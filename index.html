@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1311">
+<meta name="description" content="Gerador de eventos, tabelas, oráculos e diário para jogo solo, ferramenta de fã de Assimilação RPG.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gerador">
+</head><body>
+<title>Gerador de Aventuras Assimiladas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+/* Layout: cabeçalho com abas; cada aba é uma mesa de sorteio. As cartas do baralho são o ponto forte do visual, o resto fica sóbrio (concreto, tinta e quatro cores de naipe). */
+:root{
+  --bg:#d9ddd5;
+  --surface:#e9ece5;
+  --raised:#f4f6f1;
+  --ink:#161c1a;
+  --muted:#556059;
+  --line:#b3bbb0;
+  --s-nat:#2c7448;
+  --s-ame:#ad401c;
+  --s-ass:#76398f;
+  --s-rec:#8a6208;
+  --ok:#2c7448;
+  --f-display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
+  --f-body:'Newsreader',Georgia,'Times New Roman',serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1311;--surface:#171c19;--raised:#1e2521;--ink:#e0e6e0;--muted:#92a097;--line:#2c3631;
+    --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1311;--surface:#171c19;--raised:#1e2521;--ink:#e0e6e0;--muted:#92a097;--line:#2c3631;
+  --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--ink);
+  font:400 1.02rem/1.55 var(--f-body);
+  padding-block:18px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+[hidden]{display:none!important}
+.app{max-width:72rem;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+
+.top{display:flex;flex-direction:column;gap:10px}
+.stripe{height:8px;background:repeating-linear-gradient(-45deg,var(--ink) 0 10px,transparent 10px 20px);opacity:.85}
+.brandrow{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between}
+.eyebrow{margin:0;font:500 .72rem/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand{margin:0;font:700 clamp(2.1rem,6vw,3.4rem)/.95 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid var(--ink)}
+.tab{background:none;border:0;padding:10px 14px 9px;font:600 1.05rem/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:4px solid transparent;margin-bottom:-2px;display:flex;gap:8px;align-items:center}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.badge{font:600 .68rem/1 var(--f-mono);background:var(--ink);color:var(--bg);border-radius:999px;padding:3px 7px;font-variant-numeric:tabular-nums}
+
+.btn{background:transparent;border:1.5px solid var(--ink);border-radius:2px;padding:9px 14px;font:600 .74rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.btn:hover:not(:disabled){background:var(--ink);color:var(--bg)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.pri{background:var(--ink);color:var(--bg)}
+.btn.pri:hover:not(:disabled){filter:brightness(1.25)}
+.btn.sm{padding:7px 10px;font-size:.68rem}
+.btn.bad{border-color:var(--s-ame);color:var(--s-ame)}
+.btn.bad:hover:not(:disabled){background:var(--s-ame);color:var(--bg)}
+.lbl{font:600 .68rem/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hint{margin:0;font:400 .8rem/1.5 var(--f-mono);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grow{flex:1 1 auto}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+input[type=text],input[type=search],select,textarea{width:100%;min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:2px;padding:8px 10px;font:400 .95rem/1.4 var(--f-body);color:var(--ink)}
+textarea{resize:vertical;min-height:5rem;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--raised);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:600 .72rem/1 var(--f-mono);letter-spacing:.04em;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.chip:hover{color:var(--ink);border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.sw{width:10px;height:10px;border-radius:50%;background:var(--c,var(--ink));display:inline-block}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.check{display:flex;gap:8px;align-items:center;font:500 .8rem/1.3 var(--f-mono);color:var(--muted)}
+.check input{width:18px;height:18px;accent-color:var(--ink)}
+
+/* Cartas */
+.hand{display:grid;grid-template-columns:repeat(auto-fit,minmax(15.5rem,1fr));gap:16px;align-items:stretch}
+.card{--c:var(--s-nat);position:relative;background:var(--raised);border:2px solid var(--c);border-radius:10px;display:flex;flex-direction:column;min-height:20rem;overflow:hidden;box-shadow:0 1px 0 var(--line)}
+.card.s-nat{--c:var(--s-nat)}.card.s-ame{--c:var(--s-ame)}.card.s-ass{--c:var(--s-ass)}.card.s-rec{--c:var(--s-rec)}
+.card .ch{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;background:var(--c);color:var(--raised)}
+:root[data-theme="dark"] .card .ch{color:#0f1311}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card .ch{color:#0f1311}}
+.card .rank{font:700 2rem/1 var(--f-display);letter-spacing:.02em}
+.card .sname{font:600 .68rem/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;text-align:right}
+.card .cb{padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card .icon{width:34px;height:34px;color:var(--c)}
+.card h3{margin:0;font:700 1.7rem/1.05 var(--f-display);letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+.card p{margin:0;font-size:1.02rem;line-height:1.5}
+.card .cf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-top:1px dashed var(--line)}
+.tag{font:600 .66rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--c);color:var(--c);padding:4px 7px;border-radius:2px}
+.card.out{opacity:.55}
+.card.pick{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent)}
+.card.deal{animation:deal .45s ease both;animation-delay:var(--d,0s)}
+@keyframes deal{from{transform:translateY(14px) rotate(-1.5deg);opacity:0}to{transform:none;opacity:1}}
+.back{min-height:20rem;border:2px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font:600 .8rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);background:repeating-linear-gradient(45deg,transparent 0 12px,color-mix(in srgb,var(--line) 40%,transparent) 12px 13px)}
+.inplay{display:flex;flex-direction:column;gap:10px}
+.hist{display:flex;flex-wrap:wrap;gap:6px}
+.hist span{font:500 .74rem/1 var(--f-mono);border:1px solid var(--c);color:var(--c);padding:5px 8px;border-radius:2px}
+
+/* Tabelas */
+.methods{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.seg{display:flex}
+.segb{background:var(--raised);border:1px solid var(--line);padding:9px 12px;font:600 .72rem/1.1 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.segb+.segb{border-left:0}
+.segb:first-child{border-radius:2px 0 0 2px}.segb:last-child{border-radius:0 2px 2px 0}
+.segb[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.prob{display:grid;grid-template-columns:repeat(6,2.6rem);gap:6px;align-items:end}
+.prob div{display:flex;flex-direction:column;gap:3px;align-items:center;font:500 .66rem/1 var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.prob i{display:block;width:100%;background:var(--ink);min-height:2px}
+.prob .box{height:34px;display:flex;align-items:flex-end;width:100%}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(21rem,1fr));gap:16px;align-items:start}
+.tcard{display:flex;flex-direction:column;gap:12px}
+.tcard h3{margin:0;font:700 1.35rem/1.1 var(--f-display);letter-spacing:.04em;text-transform:uppercase}
+.axes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.axis{display:flex;flex-direction:column;gap:4px;min-width:0}
+.axis ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.opt{width:100%;text-align:left;background:var(--raised);border:1px solid var(--line);padding:6px 8px;display:grid;grid-template-columns:2.2rem 1fr;gap:6px;align-items:baseline;font:400 .88rem/1.3 var(--f-body);border-radius:2px}
+.opt b{font:500 .66rem/1 var(--f-mono);color:var(--muted)}
+.opt:hover{border-color:var(--ink)}
+.opt[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.opt[aria-pressed="true"] b{color:inherit;opacity:.75}
+.tres{background:var(--raised);border-left:4px solid var(--ink);padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-height:4.4rem}
+.tres .p{display:flex;flex-direction:column}
+.tres .pl{font:600 .62rem/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tres .pv{font:600 1.35rem/1.15 var(--f-display);letter-spacing:.02em;text-transform:uppercase}
+.tres .ov{font:400 1.05rem/1.45 var(--f-body)}
+.tres .empty{color:var(--muted);font:400 .85rem/1.4 var(--f-mono)}
+.edit summary{cursor:pointer;font:600 .68rem/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.edit[open] summary{margin-bottom:8px}
+.egrid{overflow-x:auto;border:1px solid var(--line)}
+.egrid table{border-collapse:collapse;min-width:34rem;width:100%}
+.egrid th{font:500 .62rem/1.2 var(--f-mono);color:var(--muted);padding:5px 6px;text-align:left;background:var(--raised);position:sticky;top:0}
+.egrid td{padding:2px;border-top:1px solid var(--line)}
+.egrid td.rh{font:500 .62rem/1.2 var(--f-mono);color:var(--muted);padding:4px 6px;white-space:nowrap;background:var(--raised)}
+.egrid input{padding:5px 6px;font-size:.82rem;border-radius:0;border-color:transparent;background:transparent}
+.egrid input:focus{background:var(--raised);border-color:var(--ink)}
+.egrid input.has{background:color-mix(in srgb,var(--s-rec) 18%,transparent)}
+
+/* Oráculos e tramas */
+.oracles{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:14px;align-items:start}
+.oc h3{margin:0;font:700 1.3rem/1.1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
+.oc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.oc li{display:grid;grid-template-columns:2.2rem 1fr;gap:6px;align-items:baseline;padding:5px 8px;border:1px solid transparent;font:400 .92rem/1.3 var(--f-body)}
+.oc li b{font:500 .66rem/1 var(--f-mono);color:var(--muted)}
+.oc li.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.oc li.on b{color:inherit;opacity:.75}
+.big{background:var(--surface);border:2px solid var(--ink);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.quote{margin:0;font:italic 400 1.35rem/1.5 var(--f-body);max-width:60ch;text-wrap:pretty}
+.hooks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0}
+.hooks li{padding:10px 0;border-top:1px solid var(--line);display:flex;gap:12px;align-items:baseline;justify-content:space-between}
+.hooks li p{margin:0;max-width:64ch;font-style:italic}
+
+/* Diário */
+.log{display:flex;flex-direction:column;gap:0}
+.entry{display:grid;grid-template-columns:6.2rem minmax(0,1fr);gap:4px 16px;padding:14px 0;border-top:1px solid var(--line)}
+.entry:first-child{border-top:0}
+.kind{font:600 .66rem/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.entry h4{margin:0 0 2px;font:700 1.15rem/1.15 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
+.entry p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;max-width:66ch}
+.entry .ebody{display:flex;flex-direction:column;gap:6px;min-width:0}
+.entry.txt p{font-size:1.1rem;line-height:1.65}
+
+/* Páginas de diário: papel pautado com tinta azul, igual nos dois temas */
+.entry.paper{--ink:#26264a;--muted:#6b6a80;--bg:#f5ecd4;--raised:#fbf5e4;--line:#c8bfa6;--ok:#2c6b47;--s-ame:#a8392f;
+  position:relative;display:block;margin:14px 0;padding:.5rem 18px .9rem 4.2rem;color:var(--ink);
+  background-color:#f5ecd4;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 calc(2rem - 1px),#b9c7de calc(2rem - 1px) 2rem);
+  background-position:0 .5rem;
+  border:1px solid #d6c9a6;border-radius:3px 8px 8px 3px;
+  box-shadow:0 1px 0 #fff8 inset,0 6px 14px -6px #0006,0 1px 2px #0004;
+  transform:rotate(-.25deg)}
+.entry.paper:nth-child(even){transform:rotate(.25deg)}
+.entry.paper::before{content:"";position:absolute;top:0;bottom:0;left:3.1rem;width:2px;background:#c9534a;opacity:.55}
+.entry.paper::after{content:"";position:absolute;left:.9rem;top:1rem;width:14px;height:14px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 1px #0003 inset,0 1px 2px #0005 inset;
+  top:calc(50% - 7px)}
+.entry.paper .kind{font:600 .66rem/2rem var(--f-mono);letter-spacing:.14em;color:#6b6a80;margin:0}
+.entry.paper .ebody{gap:0}
+.entry.paper h4{font:700 1.7rem/2rem 'Caveat','Segoe Script','Bradley Hand',cursive;text-transform:none;letter-spacing:0;color:#8a2f2a;margin:0}
+.entry.paper p{font:500 1.55rem/2rem 'Caveat','Segoe Script','Bradley Hand',cursive;color:#26264a;max-width:none;white-space:pre-wrap}
+.entry.paper.txt p{font-size:1.55rem;line-height:2rem}
+.entry.paper .row{margin-top:.5rem;gap:6px 10px;align-items:center}
+.entry.paper .hint{color:#6b6a80;font:500 .72rem/1.2 var(--f-mono)}
+.entry.paper .btn{background:transparent;border-color:#26264a;color:#26264a}
+.entry.paper .btn:hover:not(:disabled){background:#26264a;color:#f5ecd4}
+.entry.paper textarea{font:500 1.5rem/2rem 'Caveat','Segoe Script',cursive;background:#fffaeb;color:#26264a;border:1px solid #c8bfa6;min-height:8rem;line-height:2rem}
+@media (max-width:34rem){.entry.paper{padding-left:3.2rem}.entry.paper::before{left:2.2rem}.entry.paper::after{left:.5rem}}
+@media (prefers-reduced-motion:reduce){.entry.paper,.entry.paper:nth-child(even){transform:none}}
+
+/* Animações: a Assimilação se espalha devagar (esporos, veios, brotos). Tudo some com 'reduzir movimento'. */
+body{position:relative}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:
+    radial-gradient(circle at 12% 20%,color-mix(in srgb,var(--s-nat) 55%,transparent) 0 2px,transparent 3px),
+    radial-gradient(circle at 70% 60%,color-mix(in srgb,var(--s-ass) 50%,transparent) 0 2px,transparent 3px),
+    radial-gradient(circle at 40% 85%,color-mix(in srgb,var(--s-rec) 55%,transparent) 0 1.5px,transparent 3px),
+    radial-gradient(circle at 88% 12%,color-mix(in srgb,var(--s-nat) 50%,transparent) 0 1.5px,transparent 3px);
+  background-size:340px 300px,420px 380px,280px 360px,500px 440px;
+  animation:spores 70s linear infinite}
+@keyframes spores{to{background-position:-340px -600px,420px -760px,-280px -720px,500px -880px}}
+.app,.toast{position:relative;z-index:1}
+.toast{position:fixed}
+.stripe{background-size:28.28px 8px;animation:crawl 6s linear infinite}
+@keyframes crawl{to{background-position:28.28px 0}}
+.brand{animation:flick 11s steps(1,end) infinite}
+@keyframes flick{0%,93%,100%{opacity:1;text-shadow:none}94%{opacity:.82;text-shadow:2px 0 var(--s-ass),-2px 0 var(--s-nat)}95%{opacity:1;text-shadow:none}96%{opacity:.9;text-shadow:-2px 0 var(--s-ame)}97%{opacity:1;text-shadow:none}}
+.tab[aria-selected="true"]{animation:vine .35s ease-out both}
+@keyframes vine{from{border-bottom-color:transparent;letter-spacing:.02em}to{border-bottom-color:var(--ink)}}
+.card.pick{animation:veins 2.6s ease-in-out infinite}
+@keyframes veins{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 22%,transparent)}50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 38%,transparent),0 0 22px color-mix(in srgb,var(--c) 40%,transparent)}}
+.card.deal{animation:deal .45s ease both;animation-delay:var(--d,0s)}
+.card .icon{transform-origin:50% 100%}
+.card:hover .icon,.card.pick .icon{animation:sway 2.4s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-5deg) scale(1)}50%{transform:rotate(6deg) scale(1.1)}}
+.tres>*{animation:grow .55s cubic-bezier(.2,.7,.2,1) both}
+.tres>*:nth-child(2){animation-delay:.12s}
+@keyframes grow{from{clip-path:inset(0 100% 0 0);opacity:0;filter:blur(3px)}60%{opacity:1}to{clip-path:inset(0 0 0 0);filter:none}}
+.oc li.on{animation:throb 1.1s ease-out both}
+@keyframes throb{0%{transform:scale(.96);box-shadow:0 0 0 0 color-mix(in srgb,var(--ink) 55%,transparent)}60%{transform:scale(1.02);box-shadow:0 0 0 9px transparent}100%{transform:none;box-shadow:0 0 0 0 transparent}}
+.quote{animation:ink 1s ease-out both}
+@keyframes ink{from{opacity:0;filter:blur(5px);letter-spacing:.04em}to{opacity:1;filter:none;letter-spacing:0}}
+.entry.paper.fresh{animation:bleed .9s ease-out both}
+.entry.paper.fresh p,.entry.paper.fresh h4{animation:ink 1.2s ease-out both}
+@keyframes bleed{from{opacity:0;transform:translateY(-14px) rotate(-1.4deg);filter:blur(2px)}to{opacity:1;filter:none}}
+.badge{transition:transform .2s}
+.btn.pri:not(:disabled):active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){
+  body::before,.stripe,.brand,.tab[aria-selected="true"],.card.pick,.card.deal,.card:hover .icon,.card.pick .icon,.tres>*,.oc li.on,.quote,.entry.paper.fresh,.entry.paper.fresh p,.entry.paper.fresh h4{animation:none!important}
+}
+.usedmark{font:500 .66rem/1 var(--f-mono);color:var(--ok);letter-spacing:.08em;text-transform:uppercase}
+.empty{background:var(--surface);border:1px dashed var(--line);padding:24px 18px;display:flex;flex-direction:column;gap:8px}
+.empty h3{margin:0;font:700 1.4rem/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.empty p{margin:0;max-width:56ch}
+.note{font:400 .82rem/1.45 var(--f-mono);color:var(--s-ame);margin:0}
+.legal{border-top:1px solid var(--line);padding-top:14px;font:400 .76rem/1.55 var(--f-mono);color:var(--muted);max-width:90ch}
+.legal p{margin:0 0 6px}
+.toast{position:fixed;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);font:500 .8rem/1.4 var(--f-mono);text-align:center;z-index:5}
+.toast:empty{display:none}
+@media (max-width:34rem){
+  .axes{grid-template-columns:1fr}
+  .entry{grid-template-columns:1fr}
+  .tab{padding:10px 10px 9px}
+}
+@media (prefers-reduced-motion:reduce){.card.deal{animation:none}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="stripe" aria-hidden="true"></div>
+    <p class="eyebrow">Ferramenta de fã para Assimilação RPG · não oficial</p>
+    <div class="brandrow"><h1 class="brand">Gerador de Aventuras</h1><button type="button" class="btn sm" id="themebtn" aria-pressed="false">Modo escuro</button></div>
+    <nav class="tabs" role="tablist" aria-label="Geradores">
+      <button class="tab" role="tab" type="button" data-v="baralho" id="t-baralho">Baralho</button>
+      <button class="tab" role="tab" type="button" data-v="tabelas" id="t-tabelas">Tabelas</button>
+      <button class="tab" role="tab" type="button" data-v="oraculos" id="t-oraculos">Oráculos</button>
+      <button class="tab" role="tab" type="button" data-v="tramas" id="t-tramas">Tramas</button>
+      <button class="tab" role="tab" type="button" data-v="diario" id="t-diario">Diário <span class="badge" id="nlog">0</span></button>
+    </nav>
+  </header>
+  <main>
+    <section id="v-baralho" role="tabpanel" aria-labelledby="t-baralho"></section>
+    <section id="v-tabelas" role="tabpanel" aria-labelledby="t-tabelas" hidden></section>
+    <section id="v-oraculos" role="tabpanel" aria-labelledby="t-oraculos" hidden></section>
+    <section id="v-tramas" role="tabpanel" aria-labelledby="t-tramas" hidden></section>
+    <section id="v-diario" role="tabpanel" aria-labelledby="t-diario" hidden></section>
+  </main>
+  <footer class="legal">
+    <p>Ferramenta de fã, sem fins lucrativos e sem afiliação com a Editora Assimilar. Cartas, tabelas, oráculos e tramas deste site são textos originais, escritos para este gerador, que seguem a estrutura de jogo do livro: baralho de quatro naipes, tabelas 6×6 e oráculos.</p>
+    <p>Quem tem o livro pode digitar as próprias entradas em “Editar combinações”, na aba Tabelas. Elas ficam só neste navegador. O diário e as edições também ficam salvos só aqui.</p>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= DADOS ================= */
+var SUITS=[
+  {id:'nat',nm:'Fenômenos Naturais',curto:'Natural',x:'O mundo se move: clima, terreno e natureza assimilada.'},
+  {id:'ame',nm:'Ameaças e Tensões',curto:'Ameaça',x:'Encontros que podem dar errado, conforme a reação do grupo.'},
+  {id:'ass',nm:'Fenômenos da Assimilação',curto:'Assimilação',x:'A Assimilação age sobre pessoas, objetos e lugares.'},
+  {id:'rec',nm:'Eventos de Recursos',curto:'Recursos',x:'Abundância ou escassez nos estoques e nas trocas.'}
+];
+var CARDS_RAW=[
+['nat','A','Maré fora de hora','A água recua bem além do normal e volta devagar. O que estava submerso fica à mostra por algumas horas, e quem se demora no leito pode ser pego pela volta.','dilema'],
+['nat','2','Parede de poeira','Uma cortina de poeira fina cobre a região. A visão fica curta, rastros somem e filtros e motores sofrem até o ar limpar.','ameaça'],
+['nat','3','Geada fora de época','A madrugada congela o orvalho. Hortas e estoques frescos são castigados, e quem dormiu sem abrigo acorda com o corpo rígido.','ameaça'],
+['nat','4','Luz sobre a mata','Um clarão sem fonte aparece ao fim da tarde e some. Os animais se calam. Investigar pode render respostas ou atrair algo que também viu.','dilema'],
+['nat','5','Cheia repentina','Um córrego transborda em minutos. As travessias somem, mas a correnteza deixa na margem destroços úteis e peixes ofegantes.','dilema'],
+['nat','6','Noite sem lua','Uma escuridão densa cai. Lanternas parecem fracas e qualquer fogo vira, ao mesmo tempo, guia e alvo.','dilema'],
+['nat','7','Frutos no chão','Um vento forte derruba frutas maduras numa área inteira. Há comida de graça, e o cheiro doce já chama quem estiver com fome.','oportunidade'],
+['nat','8','Encosta que cede','Chuva acumulada derruba parte de um morro. Uma trilha some, mas o barro revela algo que estava enterrado.','ameaça'],
+['nat','9','Calor que não passa','Dias seguidos de calor pesado. A água rende menos, os ânimos esquentam e o descanso deixa de recuperar.','ameaça'],
+['nat','10','Nevoeiro grosso','Uma neblina baixa engole a região. Os sons chegam de direções erradas e é fácil se separar do grupo.','ameaça'],
+['nat','J','Raio na árvore velha','Um raio racha uma árvore antiga e deixa o tronco queimando devagar. O fogo pode se espalhar, e o interior aberto guarda uma surpresa.','dilema'],
+['nat','Q','Nascente que seca','Uma fonte confiável para de brotar. Quem dependia dela precisa decidir entre procurar outra ou descobrir por que parou.','ameaça'],
+['nat','K','Tempestade que não vai embora','Uma tempestade fica parada sobre a região por dias. Viagens ficam arriscadas, telhados cedem e todo mundo fica preso com todo mundo.','ameaça'],
+
+['ame','A','Emboscada na estrada','Um grupo espera numa curva, em vantagem de posição. Querem a carga, a passagem ou algo que os Infectados nem sabem que carregam.','ameaça'],
+['ame','2','Rastros grandes','Pegadas de algo pesado cruzam o caminho, recentes. O que deixou aquilo caça por perto e ainda não foi visto.','ameaça'],
+['ame','3','Mensageiro ferido','Alguém chega cambaleando com um recado que precisa chegar a outro lugar. Ajudar custa tempo e talvez traga perseguidores.','dilema'],
+['ame','4','Pedágio','Um grupo bloqueia a passagem e cobra para deixar passar. O preço é negociável, mas a paciência deles não.','dilema'],
+['ame','5','Saque em andamento','Quem passa vê um Refúgio pequeno sendo saqueado. Intervir é arriscado, e ir embora também tem seu preço.','ameaça'],
+['ame','6','Acusação','Alguém do grupo é acusado de esconder uma mudança no corpo. A acusação pode ser falsa, e a reação da multidão importa mais que a verdade.','dilema'],
+['ame','7','Cerco silencioso','Ninguém ataca, mas os movimentos fecham a área aos poucos. Quando perceberem, as saídas já terão dono.','ameaça'],
+['ame','8','Pequena traição','Um contato de confiança vende uma informação sobre o grupo por pouco. Descobrir quem foi muda em quem se confia dali em diante.','dilema'],
+['ame','9','Fugitivos','Famílias exaustas pedem abrigo, perseguidas por algo que não explicam direito. Aceitar divide a comida e atrai a perseguição.','dilema'],
+['ame','10','Armadilha velha','Um caminho comum esconde uma armadilha antiga, feita por quem já se foi. Ela ainda funciona.','ameaça'],
+['ame','J','Disputa por água','Dois grupos discutem por uma fonte, e os Infectados ficam no meio. Tomar partido, mediar ou lucrar são opções com consequências.','dilema'],
+['ame','Q','Boato que esquenta','Um comentário vira certeza em poucas horas, e a vizinhança pede ação contra alguém. O tempo para desfazer o estrago é curto.','ameaça'],
+['ame','K','Chefe de bando oferece trato','O líder de um bando propõe uma aliança vantajosa, com uma condição que ele só revela depois do aperto de mão.','dilema'],
+
+['ass','A','Febre de três dias','Alguém é tomado por febre alta sem causa aparente. Ela passa sozinha e deixa um detalhe novo no corpo ou na mente.','ameaça'],
+['ass','2','Sonho compartilhado','Duas ou mais pessoas sonham a mesma cena. Os detalhes batem, e ela aponta para um lugar real.','dilema'],
+['ass','3','Pele que formiga','Uma sensação de agulhadas percorre o corpo perto de certo ponto do terreno. Quanto mais perto, mais forte.','ameaça'],
+['ass','4','Voz emprestada','Algo na mata imita a voz de um dos Infectados pedindo ajuda. A imitação melhora a cada tentativa.','ameaça'],
+['ass','5','Gosto de metal','Água, comida e saliva ganham o mesmo gosto por algumas horas. Quem sente também percebe melhor o que está errado ao redor.','dilema'],
+['ass','6','Crescimento súbito','Raízes, fungos ou trepadeiras tomam um objeto, uma parede ou um veículo em poucas horas, como se esperassem há tempo.','ameaça'],
+['ass','7','Silêncio dos bichos','Todos os animais da área calam ao mesmo tempo. Algo mudou, e eles perceberam antes dos Infectados.','dilema'],
+['ass','8','Marca nova','Um sinal aparece na pele de alguém. Não dói, e ninguém sabe quando surgiu. Pode ser sorte, aviso ou ambos.','dilema'],
+['ass','9','Sentidos afiados','Por um dia, os sentidos de um Infectado funcionam além do normal. Ele percebe coisas que ninguém mais percebe, inclusive as que preferia não ver.','oportunidade'],
+['ass','10','Objeto contaminado','Algo trazido de uma ruína começa a mudar de cor, peso ou temperatura. Quem o carrega sente a mudança também.','ameaça'],
+['ass','J','Eco do lugar','Um local repete, em sons ou imagens, algo que aconteceu ali há tempos. O que ele mostra muda conforme quem observa.','dilema'],
+['ass','Q','Mudança de cor','Folhas, água ou pelos de bichos ganham a mesma cor fora do comum numa região inteira. A cor se espalha na direção de algum ponto.','ameaça'],
+['ass','K','O chamado','Um impulso estranho puxa um Infectado numa direção específica. Resistir cansa, e seguir pode levá-lo a algo que ele precisava ver.','dilema'],
+
+['rec','A','Colheita farta','Plantios e criações rendem acima do esperado. Há excesso para trocar, e quem passa fome por perto fica sabendo.','oportunidade'],
+['rec','2','Praga na despensa','Bichos pequenos infestam estoques de grãos. Parte da comida precisa ser descartada e o resto, vigiado.','ameaça'],
+['rec','3','Caravana de comerciantes','Mascates chegam com mercadorias raras e notícias frescas. Ficam pouco, e os preços dependem de quem negocia.','oportunidade'],
+['rec','4','Poço contaminado','A água de uma fonte comum fica turva ou ganha cheiro. Beber sem tratar é arriscado, e achar outra fonte toma tempo.','ameaça'],
+['rec','5','Achado em ruína','Uma varredura numa construção abandonada rende um lote bom de suprimentos. Alguém mais já deixou rastro lá.','oportunidade'],
+['rec','6','Ferramenta quebrada','Um item essencial do grupo ou do Refúgio falha de vez. Consertar exige peça, ajuda ou engenho.','ameaça'],
+['rec','7','Troca vantajosa','Alguém aceita trocar algo valioso por um serviço pequeno, e a pressa dele parece maior que o preço.','oportunidade'],
+['rec','8','Combustível desviado','Parte do estoque some, e as suspeitas apontam para mais de uma pessoa. Cobrar respostas custa confiança.','dilema'],
+['rec','9','Remédios vencidos','Um lote de remédios foi encontrado, mas a validade passou faz tempo. Usar vale o risco quando não há mais nada.','dilema'],
+['rec','10','Caça abundante','A região está cheia de caça por alguns dias. A fartura atrai caçadores de outros lugares.','oportunidade'],
+['rec','J','Mofo no estoque','A umidade estraga parte dos suprimentos guardados. É preciso decidir o que salvar primeiro.','ameaça'],
+['rec','Q','Doação inesperada','Alguém deixa mantimentos na porta sem se identificar. Há uma razão, e talvez uma dívida a ser cobrada depois.','oportunidade'],
+['rec','K','Racionamento imposto','Os líderes anunciam cortes na distribuição. Há quem concorde, quem proteste e quem estoque escondido.','dilema']
+];
+
+CARDS_RAW=CARDS_RAW.concat([
+['nat','+1','Ar pesado de pólen','Uma nuvem amarelada de pólen sobe dos campos. Todo mundo espirra, os olhos ardem e é difícil ouvir quem se aproxima.','ameaça'],
+['nat','+2','Aurora estranha','O céu da madrugada ganha faixas esverdeadas. Alguns acham bonito, outros acham aviso, e os bichos ficam inquietos.','dilema'],
+['nat','+3','Vento que muda','O vento vira de repente e traz cheiros de longe: fumaça, mato queimado, algo doce demais. Dá para tirar notícias dele.','oportunidade'],
+['nat','+4','Árvore que tomba','Uma árvore gigante cai sem tempestade nenhuma. As raízes arrancadas mostram uma cavidade escura no chão.','dilema'],
+['nat','+5','Rio de peixes','Cardumes sobem o rio em massa. A pesca é fácil, mas o que os empurra rio acima também pode descer atrás.','oportunidade'],
+['nat','+6','Manhã de orvalho de vidro','Uma camada fina e cortante de gelo cobre tudo ao nascer do dia. Pisar descalço é pedir para se ferir.','ameaça'],
+['ame','+1','Cães de rua','Uma matilha magra segue o grupo a distância. Se alguém jogar comida, ela vai segui-lo para sempre.','dilema'],
+['ame','+2','Viajante sorridente','Alguém muito simpático oferece companhia no caminho. Pergunta demais e responde de menos.','dilema'],
+['ame','+3','Sinal de fumaça','Uma coluna de fumaça sobe em três tufos, o sinal que alguns bandos usam para pedir encontro. Ninguém sabe de quem é.','dilema'],
+['ame','+4','Ronda armada','Uma patrulha de outro Refúgio exige revistar a carga. Se a recusa vira desconfiança, a revista vira ameaça.','ameaça'],
+['ame','+5','Criança sozinha','Uma criança aparece no caminho sem adultos por perto. Pode estar perdida, ou ser a isca de algo pior.','dilema'],
+['ame','+6','Incêndio criminoso','Um celeiro pega fogo à noite. Há cheiro de querosene, e quem acordou primeiro sabe mais do que diz.','ameaça'],
+['ass','+1','Dormência','Parte do corpo de alguém perde o tato por uma hora. Depois volta mais sensível do que antes.','ameaça'],
+['ass','+2','Reflexo errado','Água, vidro ou metal mostram por um instante um rosto que não é o de quem olha.','dilema'],
+['ass','+3','Fome estranha','Um Infectado sente vontade de comer algo que nunca comeria. Saciá-la traz um efeito que ele não esperava.','dilema'],
+['ass','+4','Pegadas que levam ao grupo','Rastros frescos de algo assimilado vão até o acampamento e param. Não saem de lá.','ameaça'],
+['ass','+5','Relógio parado','Todos os relógios e mecanismos do grupo param no mesmo instante e voltam sozinhos, atrasados em horas.','dilema'],
+['ass','+6','Cura rápida','Um ferimento fecha em uma noite, deixando uma cicatriz com padrão. Ninguém sabe o preço.','oportunidade'],
+['rec','+1','Ferro velho bom','Um monte de sucata guarda peças úteis, mas o lugar já tem dono, e ele não está à vista.','oportunidade'],
+['rec','+2','Roubo de cabras','Os animais do Refúgio somem em uma noite. As pegadas se misturam de propósito.','ameaça'],
+['rec','+3','Mel selvagem','Uma colmeia grande está ao alcance. Há muito para colher, e muitas abelhas para enfrentar.','dilema'],
+['rec','+4','Moinho consertado','Alguém põe um moinho velho para funcionar. Todos querem usá-lo, e há briga pela vez.','oportunidade'],
+['rec','+5','Sal escasso','O sal acaba. Quem sabe onde achar mais vai querer algo em troca.','ameaça'],
+['rec','+6','Lote de sementes','Um comerciante traz sementes raras. Poucos podem pagar, e quem planta primeiro colhe primeiro.','oportunidade']
+]);
+var CARDS=CARDS_RAW.map(function(c){return {id:c[0]+c[1],s:c[0],n:c[1],t:c[2],x:c[3],k:c[4]};});
+var CARDBY={}; CARDS.forEach(function(c){CARDBY[c.id]=c;});
+var SUITBY={}; SUITS.forEach(function(s){SUITBY[s.id]=s;});
+
+function T(id,nm,rt,ct,rows,cols){return {id:id,nm:nm,rt:rt,ct:ct,rows:rows,cols:cols};}
+var THEMES=[
+{id:'clima',nm:'Clima e Ambiente',x:'Atmosfera do dia, estranhezas no céu e sinais que dão ganchos de exploração.',t:[
+ T('clima-cond','Condição climática atual','Temperatura','Céu e chuva',
+  ['Calor seco','Abafado','Ameno','Fresco com brisa','Frio úmido','Frio cortante'],
+  ['Céu aberto','Nuvens esparsas','Encoberto','Garoa','Chuva forte','Temporal']),
+ T('clima-est','Fenômenos estranhos ou raros','O que se percebe','Quando e para quem',
+  ['Aves em revoada fora de hora','Luz sem fonte','Cheiro doce no ar','Sombras alongadas demais','Silêncio absoluto','Som de sino distante'],
+  ['Ao amanhecer','Ao meio-dia','Ao entardecer','De madrugada','Só para um dos Infectados','Por toda a região']),
+ T('clima-ev','Eventos ambientais','Evento','Consequência imediata',
+  ['Queda de árvore grande','Pequeno desmoronamento','Fogo de mato','Alagamento de trilha','Chuva de cinzas','Enxurrada de lama'],
+  ['Caminho bloqueado','Alguém fica isolado','Recurso exposto','Rastros apagados','Bicho desalojado','Só um atraso']),
+ T('clima-sin','Sinais no ambiente','Sinal','Frescor',
+  ['Pegadas incomuns','Fumaça ao longe','Marcas de garra num tronco','Restos de fogueira','Objetos pendurados em galhos','Terra revirada'],
+  ['De hoje cedo','De ontem','De alguns dias','Antigo, de semanas','Antigo, mas refeito','Impossível de datar'])
+]},
+{id:'terreno',nm:'Elementos de Terreno e Complicações Ambientais',x:'Lugares marcantes, obstáculos, rastros da Assimilação e achados pequenos.',t:[
+ T('ter-marcos','Marcos abandonados','Estrutura','Estado atual',
+  ['Posto de gasolina','Escola rural','Torre de rádio','Igreja de beira de estrada','Armazém de grãos','Ponte inacabada'],
+  ['Tomado por trepadeiras','Parcialmente desabado','Barricado por dentro','Marcado com avisos','Ocupado por animais','Intacto demais']),
+ T('ter-obs','Obstáculos naturais','Obstáculo','Complicação',
+  ['Rio fundo','Brejo','Barranco','Mata fechada','Pedreira','Campo de espinhos'],
+  ['Sem travessia óbvia','Correnteza forte','Chão instável','Visibilidade ruim','Fauna territorial','Rastro de outros viajantes']),
+ T('ter-marcas','Marcas da Assimilação','Marca','Onde aparece',
+  ['Vegetação de cor errada','Terra que pulsa','Cupinzeiros altos demais','Pedras com textura de pele','Água turva e quente','Raízes em padrão'],
+  ['Em um único ponto','Ao longo do caminho','Ao redor de um Refúgio','Dentro de uma construção','No fundo da água','Em tudo, por toda parte']),
+ T('ter-desc','Pequenas descobertas','Descoberta','Detalhe',
+  ['Cantil enterrado','Diário rasgado','Chave sem porta','Ferramenta boa','Pacote de sementes','Rádio quebrado'],
+  ['Com um nome gravado','Com sangue seco','Escondido de propósito','Deixado às pressas','Já usado por alguém','Parece esperar por alguém'])
+]},
+{id:'pessoas',nm:'Personagens e Grupos',x:'Gente encontrada pelo caminho: temperamento, desejo, condição e primeira atitude.',t:[
+ T('pes-pers','Personalidade','Temperamento','Traço marcante',
+  ['Desconfiado','Falante','Calado','Irônico','Gentil','Teimoso'],
+  ['Cicatriz visível','Manca de leve','Voz rouca','Mãos sempre ocupadas','Olhar que não pisca','Cheiro forte de ervas']),
+ T('pes-mot','Motivação','Quer','Mas o que atrapalha',
+  ['Proteger alguém','Encontrar alguém','Conseguir recursos','Vingar-se','Fugir de algo','Provar seu valor'],
+  ['Falta de tempo','Uma dívida','Um segredo','Uma promessa','Um rival','Um medo antigo']),
+ T('pes-cond','Condição atual','Estado do corpo','Estado do espírito',
+  ['Saudável','Cansado','Ferido de leve','Febril','Faminto','Muito machucado'],
+  ['Esperançoso','Resignado','Assustado','Furioso','Confuso','Em paz de um jeito estranho']),
+ T('pes-rel','Relação inicial com os Infectados','Atitude','Motivo',
+  ['Hostil','Desconfiada','Neutra','Curiosa','Amistosa','Devota'],
+  ['Experiência ruim','Boato ouvido','Precisa de ajuda','Tem algo a oferecer','Já os viu antes','Quer algo escondido'])
+]},
+{id:'rumores',nm:'Rumores e Boatos',x:'O que corre de boca em boca, quem contou e o que acontece se alguém for conferir.',t:[
+ T('rum-tema','Tema do boato','Assunto','Alcance',
+  ['Refúgio em apuros','Rota segura nova','Criatura nunca vista','Tesouro ou estoque escondido','Doença ou mutação','Traição entre líderes'],
+  ['Só em um Refúgio','Em uma Região','Em duas Regiões','Na estrada toda','Só entre poucos','Já virou lenda']),
+ T('rum-cons','Consequência se investigado','O que se descobre','Quem se interessa',
+  ['É verdade, e pior','É verdade, em parte','É exagero','É mentira útil para alguém','É isca','Esconde algo diferente'],
+  ['Ninguém','Um Refúgio vizinho','Um bando','Um líder','Os próprios Infectados','Algo que não é gente']),
+ T('rum-fonte','Fonte do boato','Quem contou','Por que contou',
+  ['Mascate','Criança','Sentinela','Curandeira','Viajante exausto','Prisioneiro'],
+  ['Por medo','Por dinheiro','Por tédio','Por vingança','Por bondade','Por ordem de alguém']),
+ T('rum-tom','Tom do relato','Tom','Falha no relato',
+  ['Alarmado','Solene','Debochado','Sussurrado','Cheio de detalhes','Vago'],
+  ['Datas trocadas','Um nome errado','Exagera os números','Esconde um detalhe','Contradiz o começo','Nenhuma, está limpo'])
+]},
+{id:'fauna',nm:'Fauna e Flora Assimiladas',x:'Criaturas e plantas alteradas: tipo, comportamento, alteração e efeito.',t:[
+ T('fau-tipo','Tipo de criatura ou planta','Tipo','Aparência base',
+  ['Bicho pequeno de toca','Ave','Réptil ou anfíbio','Insetos em bando','Mamífero grande','Planta ou fungo'],
+  ['Comum, mas estranho','Cores demais','Partes a mais','Partes a menos','Tamanho fora de escala','Quase humano em algum detalhe']),
+ T('fau-comp','Comportamento','Postura','Gatilho',
+  ['Foge','Observa','Segue','Territorial','Caça em grupo','Ignora tudo'],
+  ['Barulho','Luz','Cheiro de sangue','Fogo','Movimento brusco','Presença de Infectado']),
+ T('fau-carac','Características da Assimilação','Alteração','Intensidade',
+  ['Pele endurecida','Olhos a mais','Voz imitada','Brilho fraco','Espinhos','Pulsação visível'],
+  ['Quase imperceptível','Discreta','Clara','Marcante','Extrema','Em mudança agora']),
+ T('fau-efeito','Efeito no ambiente ou nos Infectados','Efeito','Duração',
+  ['Atrai outros seres','Afugenta os seres vivos','Estraga mantimentos','Cura de leve','Intoxica','Provoca sonolência'],
+  ['Alguns minutos','Uma cena','Até o fim do dia','Alguns dias','Até ser tratado','Permanente, talvez'])
+]},
+{id:'conflito',nm:'Complicações em Conflito',x:'Para esquentar uma cena de ação: intervenções, condições, eventos súbitos e terreno.',t:[
+ T('con-int','Intervenções externas','Quem intervém','A favor de quem',
+  ['Aliado inesperado','Terceiro grupo','Fauna local','Moradores','Autoridade do Refúgio','Alguém desaparecido'],
+  ['Dos Infectados','Do adversário','De ninguém','Só de si mesmo','De uma criança','De quem pagar mais']),
+ T('con-cond','Condicionantes e acontecimentos aleatórios','Condição','Efeito',
+  ['Pouca luz','Terreno escorregadio','Barulho alto','Espaço apertado','Multidão','Fumaça'],
+  ['Atrapalha quem avança','Atrapalha quem mira','Favorece quem se esconde','Favorece quem corre','Atrapalha a comunicação','Muda a cada rodada']),
+ T('con-sub','Eventos súbitos','O que acontece','Onde',
+  ['Algo desaba','Um grito','Um estouro','Alguém foge','Um animal invade','Um alarme dispara'],
+  ['No centro da cena','Na borda','Atrás dos Infectados','Atrás do adversário','Acima','Abaixo']),
+ T('con-terr','Condições que alteram o terreno','Mudança','Alcance',
+  ['Fogo','Água','Lama','Gelo fino','Vegetação de crescimento rápido','Escombros'],
+  ['Um ponto','Uma passagem','Metade da área','A área toda','Só um lado','Se espalha aos poucos'])
+]},
+{id:'objetos',nm:'Objetos, Relíquias & Itens Perdidos',x:'O que se acha por aí: tipo, importância, história e estado.',t:[
+ T('obj-tipo','Tipo de objeto','Categoria','Material',
+  ['Ferramenta','Arma improvisada','Remédio','Documento','Adereço pessoal','Equipamento de comunicação'],
+  ['Metal enferrujado','Madeira trabalhada','Plástico rachado','Tecido','Vidro','Osso ou couro']),
+ T('obj-pot','Potencial narrativo','Valor','Quem quer',
+  ['Útil agora','Útil depois','Valioso para outros','Perigoso','Sentimental','Misterioso'],
+  ['Ninguém','Um Refúgio','Um bando','Uma pessoa só','Algo assimilado','Mais de um interessado']),
+ T('obj-orig','Origem ou história','Veio de','Marca da história',
+  ['Antes do Colapso','Dos primeiros anos','De um Refúgio extinto','De uma caravana perdida','Feito à mão','Trazido de longe'],
+  ['Iniciais gravadas','Reparo cuidadoso','Mancha estranha','Inscrição apagada','Cheiro que não sai','Nada, só o desgaste']),
+ T('obj-cons','Estado de conservação','Condição','Detalhe',
+  ['Novo','Bom','Gasto','Danificado','Quase inútil','Estragado'],
+  ['Falta uma peça','Funciona com um truque','Tem remendo','Foi limpo há pouco','Está contaminado','Tem algo escondido dentro'])
+]},
+{id:'mente',nm:'Efeitos Mentais',x:'O peso psicológico do mundo: visões, traumas, fixações e pequenas crises.',t:[
+ T('men-pes','Pesadelos e visões','Imagem','Como termina',
+  ['Casa da infância','Corpo na água','Corredor sem fim','Rosto sem boca','Céu que desce','Vozes na mata'],
+  ['Acorda gritando','Com uma pista','Com uma pergunta','Sem lembrar de nada','Com um aviso','Continua acordado']),
+ T('men-trau','Traumas e consequências','Gatilho','Reação',
+  ['Cheiro de queimado','Choro de criança','Escuro total','Multidão','Água parada','Sons repetidos'],
+  ['Paralisa','Foge','Fica agressivo','Fica mudo','Chora','Age com uma frieza estranha']),
+ T('men-obs','Obsessões','Fixação','Intensidade',
+  ['Contar coisas','Limpar','Guardar lixo','Vigiar uma pessoa','Seguir um sinal','Repetir uma frase'],
+  ['Hábito leve','Incomoda os outros','Atrapalha tarefas','Domina o dia','Dá coragem','Dá medo de perder']),
+ T('men-cri','Pequenas crises','Crise','Momento',
+  ['Tremor nas mãos','Choro sem motivo','Riso fora de hora','Esquecimento','Raiva súbita','Desligamento'],
+  ['Antes de agir','No meio da ação','Logo depois','Em silêncio, à noite','Diante de estranhos','Ao ver sangue'])
+]},
+{id:'assim',nm:'Eventos da Assimilação',x:'A Assimilação em ação: manifestações, mutações passageiras, sentidos e reações sociais.',t:[
+ T('ass-man','Manifestações no ambiente','Manifestação','Onde',
+  ['Cheiro adocicado','Calor vindo do chão','Névoa colorida','Plantas se virando','Eco que responde','Poças que tremem'],
+  ['No acampamento','Na trilha','Na entrada de um Refúgio','Numa ruína','Junto à água','Em todo canto']),
+ T('ass-mut','Mutações temporárias nos Infectados','Alteração','Efeito prático',
+  ['Pele áspera','Olhos que brilham','Dedos alongados','Ossos que doem','Dentes sensíveis','Cabelo que cresce rápido'],
+  ['Ajuda numa tarefa física','Atrapalha tarefas finas','Assusta quem vê','Chama atenção de bichos','Dá sede ou fome','Some ao fim do dia']),
+ T('ass-sen','Efeitos sensoriais','Sentido','Efeito',
+  ['Visão','Audição','Olfato','Paladar','Tato','Equilíbrio'],
+  ['Aguçado demais','Embotado','Distorcido','Mistura com outro sentido','Dá falsos sinais','Vai e volta']),
+ T('ass-soc','Repercussões sociais','Reação das pessoas','Quem reage',
+  ['Medo','Curiosidade','Culpa','Reverência','Cobrança','Isolamento'],
+  ['Um Refúgio','Um grupo de viajantes','Um parente','Os próprios aliados','Um líder','Todos que ouvirem falar'])
+]}
+];
+var TBY={}; THEMES.forEach(function(th){th.t.forEach(function(t){t.tema=th; TBY[t.id]=t;});});
+
+
+var EX={
+'clima-cond':[['Calor sufocante','Morno e pesado','Agradável','Vento fresco','Frio de gelar o nariz','Gelo na madrugada'],['Céu limpo e duro','Nuvens altas','Cinzento','Chuvisco fino','Chuva grossa','Trovoada seca']],
+'clima-est':[['Cães uivando sem motivo','Reflexos no céu','Gosto de metal no ar','Vulto no horizonte','Vento que para de repente','Eco sem origem'],['Logo cedo','Sob sol alto','Na hora de acender o fogo','No meio da noite','Só para quem tem marca','Até onde a vista alcança']],
+'clima-ev':[['Ponte de tronco cai','Cerca de pedra rui','Incêndio no capim','Poça vira lago','Granizo','Ventania derruba telhados'],['Passagem fechada','Alguém se separa','Suprimento aparece','Pegadas somem','Bicho assustado foge para perto','Só atrasa']],
+'clima-sin':[['Marcas de roda','Luz de lanterna ao longe','Ossos arrumados','Fogueira apagada às pressas','Panos amarrados em estacas','Pegadas descalças'],['Ainda quentes','De hoje à noite','De uma semana','De meses','Refeito sempre','Sem como saber']],
+'ter-marcos':[['Oficina mecânica','Ponto de ônibus','Caixa-d’água','Capela','Cooperativa','Viaduto'],['Coberto de mato','Metade em pé','Trancado','Cheio de recados','Cheio de ninhos','Limpo e arrumado']],
+'ter-obs':[['Lagoa','Mangue','Ribanceira','Capoeira densa','Cascalheira','Cerca de arame farpado'],['Sem ponto de apoio','Água fria demais','Terra que cede','Névoa no meio','Bicho dono do lugar','Alguém passou há pouco']],
+'ter-marcas':[['Folhas com veias luminosas','Chão morno','Formigueiros enormes','Pedras que parecem couro','Poças que fervem sem fogo','Raízes que se cruzam em desenho'],['Num ponto só','Ao longo da rota','Em volta de um muro','Dentro de um prédio','Sob a água','Por todo lado']],
+'ter-desc':[['Lanterna enterrada','Folha de caderno','Cadeado velho','Faca de cozinha','Saco de feijão','Walkie-talkie sem bateria'],['Com um recado','Com manchas escuras','Escondido com cuidado','Largado na pressa','Usado há pouco','Parece ter dono']],
+'pes-pers':[['Cauteloso','Brincalhão','Reservado','Sarcástico','Atencioso','Cabeça-dura'],['Dedo faltando','Anda arrastando o pé','Voz baixa','Rói as unhas','Fala olhando para o chão','Cheiro de fumaça']],
+'pes-mot':[['Cuidar da família','Achar um desaparecido','Juntar suprimentos','Acertar contas','Escapar do passado','Merecer respeito'],['Pouco tempo','Uma dívida de favor','Um segredo guardado','Um juramento','Um concorrente','Um trauma']],
+'pes-cond':[['Bem','Exausto','Machucado leve','Com tosse','Com fome','Debilitado'],['Otimista','Conformado','Apavorado','Raivoso','Perdido','Estranhamente calmo']],
+'pes-rel':[['Agressiva','Cautelosa','Indiferente','Interessada','Cordial','Fiel desde o primeiro encontro'],['Foi traída antes','Ouviu histórias','Está precisando','Tem informação','Já cruzou o caminho deles','Quer algo em troca']],
+'rum-tema':[['Comunidade em crise','Estrada nova','Bicho jamais visto','Depósito lacrado','Surto de doença','Racha no comando'],['Numa vila só','Numa Região','Entre Regiões vizinhas','Pela estrada inteira','Entre poucos','Virou conto antigo']],
+'rum-cons':[['É verdade, e grave','Metade verdade','Exagero puro','Mentira que alguém plantou','Armadilha','Esconde algo maior'],['Ninguém liga','Refúgio vizinho','Bando de estrada','Um chefe','Os próprios Infectados','Algo que não dorme']],
+'rum-fonte':[['Vendedor ambulante','Menino da horta','Vigia','Rezadeira','Andarilho cansado','Preso solto de manhã'],['Medo','Interesse','Tédio','Rancor','Generosidade','Obediência']],
+'rum-tom':[['Aflito','Grave','Zombeteiro','Em voz baixa','Cheio de minúcias','Evasivo'],['Confunde os dias','Erra um nome','Infla os números','Cala o essencial','Se contradiz','Está redondo']],
+'fau-tipo':[['Roedor','Pássaro','Lagarto ou sapo','Nuvem de insetos','Animal de porte grande','Cipó ou cogumelo'],['Quase normal','Cores berrantes','Membros demais','Falta uma parte','Grande ou pequeno demais','Algo de humano']],
+'fau-comp':[['Recua','Espreita','Persegue','Defende território','Caça em matilha','Não se importa'],['Ruído','Claridade','Cheiro de carne','Chama','Gesto rápido','Chegada de Infectado']],
+'fau-carac':[['Couraça','Olhos extras','Imita sons','Luminescência','Espinhos','Batimento visível'],['Mal se nota','Sutil','Evidente','Gritante','Absurda','Mudando à vista']],
+'fau-efeito':[['Chama outros bichos','Espanta tudo','Apodrece comida','Alivia dores','Envenena','Dá sono'],['Minutos','A cena toda','O dia','Dias','Até haver cuidado','Talvez para sempre']],
+'con-int':[['Aliado que ninguém esperava','Outro grupo','Bichos do lugar','Gente da vizinhança','Guarda do Refúgio','Alguém que sumiu'],['Dos Infectados','Do inimigo','De nenhum lado','Do próprio interesse','De uma criança','Do melhor pagador']],
+'con-cond':[['Quase escuro','Chão liso','Barulho ensurdecedor','Corredor estreito','Aglomeração','Fumaceira'],['Dificulta o avanço','Dificulta a pontaria','Ajuda a se esconder','Ajuda a correr','Atrapalha o contato','Muda a cada rodada']],
+'con-sub':[['Desabamento','Grito','Explosão','Fuga','Bicho invade','Sirene toca'],['No meio','Na borda','Às costas dos Infectados','Às costas do inimigo','No alto','No chão']],
+'con-terr':[['Chamas','Água','Barro','Gelo fino','Trepadeira que cresce','Entulho'],['Um ponto','Uma passagem','Metade','Tudo','Um lado só','Vai crescendo']],
+'obj-tipo':[['Utensílio','Arma de fortuna','Medicamento','Papel ou mapa','Peça pessoal','Aparelho de comunicação'],['Ferro ferrugento','Madeira lavrada','Plástico trincado','Pano','Vidro','Couro ou osso']],
+'obj-pot':[['Serve já','Serve depois','Vale muito para outros','Perigoso','Tem valor afetivo','Cheio de mistério'],['Ninguém','Um Refúgio','Um bando','Uma pessoa','Algo assimilado','Vários']],
+'obj-orig':[['De antes do Colapso','Dos primeiros anos','De um Refúgio que caiu','De uma caravana desaparecida','Feito em casa','De muito longe'],['Iniciais','Remendo caprichado','Mancha esquisita','Texto apagado','Cheiro persistente','Só desgaste']],
+'obj-cons':[['Zerado','Em boa forma','Usado','Avariado','Quase perdido','Podre'],['Falta uma peça','Funciona com jeito','Está remendado','Foi limpo','Está contaminado','Guarda algo dentro']],
+'men-pes':[['Casa de infância','Afogado','Corredor interminável','Rosto liso','Céu baixo','Vozes entre as árvores'],['Acorda gritando','Com uma pista','Com uma dúvida','Esquecendo tudo','Com um aviso','Sonha acordado']],
+'men-trau':[['Cheiro de fumaça','Choro de bebê','Breu','Aglomeração','Água parada','Barulho que se repete'],['Congela','Corre','Fica violento','Perde a voz','Chora','Age com frieza estranha']],
+'men-obs':[['Contar passos','Esfregar tudo','Juntar sucata','Observar alguém','Seguir um sinal','Repetir uma palavra'],['Tique leve','Irrita os outros','Atrapalha o trabalho','Toma o dia','Dá coragem','Dá medo de perder']],
+'men-cri':[['Mãos que tremem','Choro à toa','Riso fora de hora','Branco na memória','Ódio súbito','Ausência'],['Antes de agir','No meio','Logo depois','De noite, calado','Diante de estranho','Ao ver sangue']],
+'ass-man':[['Perfume doce','Chão quente','Neblina colorida','Folhas viram','Eco que responde','Poças tremendo'],['No acampamento','Na trilha','No portão do Refúgio','Em uma ruína','Na beira d’água','Em todo lugar']],
+'ass-mut':[['Pele grossa','Olhos brilhantes','Dedos compridos','Dor nos ossos','Dentes sensíveis','Cabelo crescendo'],['Ajuda no esforço','Atrapalha o fino','Assusta','Chama bicho','Dá fome ou sede','Passa à noite']],
+'ass-sen':[['Vista','Ouvido','Nariz','Língua','Pele','Equilíbrio'],['Aguçado','Apagado','Torto','Misturado','Dá alarme falso','Oscila']],
+'ass-soc':[['Pavor','Interesse','Remorso','Respeito exagerado','Exigência','Afastamento'],['Um Refúgio inteiro','Um grupo de viajantes','Alguém da família','Os próprios companheiros','Um líder','Quem ouvir o boato']]
+};
+Object.keys(EX).forEach(function(id){ if(TBY[id]){ TBY[id].ra=EX[id][0]; TBY[id].ca=EX[id][1]; } });
+var ORACLES=[
+ {id:'encruz',nm:'Encruzilhada',q:'Pergunta de sim ou não',v:['Não, e algo piora','Não','Não, mas há uma saída','Sim, mas com um custo','Sim','Sim, e algo melhora']},
+ {id:'disp',nm:'Disposição',q:'Humor de quem você encontra',v:['Hostil','Irritado','Impaciente','Calmo','Cordial','Caloroso']},
+ {id:'rela',nm:'Relacionamento',q:'Laço entre duas pessoas',v:['Inimizade','Rancor','Desconfiança','Neutralidade','Afinidade','Lealdade']},
+ {id:'dest',nm:'Destino',q:'Sorte do momento',v:['Desastroso','Azarado','Desfavorável','Favorável','Sortudo','Excepcional']},
+ {id:'ref',nm:'Refúgio',q:'Força de uma comunidade',v:['Em ruínas','Frágil','Modesto','Estável','Forte','Fortaleza']},
+ {id:'crime',nm:'Crime',q:'O que aconteceu de errado',v:['Contrabando','Roubo de provisões','Agressão','Calúnia','Sabotagem','Assassinato']},
+ {id:'local',nm:'Local',q:'Onde a cena se passa',v:['Ruína de beira de estrada','Mata fechada','Margem de rio','Galpão ou depósito','Refúgio vizinho','Lugar assimilado']},
+ {id:'dem',nm:'Demanda',q:'O que pedem aos Infectados',v:['Escolta','Resgate','Busca','Investigação','Vigília','Entrega']},
+ {id:'neg',nm:'Negociação',q:'O que está na mesa',v:['Troca justa','Chantagem','Aliança','Pedido de proteção','Compra de informação','Acordo de passagem']},
+ {id:'conf',nm:'Confraternização',q:'Ocasião de encontro',v:['Velório','Festa de colheita','Troca de histórias','Banquete improvisado','Casamento','Despedida de viajantes']}
+];
+
+ORACLES.push(
+ {id:'perigo',nm:'Perigo',q:'Gravidade da ameaça à vista',v:['Letal','Grave','Séria','Contornável','Pequena','Só um susto']},
+ {id:'motivo',nm:'Motivo',q:'Por que alguém age assim',v:['Vingança','Medo','Necessidade','Ambição','Lealdade','Esperança']},
+ {id:'recurso',nm:'Recurso',q:'O que se encontra em um estoque ou achado',v:['Nada útil','Quase nada','Pouco','Razoável','Bastante','Fartura']}
+);
+var ORBY={}; ORACLES.forEach(function(o){ORBY[o.id]=o;});
+
+var PLOTS=[
+ {id:'combate',nm:'Combate',h:[
+  'Acordamos com o alarme do portão. Alguém forçou a entrada durante a noite e deixou a ronda caída no chão.',
+  'A estrada mais curta passa por um trecho onde dizem que um bando cobra caro de quem tenta. Vamos pagar ou lutar?',
+  'Encontramos o rastro de uma criatura grande perto do galinheiro. Ela voltou duas vezes, e na terceira não vai se contentar com galinha.',
+  'Um grupo de saqueadores acampou na colina em frente ao Refúgio. Estão esperando algo, e não sei o quê.',
+  'Hoje a armadilha da trilha disparou, mas não achamos o que caiu nela. Só o sangue, e ele seguia em direção ao nosso acampamento.',
+  'O barulho vinha do silo velho. Quem entrou ali não quer ser visto, e acho que não está sozinho.',
+  'Alguém roubou o remédio de uma criança e fugiu para a mata. Os rastros ainda estão frescos.',
+  'A ponte está bloqueada por carros empilhados. Não é acidente: é uma emboscada pronta, só falta quem passe.']},
+ {id:'explo',nm:'Exploração',h:[
+  'Achamos um mapa rabiscado que mostra um depósito de antes do Colapso. Metade das marcas já não existe, mas uma ainda aparece no terreno.',
+  'A mata ali é mais fechada do que devia. Quem passou antes deixou fitas amarradas nas árvores, e as últimas estão rasgadas.',
+  'Subi a torre de caixa-d’água e vi fumaça de duas direções. Uma é de um Refúgio. Da outra, não sei.',
+  'Há uma entrada no morro que ninguém registrou. O vento sai dela, e é quente.',
+  'O rio baixou, e debaixo da lama aparece o teto de uma casa. Se há uma, deve haver mais.',
+  'Um trecho da estrada está limpo demais, sem mato nem lixo. Alguém cuida dele e quer que a gente passe por ali.',
+  'A ruína do posto tem um alçapão com uma corrente nova, sem ferrugem.',
+  'Na beira do brejo, achamos um barco escondido, com a proa apontada para a ilha. Alguém planejou ir e não voltou.']},
+ {id:'invest',nm:'Investigação',h:[
+  'Três pessoas do Refúgio acordaram com a mesma marca no braço. Nenhuma delas se conhece bem, e nenhuma dorme mais.',
+  'Os estoques diminuem mais depressa do que as contas dizem. Alguém sabe o motivo, e ninguém quer falar.',
+  'Encontrei um caderno com datas e nomes, e o último nome é o meu.',
+  'O poço está limpo, mas os animais não bebem dele. Preciso descobrir o que eles sabem e a gente não.',
+  'O corpo foi achado sem ferida visível. Quem o viu por último jura que ele estava bem ao entardecer.',
+  'Uma mensagem foi gravada num rádio velho e repetida por dias. A voz muda um pouco a cada vez.',
+  'Alguém está apagando as marcas de passagem que deixamos na trilha, e só pode ser quem conhece o nosso método.',
+  'As crianças brincam de um jogo novo, com regras que ninguém ensinou. Alguém ensinou, e preciso saber quem.']},
+ {id:'refugio',nm:'Refúgio',h:[
+  'Os muros aguentaram, mas a chuva abriu um vão na parte velha. Consertar custa material que não sobra.',
+  'Chegou gente de fora pedindo para ficar. Cada pessoa é uma boca a mais e um par de mãos a mais.',
+  'A colheita foi boa e a assembleia quer festa. O líder quer estocar tudo. Os dois têm razão.',
+  'Um dos nossos foi pego trocando coisas do Refúgio por favores lá fora. Não parece ganância. Parece medo.',
+  'O gerador falhou de novo, e só uma pessoa sabe consertá-lo. Ela decidiu que não quer mais.',
+  'A escola improvisada pegou fogo. Ninguém se feriu, mas a cada hora aparece uma versão diferente do motivo.',
+  'Dois grupos do Refúgio disputam a vez de usar o poço. Hoje foi só discussão.',
+  'Uma ronda voltou com um a menos. O resto jura que ninguém ficou para trás.']},
+ {id:'jornada',nm:'Jornada',h:[
+  'Saímos antes do sol, com comida para quatro dias e a esperança de que baste.',
+  'O caminho que seguimos há semanas acabou num rio sem ponte. Para a outra margem, só um barqueiro, com seus preços.',
+  'Uma caravana se oferece para viajar conosco. Aceitar é segurança. Aceitar é também mostrar nossos segredos.',
+  'O melhor atalho passa por território de bando. O pior atalho passa por um lugar de que o povo evita falar.',
+  'A bússola começou a apontar para outro lugar depois da noite no vale. Não sei se ela quebrou ou se o vale mudou.',
+  'Hoje o grupo se dividiu por duas ideias. Sigo com quem acredito, mas não deixo de ouvir o outro lado.',
+  'Atrasamos por causa da febre de um companheiro. Se ficarmos, perdemos o prazo. Se formos, ele fica.',
+  'Encontramos um ponto de descanso tão confortável que desconfiei na hora.']},
+ {id:'politica',nm:'Politicagem',h:[
+  'O Conselho do Refúgio vota amanhã se aceita um acordo de comércio com um grupo que ninguém conhece direito. Todos querem me convencer.',
+  'Dois líderes vizinhos se desentendem e usam a gente como mensageiro. Cada recado que levo muda um pouco.',
+  'Alguém ofereceu proteção em troca de lealdade. Soube depois que o mesmo foi oferecido a todo mundo.',
+  'Uma assembleia exige julgar um viajante por algo que ele jura não ter feito. As provas são poucas e a pressa é grande.',
+  'O novo líder prometeu mudar as regras do racionamento. Começou pelas regras que o favorecem.',
+  'Querem uma testemunha para um acordo antigo. Se eu disser o que vi, alguém perde a posição.',
+  'Os fundadores do Refúgio sempre contaram a mesma história de origem. Achei um documento que a contradiz.',
+  'Uma delegação chegou de longe com presentes demais para uma visita só de cortesia.']}
+];
+
+var PEX={
+ combate:['O cão do vizinho latiu a noite toda para o mato. De manhã, ele não estava mais amarrado, e a corda estava cortada.','Duas famílias do Refúgio vão se pegar na saída da assembleia, e eu estou no meio do caminho.','Na estrada, um homem pediu carona, e a mão dele tinha o mesmo corte de um bandido que vi ontem.','Algo derrubou a cerca do pasto sem deixar rastro. A terra está revirada de dentro para fora.'],
+ explo:['Seguimos o mapa até uma casa de fazenda. Só o paiol estava de pé, e a porta tinha sido arrombada por dentro.','Achei um poço seco no meio da mata, com degraus esculpidos descendo.','Do alto do morro vimos uma clareira circular perfeita. Nem as plantas ousam entrar nela.','Depois da curva do rio há luz acesa numa casa que todos juram estar vazia há anos.'],
+ invest:['Alguém deixou bilhetes sob as portas, todos com letra diferente e a mesma frase.','O curandeiro não quer dizer o que ouviu durante a febre do menino, e ele não parece ter medo da doença.','Os sinos da capela tocaram sozinhos três vezes, sempre à mesma hora, sempre uma batida a menos.','Dois depoimentos de testemunhas combinam palavra por palavra. Isso só pode ser ensaiado.'],
+ refugio:['O inverno está chegando e o estoque de lenha não aguenta. Há quem sugira derrubar o bosque sagrado.','Uma festa de casamento foi marcada em meio à escassez, e metade do Refúgio acha que é insulto e a outra metade, esperança.','A primeira geração nascida depois do Colapso quer mudar as regras. Os velhos dizem que as regras salvaram todo mundo.','Um forasteiro sabe consertar o gerador, mas só se puder ficar com o quarto da torre, que ninguém usa há anos.'],
+ jornada:['O mapa mostra uma estrada que o guia jura que não existe mais. Ele quer ir assim mesmo.','Dormimos em turnos, mas amanheci com o fogo aceso por alguém que não era da vez.','Acabou a água, e o único rio do caminho tem cheiro de ferrugem.','Um viajante de volta nos avisou que a ponte à frente foi cortada. Ele não quis dizer por quem.'],
+ politica:['Dois candidatos à chefia me procuraram na mesma noite, e os dois sabiam do que eu devia.','Há uma lista de nomes que ninguém quer admitir ter escrito. O meu está nela.','Um embaixador oferece aliança, mas pede para ver o nosso estoque primeiro.','Roubaram o selo do Conselho. Quem o usar poderá assinar qualquer acordo em nome do Refúgio.']
+};
+PLOTS.forEach(function(p){ if(PEX[p.id]) p.h=p.h.concat(PEX[p.id]); });
+var PLBY={}; PLOTS.forEach(function(p){PLBY[p.id]=p;});
+
+var LABELS=['0–1','2','3','4','5','6+'];
+var DIST={padrao:[16,21,26,21,12,4],alto:[11.1,17.4,22.2,22.2,15.3,11.8],uniforme:[1,1,1,1,1,1]};
+var METODOS=[
+  {id:'padrao',nm:'Padrão'},
+  {id:'alto',nm:'Resultados altos'},
+  {id:'uniforme',nm:'Equilíbrio total (d6)'}
+];
+var TONS=['Sombrio e tenso','Seco e irônico','Melancólico e esperançoso','Cansado e cuidadoso'];
+
+/* ================= UTILIDADES ================= */
+function $(id){return document.getElementById(id);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function h(tag){
+  var n=document.createElement(tag), args=Array.prototype.slice.call(arguments,1);
+  function apply(a){
+    Object.keys(a).forEach(function(k){
+      var v=a[k]; if(v===null||v===undefined||v===false) return;
+      if(k==='class') n.className=v;
+      else if(k.slice(0,2)==='on') n.addEventListener(k.slice(2),v);
+      else if(k==='style') n.setAttribute('style',v);
+      else if(k in n && k!=='list') { try{ n[k]=v; }catch(e){ n.setAttribute(k,v); } }
+      else n.setAttribute(k,v===true?'':v);
+    });
+  }
+  function add(c){
+    if(c===null||c===undefined||c===false) return;
+    if(Array.isArray(c)) return c.forEach(add);
+    if(c.nodeType) return n.append(c);
+    if(typeof c==='object') return apply(c);
+    n.append(document.createTextNode(String(c)));
+  }
+  if(typeof args[0]==='string' && args.length>1){ n.className=args.shift(); }
+  args.forEach(add);
+  return n;
+}
+var SVGNS='http://www.w3.org/2000/svg';
+var ICONS={
+  nat:['M4 20C4 10 10 4 20 4c0 10-6 16-16 16z','M4 20L14 10'],
+  ame:['M12 3L22 20H2z','M12 9v5','M12 17v.01'],
+  ass:['M12 3a9 9 0 1 0 9 9','M12 7a5 5 0 1 0 5 5','M12 11a1 1 0 1 0 1 1'],
+  rec:['M3 7l9-4 9 4v10l-9 4-9-4z','M3 7l9 4 9-4','M12 11v10']
+};
+function icon(id){
+  var s=document.createElementNS(SVGNS,'svg');
+  s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','icon'); s.setAttribute('aria-hidden','true');
+  s.setAttribute('fill','none'); s.setAttribute('stroke','currentColor'); s.setAttribute('stroke-width','2');
+  s.setAttribute('stroke-linecap','round'); s.setAttribute('stroke-linejoin','round');
+  (ICONS[id]||[]).forEach(function(d){var p=document.createElementNS(SVGNS,'path');p.setAttribute('d',d);s.append(p);});
+  return s;
+}
+var toastT=null;
+function toast(m){
+  $('toast').textContent=m; clearTimeout(toastT);
+  toastT=setTimeout(function(){$('toast').textContent='';},3000);
+}
+function copyText(txt,ok){
+  function fb(){
+    try{
+      var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.append(ta); ta.select(); var r=document.execCommand('copy'); ta.remove();
+      toast(r?ok:'Não consegui copiar.');
+    }catch(e){toast('Não consegui copiar.');}
+  }
+  try{ navigator.clipboard.writeText(txt).then(function(){toast(ok);},fb); }catch(e){fb();}
+}
+var downloads=null, sample=null;
+function saveFile(name,data){
+  if(!downloads){ toast('Salvar arquivo não está disponível aqui. Use Copiar.'); return; }
+  downloads.save({filename:name,data:data}).then(
+    function(){toast('Arquivo salvo.');},
+    function(e){ if(!e||e.code!=='declined') toast('Não foi possível salvar o arquivo.'); });
+}
+
+/* ================= ESTADO ================= */
+var KEY='gerador-aventuras-assimiladas-v1';
+var ST={metodo:'padrao',diario:[],over:{},narrador:'',tom:TONS[0]};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
+function load(){
+  try{
+    var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(!o||typeof o!=='object') return;
+    if(DIST[o.metodo]) ST.metodo=o.metodo;
+    if(Array.isArray(o.diario)) ST.diario=o.diario.filter(function(e){return e&&typeof e.texto==='string';}).slice(0,500).map(function(e){
+      return {id:String(e.id||Math.random()),kind:String(e.kind||'Nota'),titulo:String(e.titulo||''),texto:String(e.texto),usado:!!e.usado,ts:+e.ts||Date.now()};
+    });
+    if(o.over&&typeof o.over==='object') Object.keys(o.over).forEach(function(tid){
+      if(!TBY[tid]||!o.over[tid]||typeof o.over[tid]!=='object') return;
+      var m={}; Object.keys(o.over[tid]).forEach(function(k){
+        if(/^[0-5]-[0-5]$/.test(k)&&typeof o.over[tid][k]==='string'&&o.over[tid][k].trim()) m[k]=o.over[tid][k].slice(0,400);
+      });
+      if(Object.keys(m).length) ST.over[tid]=m;
+    });
+    if(typeof o.narrador==='string') ST.narrador=o.narrador.slice(0,80);
+    if(TONS.indexOf(o.tom)>=0) ST.tom=o.tom;
+  }catch(e){}
+}
+function rolar(){
+  var w=DIST[ST.metodo], sum=w.reduce(function(a,b){return a+b;},0), r=Math.random()*sum, acc=0;
+  for(var i=0;i<w.length;i++){acc+=w[i]; if(r<acc) return i;}
+  return w.length-1;
+}
+function addLog(kind,titulo,texto){
+  ST.diario.unshift({id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),kind:kind,titulo:titulo,texto:texto,usado:false,ts:Date.now()});
+  ST.diario=ST.diario.slice(0,500);
+  lastNew=ST.diario[0].id;
+  save(); updateBadge(); if(!$('v-diario').hidden) renderDiario();
+  toast('Enviado ao diário.');
+}
+function updateBadge(){ $('nlog').textContent=String(ST.diario.length); }
+
+/* ================= ABAS ================= */
+var VIEWS=['baralho','tabelas','oraculos','tramas','diario'];
+function go(v){
+  VIEWS.forEach(function(x){
+    $('v-'+x).hidden=(x!==v);
+    var t=$('t-'+x); t.setAttribute('aria-selected',String(x===v)); t.tabIndex=(x===v)?0:-1;
+  });
+  try{ if(location.hash!=='#'+v) history.replaceState(null,'','#'+v); }catch(e){}
+  if(v==='diario') renderDiario();
+}
+
+/* ================= BARALHO ================= */
+var DK={draw:[],pile:[],hand:[],chosen:null,hist:[],suits:{nat:1,ame:1,ass:1,rec:1},devolver:true,fresh:false};
+function activeIds(){
+  return CARDS.filter(function(c){return DK.suits[c.s];}).map(function(c){return c.id;});
+}
+function rebuild(){
+  var busy=DK.pile.concat(DK.hand);
+  DK.draw=shuffle(activeIds().filter(function(id){return busy.indexOf(id)<0;}));
+}
+function resetDeck(){
+  DK.pile=[];DK.hand=[];DK.chosen=null;DK.hist=[];DK.fresh=false;
+  DK.draw=shuffle(activeIds());
+}
+function sortear(){
+  if(DK.hand.length){
+    var rest=DK.hand.filter(function(id){return id!==DK.chosen;});
+    if(DK.devolver&&DK.chosen!==null){ DK.draw=shuffle(DK.draw.concat(rest.filter(function(id){return DK.suits[CARDBY[id].s];}))); }
+    else if(DK.chosen===null&&DK.devolver){ DK.draw=shuffle(DK.draw.concat(DK.hand.filter(function(id){return DK.suits[CARDBY[id].s];}))); }
+    else DK.pile=DK.pile.concat(rest);
+  }
+  DK.hand=[];DK.chosen=null;
+  if(DK.draw.length<3){
+    var back=DK.pile.filter(function(id){return DK.suits[CARDBY[id].s];});
+    DK.pile=DK.pile.filter(function(id){return !DK.suits[CARDBY[id].s];});
+    DK.draw=shuffle(DK.draw.concat(back));
+    if(back.length) toast('Baralho acabou: o descarte foi embaralhado de volta.');
+  }
+  DK.hand=DK.draw.splice(0,3);
+  DK.fresh=true;
+  renderBaralho();
+}
+function escolher(id){
+  if(DK.chosen!==null) return;
+  DK.chosen=id; DK.pile.push(id); DK.hist.unshift(id); DK.hist=DK.hist.slice(0,10); DK.fresh=false;
+  renderBaralho();
+}
+function cartaNode(c,opts){
+  opts=opts||{};
+  var cls='card s-'+c.s+(opts.out?' out':'')+(opts.pick?' pick':'')+(opts.deal?' deal':'');
+  var el=h('article',{class:cls,style:opts.d?('--d:'+opts.d+'s'):null},
+    h('div','ch',h('span','rank',c.n),h('span','sname',SUITBY[c.s].nm)),
+    h('div','cb',icon(c.s),h('h3',null,c.t),h('p',null,c.x)),
+    h('div','cf',h('span','tag',c.k),opts.foot||null));
+  return el;
+}
+function cartaTexto(c){return '['+SUITBY[c.s].nm+' · '+c.n+'] '+c.t+'. '+c.x;}
+function renderBaralho(){
+  var root=$('v-baralho'); root.textContent='';
+  var chips=h('div','chips',SUITS.map(function(s){
+    var b=h('button',{type:'button',class:'chip','aria-pressed':String(!!DK.suits[s.id]),title:s.x,style:'--c:var(--s-'+s.id+')'},h('span','sw',{style:'--c:var(--s-'+s.id+')'}),s.nm);
+    b.addEventListener('click',function(){
+      var on=Object.keys(DK.suits).filter(function(k){return DK.suits[k];});
+      if(DK.suits[s.id]&&on.length===1){ toast('Deixe ao menos um naipe ativo.'); return; }
+      DK.suits[s.id]=DK.suits[s.id]?0:1; rebuild(); renderBaralho();
+    });
+    return b;
+  }));
+  var dev=h('input',{type:'checkbox',id:'dev'}); dev.checked=DK.devolver;
+  dev.addEventListener('change',function(){DK.devolver=dev.checked;});
+  var nDraw=DK.draw.length, nPile=DK.pile.filter(function(id){return DK.suits[CARDBY[id].s];}).length;
+  root.append(h('div','panel',
+    h('div','bar',
+      h('div','row',
+        h('button',{type:'button',class:'btn pri',onclick:sortear},'Sortear 3 cartas'),
+        h('button',{type:'button',class:'btn',onclick:function(){resetDeck();DK.hand=[];renderBaralho();toast('Baralho embaralhado.');}},'Embaralhar tudo')),
+      h('span','hint','Baralho: '+nDraw+' · Descarte: '+nPile)),
+    h('div','field',h('span','lbl','Naipes no baralho'),chips),
+    h('label',{class:'check','for':'dev'},dev,'Devolver ao baralho as cartas que não foram escolhidas')));
+  root.append(h('p','hint',{style:'margin:14px 0 10px'},'Sorteie três cartas e escolha uma. A carta é um gatilho: use agora, guarde para depois ou adapte ao que o grupo está vivendo.'));
+  var hand=h('div',{class:'hand'});
+  if(!DK.hand.length){
+    for(var i=0;i<3;i++) hand.append(h('div','back','Carta virada'));
+  }else{
+    DK.hand.forEach(function(id,i){
+      var c=CARDBY[id], isPick=(DK.chosen===id), out=(DK.chosen!==null&&!isPick);
+      var foot;
+      if(DK.chosen===null){
+        foot=h('button',{type:'button',class:'btn sm pri',onclick:function(){escolher(id);}},'Escolher');
+      }else if(isPick){
+        foot=h('span','tag','Em jogo');
+      }else foot=h('span','hint','Não escolhida');
+      hand.append(cartaNode(c,{out:out,pick:isPick,deal:DK.fresh,d:(i*0.08).toFixed(2),foot:foot}));
+    });
+  }
+  root.append(hand);
+  if(DK.chosen!==null){
+    var c=CARDBY[DK.chosen];
+    root.append(h('div',{class:'panel',style:'margin-top:16px'},
+      h('div','lbl','Carta em jogo'),
+      h('p',null,h('strong',null,c.t+'. '),c.x),
+      h('div','row',
+        h('button',{type:'button',class:'btn pri',onclick:function(){addLog('Carta',c.t+' ('+SUITBY[c.s].curto+' '+c.n+')',c.x);}},'Enviar ao diário'),
+        h('button',{type:'button',class:'btn',onclick:function(){copyText(cartaTexto(c),'Carta copiada.');}},'Copiar'))));
+  }
+  if(DK.hist.length){
+    root.append(h('div',{class:'panel',style:'margin-top:16px'},h('div','lbl','Cartas escolhidas nesta sessão'),
+      h('div','hist',DK.hist.map(function(id){var c=CARDBY[id];return h('span',{style:'--c:var(--s-'+c.s+')'},c.n+' · '+c.t);}))));
+  }
+}
+
+/* ================= TABELAS ================= */
+var TS={}, curTheme='clima';
+function ts(t){return TS[t.id]||(TS[t.id]={r:null,c:null});}
+function cellOver(t,r,c){var o=ST.over[t.id]; return o&&o[r+'-'+c]?o[r+'-'+c]:'';}
+function sa(s,k,i){ s[k]=i; s[k+'v']=Math.random()<0.5; }
+function tableResult(t){
+  var s=ts(t); if(s.r===null||s.c===null) return null;
+  var ov=cellOver(t,s.r,s.c);
+  var row=(s.rv&&t.ra)?t.ra[s.r]:t.rows[s.r], col=(s.cv&&t.ca)?t.ca[s.c]:t.cols[s.c];
+  return {ov:ov,row:row,col:col,rl:LABELS[s.r],cl:LABELS[s.c]};
+}
+function tableText(t){
+  var r=tableResult(t); if(!r) return '';
+  if(r.ov) return r.ov+' ('+t.rt+': '+r.row+' / '+t.ct+': '+r.col+')';
+  return t.rt+': '+r.row+' · '+t.ct+': '+r.col;
+}
+function probNode(){
+  var w=DIST[ST.metodo], tot=w.reduce(function(a,b){return a+b;},0), mx=Math.max.apply(null,w);
+  return h('div','prob',{'aria-label':'Chance de cada resultado no método escolhido'},w.map(function(v,i){
+    var bar=h('i'); bar.style.height=Math.round(v/mx*34)+'px';
+    return h('div',null,h('span','box',bar),h('span',null,LABELS[i]),h('span',null,(v/tot*100).toFixed(ST.metodo==='uniforme'?1:0)+'%'));
+  }));
+}
+function methodBar(onchange){
+  return h('div','methods',
+    h('div','field',h('span','lbl','Método de rolagem'),
+      h('div','seg',METODOS.map(function(m){
+        return h('button',{type:'button',class:'segb','aria-pressed':String(ST.metodo===m.id),onclick:function(){ST.metodo=m.id;save();onchange();}},m.nm);
+      }))),
+    h('div','field',h('span','lbl','Chance de cada resultado (porcentagens do livro)'),probNode()));
+}
+function tableCard(t,rerender){
+  var s=ts(t);
+  var res=h('div',{class:'tres','aria-live':'polite'});
+  function paint(){
+    res.textContent='';
+    var r=tableResult(t);
+    if(!r){ res.append(h('span','empty','Role ou escolha uma linha e uma coluna.')); return; }
+    if(r.ov){
+      res.append(h('div','ov',r.ov),h('span','pl',t.rt+': '+r.row+' · '+t.ct+': '+r.col+' (entrada sua)'));
+    }else{
+      res.append(
+        h('div','p',h('span','pl',t.rt),h('span','pv',r.row)),
+        h('div','p',h('span','pl',t.ct),h('span','pv',r.col)));
+    }
+  }
+  var rowsEl=[], colsEl=[];
+  function mark(){
+    rowsEl.forEach(function(b,i){b.setAttribute('aria-pressed',String(s.r===i));});
+    colsEl.forEach(function(b,i){b.setAttribute('aria-pressed',String(s.c===i));});
+    paint();
+  }
+  function axis(title,list,arr,key){
+    var ol=h('ol');
+    list.forEach(function(txt,i){
+      var b=h('button',{type:'button',class:'opt','aria-pressed':'false'},h('b',null,LABELS[i]),h('span',null,txt));
+      b.addEventListener('click',function(){sa(s,key,i); var ok=key==='r'?'c':'r'; if(s[ok]===null) sa(s,ok,rolar()); mark();});
+      arr.push(b); ol.append(h('li',null,b));
+    });
+    return h('div','axis',h('span','lbl',title),ol);
+  }
+  var card=h('article','panel tcard',h('h3',null,t.nm));
+  card.append(h('div','axes',axis('Linha · '+t.rt,t.rows,rowsEl,'r'),axis('Coluna · '+t.ct,t.cols,colsEl,'c')));
+  card.append(res);
+  card.append(h('div','row',
+    h('button',{type:'button',class:'btn pri sm',onclick:function(){sa(s,'r',rolar());sa(s,'c',rolar());mark();}},'Rolar'),
+    h('button',{type:'button',class:'btn sm',onclick:function(){sa(s,'r',rolar());if(s.c===null)sa(s,'c',rolar());mark();}},'Só a linha'),
+    h('button',{type:'button',class:'btn sm',onclick:function(){sa(s,'c',rolar());if(s.r===null)sa(s,'r',rolar());mark();}},'Só a coluna'),
+    h('button',{type:'button',class:'btn sm',onclick:function(){
+      if(!tableResult(t)){toast('Role a tabela antes de enviar.');return;}
+      var r=tableResult(t);
+      addLog('Tabela',t.nm,r.ov?r.ov:(t.rt+': '+r.row+' · '+t.ct+': '+r.col));
+    }},'Enviar ao diário')));
+  // editor de combinações
+  var det=h('details','edit',h('summary',null,'Editar combinações (36 células)'));
+  var tb=h('tbody');
+  for(var r=0;r<6;r++){
+    var tr=h('tr',null,h('td','rh',LABELS[r]+' · '+t.rows[r]));
+    for(var c=0;c<6;c++){
+      (function(r,c){
+        var inp=h('input',{type:'text',maxlength:'400','aria-label':'Linha '+LABELS[r]+', coluna '+LABELS[c]+' da tabela '+t.nm,placeholder:t.rows[r]+' + '+t.cols[c]});
+        inp.value=cellOver(t,r,c); if(inp.value) inp.classList.add('has');
+        inp.addEventListener('change',function(){
+          var v=inp.value.trim(); var o=ST.over[t.id]||(ST.over[t.id]={});
+          if(v){o[r+'-'+c]=v;inp.classList.add('has');}else{delete o[r+'-'+c];inp.classList.remove('has'); if(!Object.keys(o).length) delete ST.over[t.id];}
+          save(); mark();
+        });
+        tr.append(h('td',null,inp));
+      })(r,c);
+    }
+    tb.append(tr);
+  }
+  var head=h('tr',null,h('th',null,'Linha \\ Coluna'),t.cols.map(function(x,i){return h('th',null,LABELS[i]+' · '+x);}));
+  det.append(
+    h('p','hint',{style:'margin-bottom:8px'},'Digite aqui, célula por célula, o que quiser no lugar da combinação padrão. Fica salvo só neste navegador. Célula vazia usa a combinação das duas listas.'),
+    h('div','egrid',h('table',null,h('thead',null,head),tb)),
+    h('div',{class:'row',style:'margin-top:8px'},h('button',{type:'button',class:'btn sm bad',onclick:function(){delete ST.over[t.id];save();rerender();toast('Edições desta tabela removidas.');}},'Limpar edições desta tabela')));
+  card.append(det);
+  mark();
+  return card;
+}
+function renderTabelas(){
+  var root=$('v-tabelas'); root.textContent='';
+  var th=THEMES.filter(function(x){return x.id===curTheme;})[0];
+  root.append(h('div','panel',
+    methodBar(renderTabelas),
+    h('p','hint','Cada tabela tem 6 linhas e 6 colunas. Role uma vez para a linha e outra para a coluna, ou escolha direto. As porcentagens acima são as do livro e dão mais peso aos resultados do meio. Cada linha e cada coluna têm uma segunda versão escondida, sorteada na hora, então o mesmo resultado pode sair com palavras diferentes. As 36 combinações vêm de duas listas, e você pode trocar qualquer célula pela sua.')));
+  root.append(h('div',{class:'chips',style:'margin:16px 0 8px'},THEMES.map(function(x){
+    return h('button',{type:'button',class:'chip','aria-pressed':String(x.id===curTheme),onclick:function(){curTheme=x.id;renderTabelas();}},x.nm);
+  })));
+  root.append(h('div','bar',{style:'margin-bottom:12px'},
+    h('p','hint',th.x),
+    h('button',{type:'button',class:'btn sm',onclick:function(){
+      th.t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());}); renderTabelas();
+    }},'Rolar o tema inteiro')));
+  root.append(h('div','tables',th.t.map(function(t){return tableCard(t,renderTabelas);})));
+  var nOver=Object.keys(ST.over).reduce(function(a,k){return a+Object.keys(ST.over[k]).length;},0);
+  var file=h('input',{type:'file',accept:'.json,application/json',id:'imp',hidden:true});
+  file.addEventListener('change',function(){
+    var f=file.files&&file.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(){
+      try{
+        var o=JSON.parse(String(r.result||'')); var src=(o&&o.over)?o.over:o; var n=0;
+        Object.keys(src).forEach(function(tid){
+          if(!TBY[tid]||!src[tid]||typeof src[tid]!=='object') return;
+          Object.keys(src[tid]).forEach(function(k){
+            if(/^[0-5]-[0-5]$/.test(k)&&typeof src[tid][k]==='string'&&src[tid][k].trim()){
+              (ST.over[tid]||(ST.over[tid]={}))[k]=src[tid][k].slice(0,400); n++;
+            }
+          });
+        });
+        save(); renderTabelas(); toast(n?(n+' células importadas.'):'Nada para importar nesse arquivo.');
+      }catch(e){toast('Arquivo inválido.');}
+    };
+    r.onerror=function(){toast('Não consegui ler o arquivo.');};
+    r.readAsText(f); file.value='';
+  });
+  root.append(h('div',{class:'panel',style:'margin-top:16px'},
+    h('div','lbl','Minhas edições'),
+    h('p','hint',nOver+(nOver===1?' célula editada':' células editadas')+' em todas as tabelas.'),
+    h('div','row',
+      h('button',{type:'button',class:'btn sm',disabled:!nOver,onclick:function(){copyText(JSON.stringify({over:ST.over},null,2),'Edições copiadas (JSON).');}},'Copiar edições'),
+      downloads?h('button',{type:'button',class:'btn sm',disabled:!nOver,onclick:function(){saveFile('minhas-tabelas-gerador.json',JSON.stringify({over:ST.over},null,2));}},'Salvar arquivo'):null,
+      h('button',{type:'button',class:'btn sm',onclick:function(){file.click();}},'Importar'),file)));
+}
+
+/* ================= ORÁCULOS ================= */
+var OS={};
+function renderOraculos(){
+  var root=$('v-oraculos'); root.textContent='';
+  root.append(h('div','panel',
+    methodBar(renderOraculos),
+    h('p','hint','Oráculos respondem perguntas rápidas. Cada um tem seis resultados, do pior (0–1) ao melhor (6+), e rolam com o mesmo método das tabelas.')));
+  var grid=h('div',{class:'oracles',style:'margin-top:16px'});
+  ORACLES.forEach(function(o){
+    var ol=h('ol');
+    o.v.forEach(function(t,i){ol.append(h('li',OS[o.id]===i?'on':null,h('b',null,LABELS[i]),h('span',null,t)));});
+    grid.append(h('article','panel oc',
+      h('h3',null,o.nm),h('p','hint',o.q),ol,
+      h('div','row',
+        h('button',{type:'button',class:'btn pri sm',onclick:function(){OS[o.id]=rolar();renderOraculos();}},'Rolar'),
+        h('button',{type:'button',class:'btn sm',disabled:OS[o.id]===undefined,onclick:function(){addLog('Oráculo',o.nm,o.v[OS[o.id]]+' ('+o.q+')');}},'Enviar ao diário'))));
+  });
+  root.append(grid);
+}
+
+/* ================= TRAMAS ================= */
+var PS={cat:'todas',cur:null};
+function renderTramas(){
+  var root=$('v-tramas'); root.textContent='';
+  var cats=[{id:'todas',nm:'Todas'}].concat(PLOTS);
+  root.append(h('div','panel',
+    h('div','field',h('span','lbl','Tipo de trama'),
+      h('div','chips',cats.map(function(c){return h('button',{type:'button',class:'chip','aria-pressed':String(PS.cat===c.id),onclick:function(){PS.cat=c.id;renderTramas();}},c.nm);}))),
+    h('p','hint','Pontos de partida para a primeira anotação de um registro de jogo solo. Escritos como se fossem a voz de quem escreve o diário.')));
+  var pool=[]; PLOTS.forEach(function(p){ if(PS.cat==='todas'||PS.cat===p.id) p.h.forEach(function(x){pool.push({cat:p,x:x});}); });
+  var big=h('div',{class:'big',style:'margin-top:16px'});
+  function paint(){
+    big.textContent='';
+    if(!PS.cur){ big.append(h('div','lbl','Ponto de partida'),h('p','hint','Toque em Sortear para receber um começo de registro.')); }
+    else big.append(h('div','lbl','Trama · '+PS.cur.cat.nm),h('p','quote','“'+PS.cur.x+'”'));
+    big.append(h('div','row',
+      h('button',{type:'button',class:'btn pri',onclick:function(){PS.cur=pick(pool);paint();}},PS.cur?'Sortear outra':'Sortear'),
+      h('button',{type:'button',class:'btn',disabled:!PS.cur,onclick:function(){addLog('Trama',PS.cur.cat.nm,PS.cur.x);}},'Enviar ao diário')));
+  }
+  if(PS.cur&&pool.every(function(p){return p.x!==PS.cur.x;})) PS.cur=null;
+  paint();
+  root.append(big);
+  var list=h('ul',{class:'hooks'});
+  pool.forEach(function(p){
+    list.append(h('li',null,h('p',null,p.x),h('button',{type:'button',class:'btn sm',onclick:function(){PS.cur=p;paint();window.scrollTo(0,0);}},'Usar')));
+  });
+  root.append(h('div',{class:'panel',style:'margin-top:16px'},h('div','lbl','Todas as tramas ('+pool.length+')'),list));
+}
+
+/* ================= DIÁRIO ================= */
+var editing=null, narrating=false, ctl=null, confirmClear=false, lastNew=null;
+function diarioJson(){
+  return JSON.stringify({tipo:'diario-assimilado',versao:1,narrador:ST.narrador,tom:ST.tom,
+    diario:ST.diario.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};})},null,2);
+}
+function cleanEntry(e){
+  if(!e||typeof e!=='object'||typeof e.texto!=='string'||!e.texto.trim()) return null;
+  return {id:String(e.id||('i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6))).slice(0,40),
+    kind:String(e.kind||'Nota').slice(0,30),titulo:String(e.titulo||'').slice(0,120),texto:e.texto.slice(0,6000),
+    usado:!!e.usado,ts:(+e.ts>0?+e.ts:Date.now())};
+}
+function importarDiario(text){
+  var o;
+  try{o=JSON.parse(text);}catch(e){toast('Arquivo inválido: não é um diário em JSON.');return;}
+  var list=Array.isArray(o)?o:(o&&Array.isArray(o.diario)?o.diario:null);
+  if(!list){toast('Arquivo inválido: não encontrei entradas de diário.');return;}
+  var have={}; ST.diario.forEach(function(e){have[e.id]=1;});
+  var n=0, dup=0;
+  list.forEach(function(raw){
+    var e=cleanEntry(raw); if(!e) return;
+    if(have[e.id]){dup++;return;}
+    have[e.id]=1; ST.diario.push(e); n++;
+  });
+  ST.diario.sort(function(a,b){return b.ts-a.ts;});
+  ST.diario=ST.diario.slice(0,500);
+  if(!o.length&&o&&typeof o.narrador==='string'&&!ST.narrador) ST.narrador=o.narrador.slice(0,80);
+  if(o&&TONS.indexOf(o.tom)>=0&&!Array.isArray(o)) ST.tom=o.tom;
+  save(); updateBadge(); renderDiario();
+  toast(n?(n+(n===1?' entrada importada':' entradas importadas')+(dup?(' ('+dup+' já existiam)'):'')+'.'):(dup?'Nada novo: essas entradas já estavam no diário.':'Nenhuma entrada válida no arquivo.'));
+}
+function fmtTs(ts){
+  try{return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}
+}
+function diarioMd(){
+  var L=['# Diário'+(ST.narrador?(' de '+ST.narrador):''),''];
+  ST.diario.slice().reverse().forEach(function(e){
+    L.push('## '+e.kind+(e.titulo?(' — '+e.titulo):''),'',e.texto,'');
+  });
+  return L.join('\n');
+}
+function buildPrompt(items){
+  var fatos=items.map(function(e){return '- ['+e.kind+(e.titulo?(': '+e.titulo):'')+'] '+e.texto;}).join('\n');
+  var antes=ST.diario.filter(function(e){return e.kind==='Texto'&&e.texto;}).slice(0,2).map(function(e){return e.texto.slice(0,700);}).join('\n\n');
+  return [
+    'Você escreve uma entrada de diário de jogo solo em português do Brasil, em primeira pessoa e no passado.',
+    'O mundo é um Brasil pós-colapso, em que uma força chamada Assimilação muda pessoas, bichos, plantas e lugares. Os sobreviventes são chamados de Infectados e vivem em comunidades chamadas Refúgios.',
+    '',
+    'NARRADOR(A): '+(ST.narrador||'a pessoa que escreve o diário'),
+    'TOM: '+ST.tom,
+    '',
+    'ENTRADAS ANTERIORES (para manter a continuidade, sem repetir):',
+    antes||'(nenhuma, este é o começo)',
+    '',
+    'ACONTECIMENTOS DE HOJE (tratar como fatos, sem contradizer nenhum):',
+    fatos,
+    '',
+    'REGRAS:',
+    '- Conecte os acontecimentos numa cena coerente, com detalhes concretos de sensação, cheiro, som e dúvida.',
+    '- Não cite cartas, tabelas, dados ou termos de jogo.',
+    '- Entre 120 e 200 palavras. Termine com uma frase que deixe uma pergunta ou uma decisão em aberto.',
+    '- Responda só com o texto da entrada, sem título, aspas ou markdown.'
+  ].join('\n');
+}
+async function escrever(){
+  if(narrating||!sample) return;
+  var items=ST.diario.filter(function(e){return !e.usado&&e.kind!=='Texto'&&e.kind!=='Nota';}).slice(0,12).reverse();
+  var notas=ST.diario.filter(function(e){return !e.usado&&e.kind==='Nota';}).slice(0,6).reverse();
+  items=items.concat(notas);
+  if(!items.length){ toast('Envie ao diário ao menos um sorteio novo antes de escrever.'); return; }
+  narrating=true;
+  var entry={id:'e'+Date.now().toString(36),kind:'Texto',titulo:'Entrada escrita',texto:'',usado:true,ts:Date.now(),writing:true};
+  ST.diario.unshift(entry); lastNew=entry.id; renderDiario();
+  ctl=new AbortController();
+  try{
+    var r=await sample(buildPrompt(items),{signal:ctl.signal,cache:false,onText:function(u){entry.texto=u.text;var p=document.getElementById('w-'+entry.id);if(p) p.textContent=u.text;}});
+    entry.texto=String(r.text).trim();
+    items.forEach(function(e){e.usado=true;});
+    delete entry.writing;
+  }catch(err){
+    var code=err&&err.code;
+    if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(code)>=0){ sample=null; toast('A escrita com Claude não está disponível aqui.'); }
+    else if(code==='cancelled') toast('Escrita parada.');
+    else if(code==='rate_limited') toast('Limite de uso atingido. Tente mais tarde.');
+    else toast('A escrita falhou. Tente de novo.');
+    if(entry.texto&&entry.texto.trim()){ delete entry.writing; entry.titulo='Entrada escrita (incompleta)'; }
+    else ST.diario=ST.diario.filter(function(e){return e!==entry;});
+  }finally{
+    narrating=false; ctl=null; save(); updateBadge(); renderDiario();
+  }
+}
+function renderDiario(){
+  var root=$('v-diario'); root.textContent='';
+  var nome=h('input',{type:'text',id:'narr',maxlength:'80',placeholder:'Nome de quem escreve o diário'}); nome.value=ST.narrador;
+  nome.addEventListener('input',function(){ST.narrador=nome.value;save();});
+  var tom=h('select',{id:'tom'},TONS.map(function(t){return h('option',{value:t},t);})); tom.value=ST.tom;
+  tom.addEventListener('change',function(){ST.tom=tom.value;save();});
+  var nova=h('textarea',{id:'nota',maxlength:'2000',placeholder:'Escreva sua própria anotação: o que o narrador decidiu, quem encontrou, o que sentiu.'});
+  var novos=ST.diario.filter(function(e){return !e.usado&&e.kind!=='Texto';}).length;
+  var panel=h('div','panel',
+    h('div',{class:'bar'},
+      h('div',{class:'field grow'},h('label',{class:'lbl','for':'narr'},'Narrador(a)'),nome),
+      h('div',{class:'field',style:'min-width:14rem'},h('label',{class:'lbl','for':'tom'},'Tom da escrita'),tom)),
+    h('div','field',h('label',{class:'lbl','for':'nota'},'Nova anotação'),nova),
+    h('div','row',
+      h('button',{type:'button',class:'btn sm',onclick:function(){
+        var v=nova.value.trim(); if(!v){toast('Escreva algo antes de adicionar.');return;}
+        addLog('Nota','',v);
+      }},'Adicionar anotação'),
+      sample?(narrating
+        ?h('button',{type:'button',class:'btn sm bad',onclick:function(){if(ctl) ctl.abort();}},'Parar escrita')
+        :h('button',{type:'button',class:'btn sm pri',disabled:!novos,onclick:escrever},'Escrever entrada com Claude ('+novos+' novos)'))
+       :h('span','hint','A escrita automática só funciona dentro do Claude.')));
+  root.append(panel);
+  var impFile=h('input',{type:'file',accept:'.json,application/json',hidden:true,'aria-label':'Importar diário'});
+  impFile.addEventListener('change',function(){
+    var f=impFile.files&&impFile.files[0]; if(!f) return;
+    if(f.size>5*1024*1024){toast('Arquivo grande demais.');impFile.value='';return;}
+    var r=new FileReader();
+    r.onload=function(){importarDiario(String(r.result||''));};
+    r.onerror=function(){toast('Não consegui ler o arquivo.');};
+    r.readAsText(f); impFile.value='';
+  });
+  var tools=h('div',{class:'row',style:'margin:16px 0 4px'},
+    h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){copyText(diarioMd(),'Diário copiado.');}},'Copiar diário'),
+    downloads?h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){saveFile('diario-assimilado.json',diarioJson());}},'Exportar diário'):null,
+    downloads?h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){saveFile('diario-assimilado.md',diarioMd());}},'Salvar .md'):null,
+    h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){copyText(diarioJson(),'Backup do diário copiado (JSON).');}},'Copiar backup'),
+    h('button',{type:'button',class:'btn sm',onclick:function(){impFile.click();}},'Importar diário'),
+    impFile,
+    h('span',{class:'grow'}),
+    confirmClear?[h('span','hint','Apagar todo o diário?'),
+      h('button',{type:'button',class:'btn sm bad',onclick:function(){ST.diario=[];confirmClear=false;save();updateBadge();renderDiario();}},'Apagar'),
+      h('button',{type:'button',class:'btn sm',onclick:function(){confirmClear=false;renderDiario();}},'Cancelar')]
+     :h('button',{type:'button',class:'btn sm bad',disabled:!ST.diario.length,onclick:function(){confirmClear=true;renderDiario();}},'Limpar diário'));
+  root.append(tools);
+  if(!ST.diario.length){
+    root.append(h('div','empty',h('h3',null,'O diário está vazio'),
+      h('p',null,'Use o botão “Enviar ao diário” em qualquer sorteio das outras abas. Eles aparecem aqui, do mais novo para o mais antigo, para você editar, copiar ou transformar em texto.')));
+    return;
+  }
+  var log=h('div',{class:'log'});
+  ST.diario.forEach(function(e){
+    var body=h('div',{class:'ebody'});
+    if(editing===e.id){
+      var ta=h('textarea',{id:'ed-'+e.id}); ta.value=e.texto; ta.style.minHeight='8rem';
+      body.append(e.titulo?h('h4',null,e.titulo):'',ta,h('div','row',
+        h('button',{type:'button',class:'btn sm pri',onclick:function(){e.texto=ta.value.trim()||e.texto;editing=null;save();renderDiario();}},'Salvar'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){editing=null;renderDiario();}},'Cancelar')));
+    }else{
+      var p=h('p',null,e.texto); if(e.writing){ p.id='w-'+e.id; if(!e.texto) p.textContent='Escrevendo…'; }
+      body.append(e.titulo?h('h4',null,e.titulo):'',p,
+        h('div','row',
+          h('span','hint',fmtTs(e.ts)),
+          e.usado&&e.kind!=='Texto'?h('span','usedmark','usado na escrita'):null,
+          e.writing?null:h('button',{type:'button',class:'btn sm',onclick:function(){editing=e.id;renderDiario();var t=$('ed-'+e.id);if(t)t.focus();}},'Editar'),
+          e.writing?null:h('button',{type:'button',class:'btn sm',onclick:function(){ST.diario=ST.diario.filter(function(x){return x!==e;});save();updateBadge();renderDiario();}},'Excluir')));
+    }
+    var pap=(e.kind==='Nota'||e.kind==='Texto');
+    log.append(h('article','entry'+(e.kind==='Texto'?' txt':'')+(pap?' paper':'')+(e.id===lastNew?' fresh':''),h('div','kind',pap?(e.kind==='Nota'?'Anotação':'Entrada do diário'):e.kind),body));
+  });
+  lastNew=null;
+  root.append(log);
+}
+
+
+/* ================= TEMA ================= */
+(function(){
+  var TK='gerador-aventuras-tema-v1', root=document.documentElement, btn=$('themebtn');
+  function sysDark(){try{return window.matchMedia('(prefers-color-scheme: dark)').matches;}catch(e){return false;}}
+  var cur=null;
+  try{cur=localStorage.getItem(TK);}catch(e){}
+  if(cur!=='dark'&&cur!=='light') cur=sysDark()?'dark':'light';
+  function apply(){
+    root.setAttribute('data-theme',cur);
+    var dark=cur==='dark';
+    btn.textContent=dark?'Modo claro':'Modo escuro';
+    btn.setAttribute('aria-pressed',String(dark));
+    btn.setAttribute('aria-label',dark?'Mudar para o modo claro':'Mudar para o modo escuro');
+  }
+  btn.addEventListener('click',function(){
+    cur=cur==='dark'?'light':'dark'; apply();
+    try{localStorage.setItem(TK,cur);}catch(e){}
+  });
+  apply();
+})();
+
+/* ================= INÍCIO ================= */
+load();
+updateBadge();
+resetDeck(); DK.hand=DK.draw.splice(0,3); DK.fresh=true;
+THEMES[0].t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());});
+renderBaralho(); renderTabelas(); renderOraculos(); renderTramas();
+document.querySelectorAll('.tab').forEach(function(b){
+  b.addEventListener('click',function(){go(b.dataset.v);});
+  b.addEventListener('keydown',function(e){
+    var i=VIEWS.indexOf(b.dataset.v);
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+      var n=VIEWS[(i+(e.key==='ArrowRight'?1:VIEWS.length-1))%VIEWS.length];
+      go(n); $('t-'+n).focus(); e.preventDefault();
+    }
+  });
+});
+var hv=(location.hash||'').slice(1);
+go(VIEWS.indexOf(hv)>=0?hv:'baralho');
+(async function(){
+  try{ downloads=(window.claude&&window.claude.use)?await window.claude.use('downloads'):null; }catch(e){downloads=null;}
+  try{ sample=(window.claude&&window.claude.use)?await window.claude.use('sample'):null; }catch(e){sample=null;}
+  if(!window.claude){
+    downloads={save:function(r){
+      try{
+        var b=new Blob([r.data],{type:'application/octet-stream'});
+        var u=URL.createObjectURL(b);
+        var a=document.createElement('a'); a.href=u; a.download=r.filename;
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(function(){URL.revokeObjectURL(u);},1000);
+        return Promise.resolve({status:'saved'});
+      }catch(e){ return Promise.reject({code:'unavailable'}); }
+    }};
+  }
+  renderTabelas(); renderDiario();
+})();
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+}
+</script>
+
+</body></html>
