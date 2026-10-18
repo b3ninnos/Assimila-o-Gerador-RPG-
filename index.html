@@ -330,6 +330,13 @@ select{appearance:auto}
 .amh strong{font:700 1.25rem/1.1 var(--f-display);letter-spacing:.04em;text-transform:uppercase}
 .ficha .tag{border-color:var(--c);color:var(--ink)}
 @media (max-width:40rem){.fhead{grid-template-columns:1fr}.fart{min-height:8rem;border-right:0;border-bottom:2px solid var(--c)}.ativ{grid-template-columns:1fr}}
+.tipos-sm{grid-template-columns:repeat(auto-fill,minmax(9.2rem,1fr))}
+.tipos-sm .tipo .art{height:68px}
+.tipos-sm .tipo strong{font-size:1.02rem}
+.tipos-sm .tipo .hint{font-size:.68rem}
+.amlist{display:flex;flex-direction:column;gap:20px}
+.fsec p{margin:0}
+.neut{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){.ficha{animation:none!important}}
 </style>
 
@@ -343,7 +350,7 @@ select{appearance:auto}
       <button class="tab" role="tab" type="button" data-v="baralho" id="t-baralho">Baralho</button>
       <button class="tab" role="tab" type="button" data-v="tabelas" id="t-tabelas">Tabelas</button>
       <button class="tab" role="tab" type="button" data-v="oraculos" id="t-oraculos">Oráculos</button>
-      <button class="tab" role="tab" type="button" data-v="conflitos" id="t-conflitos">Conflitos</button>
+      <button class="tab" role="tab" type="button" data-v="ameacas" id="t-ameacas">Ameaças</button>
       <button class="tab" role="tab" type="button" data-v="tramas" id="t-tramas">Tramas</button>
       <button class="tab" role="tab" type="button" data-v="diario" id="t-diario">Diário <span class="badge" id="nlog">0</span></button>
     </nav>
@@ -352,12 +359,12 @@ select{appearance:auto}
     <section id="v-baralho" role="tabpanel" aria-labelledby="t-baralho"></section>
     <section id="v-tabelas" role="tabpanel" aria-labelledby="t-tabelas" hidden></section>
     <section id="v-oraculos" role="tabpanel" aria-labelledby="t-oraculos" hidden></section>
-    <section id="v-conflitos" role="tabpanel" aria-labelledby="t-conflitos" hidden></section>
+    <section id="v-ameacas" role="tabpanel" aria-labelledby="t-ameacas" hidden></section>
     <section id="v-tramas" role="tabpanel" aria-labelledby="t-tramas" hidden></section>
     <section id="v-diario" role="tabpanel" aria-labelledby="t-diario" hidden></section>
   </main>
   <footer class="legal">
-    <p>Ferramenta de fã, sem fins lucrativos e sem afiliação com a Editora Assimilar. Cartas, tabelas, oráculos, conflitos e tramas deste site são textos originais, escritos para este gerador, que seguem a estrutura de jogo do livro: baralho de quatro naipes, tabelas 6×6 e oráculos.</p>
+    <p>Ferramenta de fã, sem fins lucrativos e sem afiliação com a Editora Assimilar. Cartas, tabelas, oráculos, ameaças e tramas deste site são textos originais, escritos para este gerador, que seguem a estrutura de jogo do livro: baralho de quatro naipes, tabelas 6×6 e oráculos.</p>
     <p>Quem tem o livro pode digitar as próprias entradas em “Editar combinações”, na aba Tabelas. Elas ficam só neste navegador. O diário e as edições também ficam salvos só aqui.</p>
   </footer>
 </div>
@@ -929,17 +936,79 @@ var ART=(function(){
    '<path class="sg" fill="none" stroke-width="2" stroke-linecap="round" d="M30 118q-10-26 10-44q6-6 2-16"/><circle class="fg" cx="42" cy="58" r="3"/>'+
    dots(12,240,100,'fp',1.1));
 
+  A.grupo=svg('0 0 240 140',
+   '<rect class="fb" width="240" height="140"/><circle class="fl" cx="200" cy="28" r="12" opacity=".8"/>'+
+   '<path class="fi" opacity=".9" d="M-400 120H640V140H-400z"/>'+
+   '<circle class="fy" cx="120" cy="100" r="30" opacity=".22"/>'+
+   '<path class="fy" d="M113 120q-7-16 7-30 2 11 11 16 5 7-4 14z"/>'+
+   '<g class="fi"><ellipse cx="46" cy="82" rx="7" ry="8"/><path d="M34 122l4-32q8-8 16 0l4 32z"/>'+
+   '<ellipse cx="80" cy="86" rx="7" ry="8"/><path d="M68 122l4-28q8-8 16 0l4 28z"/>'+
+   '<ellipse cx="164" cy="84" rx="7" ry="8"/><path d="M152 122l4-30q8-8 16 0l4 30z"/>'+
+   '<ellipse cx="198" cy="80" rx="7" ry="8"/><path d="M186 122l4-34q8-8 16 0l4 34z"/></g>'+
+   '<path class="si" fill="none" stroke-width="2.4" stroke-linecap="round" d="M60 124V58M178 122V52"/><path class="fr" d="M60 52l4 8h-8zM178 46l4 8h-8z"/>'+
+   '<path class="fp" opacity=".7" d="M-400 0"/>'+dots(10,240,100,'fy',1.1));
+
+  A.planta=svg('0 0 240 140',
+   '<rect class="fb" width="240" height="140"/><circle class="fl" cx="40" cy="30" r="12" opacity=".8"/>'+
+   '<path class="fi" opacity=".9" d="M-400 120H640V140H-400z"/>'+
+   '<path class="sg" fill="none" stroke-width="6" stroke-linecap="round" d="M120 122q-28-30 4-54 14-10 0-24"/>'+
+   '<path class="fg" d="M120 102q-34-6-46-28 32-2 46 28zM124 94q30-4 46-26-30-4-46 26z"/>'+
+   '<ellipse class="fg" cx="126" cy="38" rx="26" ry="17"/><path class="fr" d="M104 38q22 24 44 0-22 7-44 0z"/>'+
+   '<path class="fb" d="M110 40l3 7 3-7zM120 44l3 8 3-8zM131 44l3 8 3-8zM141 40l3 7 3-7z"/>'+
+   '<path class="sg" fill="none" stroke-width="2.4" stroke-linecap="round" d="M36 122q10-22 32-14M204 122q-14-26-36-16"/>'+
+   dots(8,240,100,'fp',1.2)+dots(6,240,100,'fy',1.2));
+
+  A.clima=svg('0 0 240 140',
+   '<rect class="fb" width="240" height="140"/>'+
+   '<g class="fm" opacity=".85"><circle cx="82" cy="46" r="22"/><circle cx="110" cy="38" r="28"/><circle cx="142" cy="48" r="22"/><rect x="72" y="48" width="82" height="22" rx="11"/></g>'+
+   '<g class="fl" opacity=".9"><circle cx="164" cy="38" r="16"/><circle cx="186" cy="44" r="14"/><rect x="152" y="44" width="46" height="14" rx="7"/></g>'+
+   '<path class="fy" d="M116 68l-13 28h13l-9 26 26-36h-15l11-18z"/>'+
+   '<path class="sl" fill="none" stroke-width="1.6" opacity=".8" d="M74 78l-5 14M90 82l-5 14M148 80l-5 14M166 76l-5 14M184 82l-5 14"/>'+
+   '<path class="sp" fill="none" stroke-width="3" stroke-linecap="round" opacity=".6" d="M10 108q14-12 28 0t28 0M170 112q14-12 28 0t28 0"/>'+
+   '<path class="fi" opacity=".9" d="M-400 122H640V140H-400z"/>');
+
+  A.praga=(function(){
+    var s='<rect class="fb" width="240" height="140"/><path class="fi" opacity=".9" d="M-400 122H640V140H-400z"/>',i;
+    for(i=0;i<46;i++){
+      var x=58+rnd()*124, y=24+rnd()*86, r=2+rnd()*2;
+      s+='<ellipse class="fi" cx="'+x.toFixed(0)+'" cy="'+y.toFixed(0)+'" rx="'+(r*1.6).toFixed(1)+'" ry="'+r.toFixed(1)+'"/>'+
+         '<ellipse class="fl" cx="'+(x-r).toFixed(0)+'" cy="'+(y-r*1.4).toFixed(0)+'" rx="'+(r*1.5).toFixed(1)+'" ry="'+(r*.7).toFixed(1)+'" opacity=".85"/>'+
+         '<ellipse class="fl" cx="'+(x+r).toFixed(0)+'" cy="'+(y-r*1.4).toFixed(0)+'" rx="'+(r*1.5).toFixed(1)+'" ry="'+(r*.7).toFixed(1)+'" opacity=".85"/>';
+    }
+    s+='<circle class="fr" cx="120" cy="64" r="3"/><circle class="fr" cx="134" cy="52" r="2.6"/><circle class="fr" cx="104" cy="76" r="2.6"/>';
+    s+=dots(8,240,100,'fy',1.2);
+    return svg('0 0 240 140',s);
+  })();
+
+  A.mente=svg('0 0 240 140',
+   '<rect class="fb" width="240" height="140"/>'+
+   '<path class="fi" opacity=".9" d="M-400 122H640V140H-400z"/>'+
+   '<path class="fi" d="M96 122V98q-12-6-12-22 2-34 32-46 30-10 54 8 14 14 10 38l10 12-12 4 2 14-14 6v8z"/>'+
+   '<path class="sy" fill="none" stroke-width="2.4" stroke-linecap="round" d="'+spiral(128,64,2.4,1.2)+'"/>'+
+   '<path class="sp" fill="none" stroke-width="2" stroke-linecap="round" opacity=".7" d="M176 48q18-10 30-2t8 16M186 78q16 4 22 16"/>'+
+   dots(16,240,110,'fp',1.3)+dots(6,240,110,'fy',1.2));
+
+  A.animal=svg('0 0 240 140',
+   '<rect class="fb" width="240" height="140"/><circle class="fl" cx="192" cy="30" r="15"/>'+
+   '<path class="fi" opacity=".9" d="M-400 118H640V140H-400z"/>'+
+   '<path class="sg" fill="none" stroke-width="2" d="M14 118l3-12 3 12M32 118l3-9 3 9M210 118l3-13 3 13"/>'+
+   '<path class="si" fill="none" stroke-width="6" stroke-linecap="round" d="M80 92q-26 0-34-22"/>'+
+   '<ellipse class="fi" cx="122" cy="92" rx="42" ry="19"/><ellipse class="fi" cx="166" cy="78" rx="15" ry="12"/>'+
+   '<path class="fi" d="M174 76l20 7-20 5zM158 69l-3-14 10 8zM170 67l5-13 6 12z"/>'+
+   '<rect class="fi" x="92" y="104" width="7" height="22" rx="3"/><rect class="fi" x="106" y="106" width="7" height="20" rx="3"/><rect class="fi" x="136" y="106" width="7" height="20" rx="3"/><rect class="fi" x="150" y="104" width="7" height="22" rx="3"/>'+
+   '<circle class="fy" cx="167" cy="75" r="2.4"/>'+dots(5,240,100,'fg',1.1));
+
   return A;
 })();
 function artNode(id,cls){ return h('div',{class:'art'+(cls?(' '+cls):''),innerHTML:ART[id]||''}); }
 var SUITART={nat:'natureza',ame:'pessoa',ass:'fenomeno',rec:'coisa'};
 
-/* ================= CONFLITOS: DADOS ================= */
+/* ================= AMEAÇAS: DADOS ================= */
 var GR=[
- {id:1,nm:'Iniciantes',x:'fichas iniciais',cb:3,cp:1,ab:2,ap:1,sim:[4,1],cli:[6,2]},
- {id:2,nm:'Intermediários',x:'21 a 40 de experiência',cb:6,cp:2,ab:4,ap:2,sim:[5,2],cli:[8,3]},
- {id:3,nm:'Avançados',x:'41 a 60 de experiência',cb:9,cp:3,ab:6,ap:3,sim:[6,3],cli:[12,4]},
- {id:4,nm:'Épicos',x:'mais de 60 de experiência',cb:12,cp:4,ab:8,ap:4,sim:[9,5],cli:[18,8]}
+ {id:1,nm:'Iniciantes',x:'fichas iniciais',ab:2,ap:1,neut:3,sim:[4,1],cli:[6,2]},
+ {id:2,nm:'Intermediários',x:'21 a 40 de experiência',ab:4,ap:2,neut:5,sim:[5,2],cli:[8,3]},
+ {id:3,nm:'Avançados',x:'41 a 60 de experiência',ab:6,ap:3,neut:7,sim:[6,3],cli:[12,4]},
+ {id:4,nm:'Épicos',x:'mais de 60 de experiência',ab:8,ap:4,neut:9,sim:[9,5],cli:[18,8]}
 ];
 var DIFS=[
  {id:0,nm:'Exploração',x:'dificuldade padrão',ex:0},
@@ -949,132 +1018,236 @@ var DIFS=[
 ];
 var DADOV={d6:1,d1:2,d2:3};
 var INTS={hostil:'Hostil',neutra:'Neutra','amigável':'Amigável'};
-var LOCAIS=['Beira de estrada','Mata fechada','Margem de rio','Refúgio em ruínas','Pátio de fábrica','Escola abandonada','Trilha de montanha','Mercado ao ar livre','Porão de hospital','Fazenda tomada pelo mato','Ponte sobre um vale','Pátio de igreja'];
-var JOGO=['A carga do grupo','A vida de um aliado','A confiança de um Refúgio','Um caminho essencial','Água potável','Um segredo guardado','Remédios escassos','A reputação dos Infectados','Um inocente em perigo','Um objeto importante','Uma saída segura','O sossego da região'];
-var DET=['Anoitece em pouco tempo','Chove sem parar','Há crianças por perto','Alguém do grupo está ferido','O vento mudou de direção','Tudo cheira a fruta madura','Uma testemunha observa de longe','Um rádio chia sem parar','O chão está coberto de penas','Um sino toca devagar','A cor do céu está errada','Ninguém fala o nome do lugar'];
 
-var GENCOND=[
- ['Pouca luz','Ações que dependem de enxergar exigem B para render mais de 1A por rodada.'],
- ['Terreno escorregadio','Quem correr ou escalar sem gastar B perde 1A do que investir naquela rodada.'],
- ['Tempo curto','A cada 3 rodadas, o(a) Assimilador(a) adiciona um Dado 6 à pilha do Conflito.'],
- ['Multidão','Ações de ataque ou de fuga exigem B adicional para não atingir inocentes.'],
- ['Ruído alto','Comunicar-se entre Infectados custa B para ser eficaz.'],
- ['Cansaço','Quem repetir a mesma ação duas rodadas seguidas perde 1A na segunda vez.'],
- ['Equipamento escasso','Só dois Infectados podem usar equipamento a cada rodada.'],
- ['Chuva forte','Ações com fogo ou eletricidade exigem B extra para ter efeito.'],
- ['Rastro fresco','Quem investir AA em seguir o rastro revela a próxima ativação do Conflito.'],
- ['Alerta geral','A primeira ativação com C em cada rodada causa mais 1 de dano se algum Infectado agir com barulho.'],
- ['Ajuda inesperada','Uma vez por Conflito, um Infectado pode trocar 3C mantidos por 3A, narrando um aliado oportuno.'],
- ['Ponto de retorno','Se o grupo investir AAAA em preparar um local seguro, a Fuga custa metade.'],
- ['Pressão do contágio','Alvos de ativações com CC ou mais fazem um Teste de Assimilação, conforme as regras do livro.'],
- ['Olhos atentos','Uma testemunha observa o Conflito: as decisões dos Infectados terão repercussão na narrativa fluida.']
+var POOLS={"criatura":{"c":[["C","Mordida","Causa {d} de dano à Saúde a um alvo."],["CC","Investida","Causa {d} de dano à Saúde e derruba o alvo."],["CC","Perseguir","A criatura fecha o espaço: ações de fuga de um Infectado escolhido custam B extra na rodada seguinte."],["CCC","Rugido","Todos os Infectados ficam abalados: a próxima ação de cada um gasta B extra para render A."],["CCCC","Cercar a presa","Os Infectados perdem 2A já investidos em Fuga."]],"a":[["AA","Gesto de respeito","A criatura hesita: cancele a próxima ativação de ataque."],["AAA","Ferida exposta","Um ponto fraco fica visível: o próximo objetivo de confronto custa 2A a menos."],["AAA","Distração","Algo desvia a atenção da criatura: um Infectado escolhido não pode ser alvo na próxima rodada."],["AAAA","Presa solta","A criatura larga o que segurava, e o que ela guardava fica ao alcance."]],"b":[["BB","Farejar","A criatura descobre onde um Infectado se escondeu e passa a mirá-lo."],["BBB","Chamar o bando","Adicione 1 Dado 6 à pilha de dados da criatura."],["BBCC","Emboscar","Causa {d} de dano à Saúde, e o alvo não pode ser ajudado nesta rodada."],["BBB","Esquivar","Remove 2A já investidos em Neutralização."]]},"pessoa":{"c":[["C","Golpe","Causa {d} de dano à Saúde a um alvo."],["CC","Ameaça aberta","Um Infectado perde a posição: A investidos em diplomacia valem metade até o fim da rodada."],["CC","Apontar o dedo","A multidão passa a desconfiar de um Infectado: ele não pode receber ajuda por B nesta rodada."],["CCC","Tiro ou arremesso","Causa {d} de dano à Saúde a um alvo à distância."],["CCCC","Cerco fechado","Todos perdem 2A já investidos em Fuga."]],"a":[["AA","Voz da razão","Um dos presentes se declara a favor dos Infectados: cancele a próxima ativação de ataque."],["AAA","Dívida velha","Alguém reconhece um Infectado e abre uma porta: o próximo objetivo social custa 2A a menos."],["AAA","Confissão","Um dos presentes revela o verdadeiro motivo do Conflito."],["AAAA","Mão estendida","Um dos antagonistas muda de lado e passa a ajudar até o fim do Conflito."]],"b":[["BB","Fofoca rápida","Uma versão distorcida corre: o próximo teste de persuasão dos Infectados perde 1A."],["BBB","Chamar reforços","Adicione 1 Dado 6 à pilha de dados do Conflito."],["BBB","Desarmar","Remove um equipamento das mãos de um Infectado."],["BBCC","Render o alvo","O alvo é rendido e precisa de AAA para se soltar."]]},"coisa":{"c":[["C","Estilhaços","Causa {d} de dano à Saúde a um alvo."],["CC","Desabamento","Causa {d} de dano à Saúde a quem estiver no ponto e bloqueia a passagem até haver A."],["CC","Falha de apoio","Um Infectado cai: perde a ação da próxima rodada, a menos que alguém gaste B para segurá-lo."],["CCC","Colapso em cadeia","Todos perdem 1A já investido em objetivos de travessia."],["CCCC","Estrutura cede","Consequência dramática: parte do local deixa de ser acessível."]],"a":[["AA","Apoio firme","Uma estrutura se mostra segura: ações de travessia custam B a menos nesta rodada."],["AAA","Atalho","O grupo encontra um caminho mais curto: a Fuga custa 2A a menos."],["AAA","Achado útil","Um recurso aparece no meio dos destroços."],["AAAA","Mecanismo desativado","Um perigo do local é desligado até o fim do Conflito."]],"b":[["BB","Ranger de aviso","Quem agir sem cautela sofre +1 de dano na próxima ativação com C."],["BBB","Mecanismo oculto","Revele uma nova ativação do Conflito."],["BBCC","Trava de segurança","O local se fecha: a Fuga custa 2A a mais."],["BBB","Vazamento","Adicione 1 Dado 6 à pilha de dados do Conflito."]]},"fenomeno":{"c":[["C","Ardência","Causa {d} de dano à Saúde a um alvo por contato com o fenômeno."],["CC","Desorientar","Um Infectado perde o rumo: suas ações de deslocamento custam B extra."],["CC","Sussurros","Um Infectado fica abalado: a próxima ação dele gasta B extra para render A."],["CCC","Contágio","Um Infectado faz um Teste de Assimilação, conforme as regras do livro."],["CCCC","Maré do fenômeno","O fenômeno cresce: adicione 2 Dados 6 à pilha do Conflito."]],"a":[["AA","Janela de calma","O fenômeno cede por um instante: cancele a próxima ativação com C."],["AAA","Padrão revelado","Alguém percebe o ritmo do fenômeno: objetivos de conter ou atravessar custam 2A a menos."],["AAA","Abrigo","Surge um refúgio natural: a Fuga custa 2A a menos."],["AAAA","Sintonia","Um Infectado se alinha com o fenômeno e ganha uma percepção que muda o rumo da cena."]],"b":[["BB","Ressoar","Revele o próximo efeito antes que ele aconteça."],["BBB","Ampliar","Repita uma ativação já cumprida sem pagar o custo de novo."],["BBCC","Distorcer","Troque de lugar dois alvos na cena."],["BBB","Cobrir o caminho","Adicione 1 Dado 6 à pilha do Conflito."]]}};
+POOLS.plantas={
+ c:[['C','Espinhos','Causa {d} de dano à Saúde a um alvo.'],['CC','Enroscar','Um Infectado fica preso: não pode se mover até alguém gastar B ou AA para soltá-lo.'],['CC','Esporos irritantes','Todos os alvos próximos sofrem 1 de dano e a próxima ação exige B extra para render A.'],['CCC','Sucção','Causa {d} de dano à Saúde ao alvo preso, e a planta se fortalece: adicione 1 Dado 6 à rolagem dela.'],['CCCC','Brotar em volta','A vegetação fecha a área: a Fuga custa 2A a mais.']],
+ a:[['AA','Folhas murchas','A planta perde viço: cancele a próxima ativação de enroscar.'],['AAA','Raiz exposta','Revela o ponto fraco: neutralizar custa 2A a menos.'],['AAA','Fruto oferecido','A planta solta algo útil (fruto, seiva ou semente) ao ser tratada com cuidado.'],['AAAA','Poda certeira','A planta recua e deixa a passagem livre até o fim da cena.']],
+ b:[['BB','Camuflar','A planta se confunde com o ambiente: só pode ser alvo depois de AA investidos em localizá-la.'],['BBB','Crescer rápido','Adicione 1 Dado 6 à rolagem da ameaça.'],['BBCC','Puxar para baixo','Causa {d} de dano à Saúde e derruba o alvo.'],['BBB','Liberar aroma','Atrai bichos da região: surge uma ameaça menor se ninguém gastar B para dispersar o cheiro.']]
+};
+POOLS.clima={
+ c:[['C','Rajada','Causa {d} de dano à Saúde a um alvo (impacto, fragmentos ou queimadura leve).'],['CC','Visão encoberta','Ações de mira e leitura de terreno custam B extra na próxima rodada.'],['CC','Sufocar','Um Infectado perde o ar: a próxima ação dele exige B extra para render A.'],['CCC','Descarga','Causa {d} de dano à Saúde em área.'],['CCCC','Avanço do fenômeno','A área afetada dobra: a Fuga custa 2A a mais.']],
+ a:[['AA','Clarão','Abre-se uma fresta no tempo: cancele a próxima ativação com C.'],['AAA','Abrigo à vista','Os Infectados percebem um abrigo: a Fuga custa 2A a menos.'],['AAA','Mudança do vento','Neutralizar custa 2A a menos nesta rodada.'],['AAAA','Estiagem','O fenômeno se dissipa por uma rodada inteira: nenhuma ativação com C acontece.']],
+ b:[['BB','Prever o ritmo','Revele a próxima ativação.'],['BBB','Acumular','Adicione 1 Dado 6 à rolagem da ameaça.'],['BBCC','Arrastar','Um alvo é puxado até o centro: sofre {d} de dano e perde a posição.'],['BBB','Cortar a rota','Remove 2A de Fuga já investidos.']]
+};
+POOLS.doencas={
+ c:[['C','Picada','Causa {d} de dano à Saúde a um alvo.'],['CC','Febre','Um Infectado perde 1A de qualquer objetivo em que tenha investido nesta rodada.'],['CC','Contágio rápido','O mal passa a um aliado próximo: ele também sofre 1 de dano.'],['CCC','Surto','Todos os Infectados na cena sofrem 1 de dano e a próxima ação custa B extra para render A.'],['CCCC','Infestação','Um recurso do grupo é perdido ou estragado.']],
+ a:[['AA','Higiene','Os Infectados isolam o foco: cancele a próxima ativação de contágio.'],['AAA','Erva certa','Alguém lembra de um remédio simples: neutralizar custa 2A a menos.'],['AAA','Resistência','Um Infectado fica imune às ativações com C desta ameaça até o fim do Conflito.'],['AAAA','Cura de campo','Um aliado ferido ou doente se recupera e volta a ajudar.']],
+ b:[['BB','Incubar','A doença avança: o próximo efeito com C custa 1C a menos.'],['BBB','Migrar','A ameaça passa para outro alvo sem custo.'],['BBB','Sintoma escondido','Um Infectado não percebe que foi atingido até gastar B.'],['BBCC','Colapso do corpo','Causa {d} de dano à Saúde e o alvo perde a próxima ação.']]
+};
+POOLS.social={
+ c:[['C','Insinuação','Um Infectado perde a confiança de um presente: os A dele em diplomacia valem metade nesta rodada.'],['CC','Pressão do grupo','Todos se voltam contra um Infectado: ele não recebe ajuda por B nesta rodada.'],['CC','Racha','Duas facções entram em atrito: objetivos coletivos custam 1A a mais.'],['CCC','Escalada','A situação esquenta: adicione 1 Dado 6 à rolagem da ameaça e a próxima ativação com C é dobrada.'],['CCCC','Revolta','O Conflito sai do controle: uma consequência grave se anuncia.']],
+ a:[['AA','Gesto de paz','Alguém propõe trégua: cancele a próxima ativação com C.'],['AAA','Prova nova','Uma informação desfaz um mal-entendido: objetivos sociais custam 2A a menos.'],['AAA','Líder intercede','Uma figura respeitada toma o partido dos Infectados.'],['AAAA','Reconciliação','As partes se aproximam: a ameaça deixa de agir por uma rodada.']],
+ b:[['BB','Plantar dúvida','Um presente passa a desconfiar de outro: troque o alvo de uma ativação.'],['BBB','Mobilizar apoio','Adicione 1 Dado 6 à rolagem da ameaça.'],['BBB','Cobrar uma dívida','Um Infectado precisa dar algo ao grupo para seguir.'],['BBCC','Humilhação pública','Um Infectado perde a ação da próxima rodada, e o renome dele sofre ao fim da cena.']]
+};
+POOLS.mente={
+ c:[['C','Lembrança invasiva','Um Infectado sofre 1 de dano psicológico e perde 1A do que investiu.'],['CC','Paralisia','Um Infectado trava: a próxima ação dele exige B para sair do lugar.'],['CC','Voz dentro da cabeça','O Infectado só age se gastar B para ignorar a voz.'],['CCC','Colapso nervoso','Um Infectado faz um Teste de Assimilação, conforme as regras do livro.'],['CCCC','Quebra','Um Infectado se retira da cena até que um aliado invista AAA para trazê-lo de volta.']],
+ a:[['AA','Respirar fundo','Um Infectado ignora a próxima ativação com C.'],['AAA','Âncora','Uma lembrança ou objeto bom devolve a calma ao grupo: neutralizar custa 2A a menos.'],['AAA','Acolhimento','Um aliado ajuda: cancele os efeitos de paralisia.'],['AAAA','Enfrentar o medo','A ameaça perde força e não age na próxima rodada.']],
+ b:[['BB','Confundir a memória','Um Infectado confunde o que viu e perde uma informação ganha na cena.'],['BBB','Eco','Repete a última ativação sem custo.'],['BBB','Espelho','Um Infectado vê o pior de si: troque o alvo de uma ação.'],['BBCC','Obsessão','O alvo só pode investir A no mesmo objetivo até a próxima rodada.']]
+};
+
+var CATS=[
+{id:'pessoas',nm:'Pessoas',x:'Indivíduos com intenção própria.',art:'pessoa',cor:'ame',pool:'pessoa',l:[
+ ['Contrabandista de passagem','Esconde mercadoria nos pertences alheios e some na confusão.','neutra','Identificar e expor o contrabando.'],
+ ['Atirador de tocaia','Mira de longe e só aparece quando erra.','hostil','Localizar e forçá-lo a recuar.'],
+ ['Mercador trapaceiro','Vende o que não tem e cobra pelo que não entrega.','neutra','Desmascarar ou pagar o preço.'],
+ ['Desertor armado','Fugiu do próprio grupo e reage a qualquer farda.','hostil','Acalmar ou render.'],
+ ['Informante vendido','Passa aos inimigos tudo que ouve.','neutra','Descobrir e virar o jogo.'],
+ ['Curandeiro desconfiado','Tem o que o grupo precisa, mas teme os Infectados.','amigável','Ganhar a confiança dele.'],
+ ['Líder de bando impaciente','Quer resultado rápido e não aceita desculpa.','hostil','Intimidar ou convencer.'],
+ ['Batedor traiçoeiro','Guia o grupo por onde ele pode lucrar.','hostil','Desmascarar e substituir.'],
+ ['Sacerdote exaltado','Prega que os Infectados são um sinal e conduz a multidão.','neutra','Contrariar ou canalizar a fé.'],
+ ['Criança esperta','Vê o que os adultos ignoram e usa isso para pedir ajuda ou pregar peças.','amigável','Ganhar a simpatia dela.'],
+ ['Cobrador de dívidas','Chega com ordens e pouca paciência.','hostil','Negociar um prazo.'],
+ ['Caçador de recompensas','Procura alguém do grupo, ou alguém que o grupo esconde.','hostil','Desviar o interesse ou pagar.']
+]},
+{id:'grupos',nm:'Grupos e facções',x:'Bandos, caravanas, refúgios móveis e seitas.',art:'grupo',cor:'ame',pool:'pessoa',l:[
+ ['Gangue de estrada','Cobra pedágio e rouba a hesitação.','hostil','Dispersar ou subornar.'],
+ ['Saqueadores de comboio','Atacam quem carrega valor e sabem onde ele dorme.','hostil','Repelir o ataque.'],
+ ['Escravagistas em marcha','Levam cativos em fila e disparam contra quem se meter.','hostil','Libertar os cativos.'],
+ ['Procissão fervorosa','Cantam, avançam e não param para ninguém.','neutra','Desviar ou integrar.'],
+ ['Caravana de mercadores','Querem negócio, mas desconfiam de rotas novas.','amigável','Fechar um acordo.'],
+ ['Patrulheiros rigorosos','Fiscalizam tudo e acusam com facilidade.','neutra','Provar boa-fé.'],
+ ['Missionários insistentes','Pregam uma verdade e exigem conversão.','neutra','Conter a insistência com jeito.'],
+ ['Refugiados em pânico','Fogem de algo e atrapalham qualquer plano.','amigável','Guiá-los a um lugar seguro.'],
+ ['Companhia de mercenários','Trabalham para quem pagar, inclusive contra os Infectados.','hostil','Pagar mais ou enfrentar.'],
+ ['Facção purista','Acredita que os Infectados devem ficar isolados.','hostil','Convencer ou fugir.'],
+ ['Inquisidores','Interrogam, acusam e queimam quem carrega marcas.','hostil','Desmentir ou escapar.'],
+ ['Devotos da Assimilação','Veem os Infectados como sinal divino e cercam o grupo com devoção sufocante.','amigável','Moderar o fervor.']
+]},
+{id:'criaturas',nm:'Criaturas comuns',x:'Animais sem alteração, mas famintos ou acuados.',art:'animal',cor:'nat',pool:'criatura',l:[
+ ['Onça faminta','Um felino grande e magro ronda o acampamento.','hostil','Afugentar com fogo ou barulho.'],
+ ['Matilha de cães ferais','Perdeu o medo de gente.','hostil','Dominar o líder da matilha.'],
+ ['Javali furioso','Ferido e sem saída, ataca tudo.','neutra','Abrir um caminho de fuga.'],
+ ['Cobra no mato alto','Escondida, só reage a quem pisa.','neutra','Afastá-la sem ferir.'],
+ ['Jacaré no vau','Vigia a travessia com paciência.','hostil','Atraí-lo para longe.'],
+ ['Ursa com filhotes','Defende a cria de qualquer um.','hostil','Recuar e dar espaço.'],
+ ['Enxame de abelhas','Reage a fumaça e a movimento.','hostil','Afastar com fumaça.'],
+ ['Lobo solitário','Persegue sem se mostrar.','hostil','Encarar e afugentar.'],
+ ['Ave de rapina','Ataca de cima e escolhe os mais lentos.','hostil','Proteger-se e espantar.'],
+ ['Rebanho em debandada','Disparado pelo susto, não distingue nada.','neutra','Desviar o curso.']
+]},
+{id:'assimiladas',nm:'Criaturas assimiladas',x:'Feras e seres mudados pela Assimilação.',art:'criatura',cor:'ass',pool:'criatura',l:[
+ ['Fera de espinhos','Um predador de carapaça farpada que ataca por emboscada.','hostil','Furar a couraça ou afugentar.'],
+ ['Besta de olhos demais','Vê em todas as direções e avisa os seus.','hostil','Cegar ou enganar.'],
+ ['Mãe de patas demais','Protege o ninho entre as raízes.','hostil','Recuar ou distrair.'],
+ ['Guardião da nascente','Dorme na água e acorda de mau humor.','neutra','Acalmar.'],
+ ['Imitador de vozes','Copia vozes humanas para atrair presas.','hostil','Revelar a farsa.'],
+ ['Enxame de zumbido grave','Nuvem de insetos que responde a calor.','hostil','Esfriar ou dispersar.'],
+ ['Gigante pacífico','Segue o grupo por curiosidade e destrói sem querer.','amigável','Guiá-lo para longe.'],
+ ['Caçador noturno','Rastreia lanternas sem se expor.','hostil','Apagar a luz e recuar.'],
+ ['Bicho de mimetismo','Vira parte do cenário e ataca de perto.','hostil','Descobrir o disfarce.'],
+ ['Ave colossal','Mergulha de cima e leva o que alcançar.','hostil','Abatê-la ou afugentá-la.'],
+ ['Besta domesticada','Obedece a um dono que já se foi.','neutra','Dar novas ordens.'],
+ ['Cria assustada','Um filhote perdido e o pânico dele atrapalham todos.','neutra','Acalmar ou devolver.']
+]},
+{id:'plantas',nm:'Plantas e fungos',x:'Vegetação traiçoeira, esporos e mata viva.',art:'planta',cor:'nat',pool:'plantas',l:[
+ ['Cipó estrangulador','Se enrosca em quem passa.','hostil','Cortar ou queimar.'],
+ ['Arbusto bebedor','Flores que atraem e espinhos que sugam.','hostil','Podar com cuidado.'],
+ ['Fungo de esporos','Solta nuvens que dão sonhos e febre.','hostil','Abafar ou lavar.'],
+ ['Flor de aroma doce','Seduz com o cheiro e adormece.','neutra','Cobrir o rosto.'],
+ ['Mata fechada viva','Os galhos se fecham sobre quem entra.','neutra','Abrir picada.'],
+ ['Raiz que puxa','Brota sob os pés e arrasta.','hostil','Cortar na base.'],
+ ['Musgo escorregadio','Cobre as pedras e tira o chão.','neutra','Evitar o trecho.'],
+ ['Árvore ocupada','Abriga um ninho e se defende com ele.','hostil','Afastar os moradores.'],
+ ['Plantação rebelde','Um cultivo que cresce e ocupa tudo.','neutra','Podar e conter.'],
+ ['Trepadeira que sussurra','Imita vozes ao vento.','hostil','Silenciar com fogo.']
+]},
+{id:'clima',nm:'Clima e gases',x:'Tempestades, névoas, fogo, enchentes e ar ruim.',art:'clima',cor:'rec',pool:'clima',l:[
+ ['Tempestade parada','Ventania, raios e chuva que não passam.','hostil','Achar abrigo.'],
+ ['Neblina cerrada','Esconde os passos e desorienta.','neutra','Marcar o caminho.'],
+ ['Gás de pântano','Inflama e anestesia quem respira.','hostil','Ventilar a área.'],
+ ['Onda de calor','Seca a água e rouba a clareza.','neutra','Refrescar e proteger.'],
+ ['Enchente repentina','Transforma o chão em rio.','neutra','Subir para o alto.'],
+ ['Incêndio no mato','Cresce com o vento.','hostil','Abrir um aceiro.'],
+ ['Nevasca fora de época','Esfria o ar e o corpo.','hostil','Acender fogo.'],
+ ['Chuva de cinzas','Cobre tudo e irrita os pulmões.','neutra','Proteger o rosto.'],
+ ['Ventania de areia','Arranha tudo que não está coberto.','hostil','Cobrir-se e esperar.'],
+ ['Raios secos','Estalam sem chuva e caem onde querem.','hostil','Afastar-se de metal e árvores.'],
+ ['Vazamento tóxico','Fumaça densa que escorre pelo chão.','hostil','Vedar a fonte.'],
+ ['Geada súbita','Congela água, plantas e dedos em minutos.','hostil','Aquecer o grupo.']
+]},
+{id:'assimilacao',nm:'Fenômenos da Assimilação',x:'A Assimilação agindo sobre o lugar.',art:'fenomeno',cor:'ass',pool:'fenomeno',l:[
+ ['Névoa colorida','Muda a percepção de quem entra.','hostil','Sair em linha, de mãos dadas.'],
+ ['Chuva de esporos','Grudam, dão sonhos e febre.','hostil','Proteger-se e lavar.'],
+ ['Eco que copia','Repete os sons com atraso e começa a dar ordens.','hostil','Calar o lugar.'],
+ ['Maré de raízes','Brotam e agarram o que se move.','hostil','Ficar parado e cortar.'],
+ ['Pulsar de calor','O ar esquenta e esfria em ritmo regular.','neutra','Acompanhar o ritmo.'],
+ ['Sonho coletivo','Todos dormem e sonham a mesma cena.','neutra','Achar a saída no sonho.'],
+ ['Luz que chama','Atrai os cansados para uma clareira.','hostil','Resistir e apagar a luz.'],
+ ['Silêncio denso','Nenhum som se propaga.','neutra','Combinar gestos.'],
+ ['Gravidade solta','Objetos e pessoas flutuam sem aviso.','neutra','Ancorar-se.'],
+ ['Floração súbita','Flores doces deixam todos felizes demais.','amigável','Resistir ao entorpecimento.'],
+ ['Rastro de vozes','Vozes antigas pedem algo ao grupo.','neutra','Ouvir e responder, ou ignorar.'],
+ ['Onda de calor vivo','Corre pelo chão a partir de um ponto.','hostil','Subir e esperar.']
+]},
+{id:'doencas',nm:'Doenças e pragas',x:'Febres, parasitas, contágio e infestações.',art:'praga',cor:'ame',pool:'doencas',l:[
+ ['Febre do mato','Sobe e some, e volta mais forte.','hostil','Tratar com a erva certa.'],
+ ['Praga de insetos','Corroem estoques e picam à noite.','hostil','Afastar com fumaça.'],
+ ['Parasita intestinal','Passa pela água e pelo prato.','hostil','Ferver e isolar.'],
+ ['Pó que coça','Irrita a pele e cega por horas.','neutra','Lavar e cobrir.'],
+ ['Mofo que avança','Cobre paredes e estoques.','neutra','Secar e raspar.'],
+ ['Peste de ratos','Invadem armazéns e espalham doenças.','hostil','Fechar as entradas.'],
+ ['Intoxicação de comida','Atinge quem comeu do mesmo pote.','neutra','Identificar a fonte.'],
+ ['Tosse seca','Contagia o acampamento aos poucos.','hostil','Isolar os doentes.'],
+ ['Carrapatos assimilados','Se fartam e mudam o hospedeiro.','hostil','Retirar um a um.'],
+ ['Mal da água','Quem bebe fica sonolento e fraco.','hostil','Trocar a fonte.']
+]},
+{id:'estruturas',nm:'Estruturas e armadilhas',x:'Construções, máquinas e engenhos perigosos.',art:'coisa',cor:'rec',pool:'coisa',l:[
+ ['Ponte de cabos','Cede um pouco a cada passo.','neutra','Reforçar.'],
+ ['Armadilha antiga','Aguarda um pé desatento.','hostil','Desarmar.'],
+ ['Teto prestes a cair','Rangendo, solta pó e pedras.','neutra','Escorar.'],
+ ['Máquina religada','Trabalha sem parar e destrói o que alcança.','hostil','Desligar.'],
+ ['Carroça descontrolada','Desce a ladeira sem condutor.','neutra','Desviar ou travar.'],
+ ['Cerca eletrificada','Ainda recebe energia.','hostil','Cortar a energia.'],
+ ['Silo desmoronando','Grãos escorrem e engolem.','neutra','Sair rápido.'],
+ ['Estalactites soltas','Caem com qualquer vibração.','neutra','Passar em silêncio.'],
+ ['Alarme sonoro','Chama quem estiver por perto.','hostil','Desligar.'],
+ ['Barragem rachada','Vaza e promete mais.','neutra','Calçar a fresta.']
+]},
+{id:'terreno',nm:'Terreno e ambiente',x:'Chão, água, grutas e passagens difíceis.',art:'natureza',cor:'nat',pool:'coisa',l:[
+ ['Pântano profundo','Chão que engole e água que esconde.','neutra','Achar uma trilha firme.'],
+ ['Barranco instável','Cede sob o peso.','neutra','Escorar ou desviar.'],
+ ['Cachoeira','Escorregadia e barulhenta.','neutra','Escalar com corda.'],
+ ['Cascalheira','Rola sob os pés.','neutra','Pisar leve.'],
+ ['Desfiladeiro estreito','Vento e pedras caindo.','hostil','Cruzar rápido.'],
+ ['Campo de espinhos','Cobre o caminho todo.','neutra','Abrir passagem.'],
+ ['Mata alagada','Água até a cintura e raízes escondidas.','neutra','Marcar o caminho.'],
+ ['Gruta escura','Ar frio e sons que enganam.','neutra','Acender uma luz.'],
+ ['Ruínas em equilíbrio','Cada passo mexe em algo.','neutra','Estabilizar.'],
+ ['Trilha de gelo','Escorrega e esconde buracos.','hostil','Usar apoios.']
+]},
+{id:'tensoes',nm:'Tensões sociais',x:'Boatos, disputas, escassez e política.',art:'grupo',cor:'ame',pool:'social',l:[
+ ['Boato venenoso','Espalha-se e contamina a convivência.','hostil','Provar a verdade.'],
+ ['Disputa de estoque','Dois grupos querem o mesmo.','neutra','Dividir com justiça.'],
+ ['Racha político','O Refúgio se divide em dois lados.','neutra','Mediar.'],
+ ['Preconceito aberto','Um grupo quer expulsar os Infectados.','hostil','Mostrar valor.'],
+ ['Escassez que aperta','Cada ração vira briga.','neutra','Achar mais recursos.'],
+ ['Julgamento precipitado','A multidão exige um culpado.','hostil','Provar inocência.'],
+ ['Traição escondida','Alguém próximo vende o grupo.','hostil','Descobrir o traidor.'],
+ ['Rivalidade de líderes','Cada um quer a palavra final.','neutra','Alinhar os interesses.'],
+ ['Pânico coletivo','Um grito vira debandada.','neutra','Acalmar a multidão.'],
+ ['Dívida cobrada','Alguém exige pagamento no pior momento.','hostil','Renegociar.']
+]},
+{id:'mente',nm:'Mente e emoções',x:'Pesadelos, traumas, obsessões e crises.',art:'mente',cor:'ass',pool:'mente',l:[
+ ['Pesadelo que não acaba','Volta toda noite e piora.','hostil','Enfrentar a imagem.'],
+ ['Culpa que paralisa','Um erro antigo pesa na hora errada.','neutra','Dividir com um aliado.'],
+ ['Obsessão','Uma ideia domina e atrapalha.','neutra','Redirecionar a atenção.'],
+ ['Medo do escuro','Aumenta quando falta luz.','neutra','Acender uma luz.'],
+ ['Luto recente','Entristece todos e tira o foco.','neutra','Honrar a pessoa.'],
+ ['Voz que sussurra','Parece vir de dentro.','hostil','Calar com firmeza.'],
+ ['Alucinação','Mostra algo que não existe.','hostil','Verificar com um aliado.'],
+ ['Raiva acumulada','Explode no pior momento.','hostil','Esvaziar com cuidado.'],
+ ['Pânico de multidão','Fecha o peito entre muita gente.','neutra','Sair para o ar livre.'],
+ ['Memória invasiva','Uma lembrança alheia ocupa a cabeça.','hostil','Externalizar a lembrança.']
+]}
+];
+var CBY={}; CATS.forEach(function(c){CBY[c.id]=c;});
+
+var TRACOS=[
+ ['Camuflada','Só pode ser alvo de neutralização depois de AA investidos em localizá-la.'],
+ ['Rápida','Sua rolagem ganha +1 Dado 6.'],
+ ['Resistente','Neutralizá-la custa +2A.'],
+ ['Em bando','Ao ser neutralizada, outra igual surge em 2 rodadas, a menos que o bando todo seja dispersado.'],
+ ['Territorial','Dentro do território dela, uma ativação com C custa 1C a menos.'],
+ ['Furtiva','Suas ativações com B custam 1B a menos.'],
+ ['Faminta','Ativações que causam dano também restauram a ameaça: remove 1A de neutralização.'],
+ ['Ferida','Começa com 1A já investido em neutralização.'],
+ ['Protegida','Tem uma barreira: os primeiros AA investidos contra ela são perdidos.'],
+ ['Inteligente','Pode trocar o alvo de uma ativação por rodada, sem custo.'],
+ ['Enlouquecida','Suas ativações com C causam +1 de dano, mas ela não pode usar B.'],
+ ['Desconfiada','Recusa ajuda: A transferidos para neutralizá-la perdem 1.']
+];
+var ESPECIAIS=[
+ 'Os A só valem se um B for gasto no mesmo turno por quem investiu.',
+ 'Cada Infectado só pode investir uma vez por rodada nesta neutralização.',
+ 'Os A só valem se a ação for descrita sem violência.',
+ 'Os A de quem age em contato direto valem em dobro, mas expõem a pessoa às ativações com C.',
+ 'Precisa de um recurso do ambiente (fogo, água, corda, etc.) para funcionar.',
+ 'O avanço é individual: cada Infectado precisa completar o total sozinho.',
+ 'Pode ser parcial: ao completar metade, a ameaça passa a rolar metade dos dados.',
+ 'Os A só valem se a ação aproveitar o terreno.'
+];
+var CONSEQS=[
+ 'Ao ser neutralizada, retire todas as C das ativações do Conflito neste turno.',
+ 'Ao ser neutralizada, ela foge e pode voltar mais tarde.',
+ 'Ao ser neutralizada, deixa para trás algo útil (recurso, informação ou item).',
+ 'Ao ser neutralizada, um aliado inesperado se revela.',
+ 'Ao ser neutralizada, os Infectados ganham uma pista sobre uma ameaça maior.',
+ 'Ao ser neutralizada, nada de especial: apenas deixa de agir.',
+ 'Ao ser neutralizada, atrai a atenção de outra ameaça menor.',
+ 'Ao ser neutralizada, sua queda abre uma rota ou atalho.'
+];
+var SECS=[
+ ['Obter informações',3,'Individual. Revela o comportamento da ameaça: a próxima ativação dela fica visível.'],
+ ['Estudar o ponto fraco',4,'Imediato. Neutralizar custa 2A a menos.'],
+ ['Distrair a ameaça',3,'Imediato. A ameaça perde a próxima rodada.'],
+ ['Buscar ajuda',4,'Um aliado chega à cena e ajuda os Infectados.'],
+ ['Preparar o terreno',3,'Imediato. Uma ativação com C da ameaça passa a custar 1C a mais.'],
+ ['Proteger um aliado',3,'Impede que um aliado seja alvo de ativações enquanto durar o esforço.']
 ];
 
-var TIPOS=[
-{id:'criatura',nm:'Criaturas',x:'Bichos, predadores e seres assimilados.',cor:'nat',
- c:[
-  ['Predador na trilha','Um predador assimilado cortou o caminho e defende a carcaça que acabou de derrubar.','hostil'],
-  ['Ninho em perigo','Uma mãe de patas demais protege filhotes escondidos entre as raízes e vê qualquer passo como ameaça.','hostil'],
-  ['Bando faminto','Uma matilha magra cerca o acampamento, e a cada minuto sem solução os bichos ficam mais ousados.','hostil'],
-  ['Rebanho em fuga','Animais grandes disparam em pânico por algo que ainda não apareceu, e o chão vira um campo de pisoteio.','neutra'],
-  ['Criatura curiosa','Algo grande e pacífico segue o grupo de perto, e um movimento brusco pode virar acidente ou amizade.','amigável'],
-  ['Enxame no pomar','Uma nuvem de insetos de zumbido grave toma a plantação e responde a calor e movimento.','hostil'],
-  ['Presa ferida','Um animal assimilado, ferido por uma armadilha, ataca quem se aproxima, mesmo quem só quer ajudar.','neutra'],
-  ['Guardião da nascente','Um bicho enorme dorme dentro da única fonte da região e acorda de mau humor.','neutra'],
-  ['Parasitas de pele','Larvas assimiladas passam de um hospedeiro a outro por simples toque, e é preciso conter antes que todos sejam infestados.','hostil'],
-  ['Aves de carniça','Aves grandes giram sobre algo que não se vê, e a descida delas se aproxima de quem estiver embaixo.','hostil'],
-  ['Caça noturna','Uma criatura de visão apurada rastreia o brilho das lanternas e fica sempre fora do alcance da luz.','hostil'],
-  ['Bicho domesticado demais','Um animal assimilado treinado por alguém que sumiu ainda obedece ordens antigas e monta guarda no lugar errado.','neutra']
- ],
- at:{
-  c:[['C','Mordida','Causa {d} de dano à Saúde a um alvo.'],['CC','Investida','Causa {d} de dano à Saúde e derruba o alvo.'],['CC','Perseguir','A criatura fecha o espaço: ações de fuga de um Infectado escolhido custam B extra na rodada seguinte.'],['CCC','Rugido','Todos os Infectados ficam abalados: a próxima ação de cada um gasta B extra para render A.'],['CCCC','Cercar a presa','Os Infectados perdem 2A já investidos em Fuga.']],
-  a:[['AA','Gesto de respeito','A criatura hesita: cancele a próxima ativação de ataque.'],['AAA','Ferida exposta','Um ponto fraco fica visível: o próximo objetivo de confronto custa 2A a menos.'],['AAA','Distração','Algo desvia a atenção da criatura: um Infectado escolhido não pode ser alvo na próxima rodada.'],['AAAA','Presa solta','A criatura larga o que segurava, e o que ela guardava fica ao alcance.']],
-  b:[['BB','Farejar','A criatura descobre onde um Infectado se escondeu e passa a mirá-lo.'],['BBB','Chamar o bando','Adicione 1 Dado 6 à pilha de dados da criatura.'],['BBCC','Emboscar','Causa {d} de dano à Saúde, e o alvo não pode ser ajudado nesta rodada.'],['BBB','Esquivar','Remove 2A já investidos em Neutralização.']]
- },
- ob:[['Afugentar a criatura','Fazer a criatura recuar sem precisar matá-la.'],['Acalmar a criatura','Ganhar a confiança do animal e encerrar a disputa em paz.'],['Abater a criatura','Eliminar a ameaça de vez, com as consequências disso.'],['Desviar a atenção','Levar o bicho para longe do que ele estava disputando.']],
- os:[['Examinar o rastro','Imediato. Revela o ponto fraco da criatura e facilita o confronto.'],['Montar armadilha','Imediato. Cria um obstáculo no caminho da criatura por 1 rodada.'],['Proteger um aliado ferido','Impede que ele seja alvo de ativações enquanto durar o esforço.'],['Coletar material','Após a cena. Rende um recurso aproveitável da criatura.'],['Marcar a rota de fuga','Fuga custa A a menos por Infectado.'],['Atrair para o terreno','Imediato. A criatura sofre os efeitos de um perigo do local.']],
- cd:[['Cheiro forte','Quem não se esconde bem gasta B extra para se ocultar do olfato da criatura.'],['Pegadas na lama','Os Infectados deixam rastro: a Fuga custa A a mais por Infectado enquanto a criatura estiver ativa.'],['Território marcado','A criatura recebe +1 dado de menor valor enquanto os Infectados estiverem dentro do seu território.'],['Ninho próximo','Ferir a criatura em demasia faz outras aparecerem na cena.']],
- am:[['Filhote perdido','Um filhote assustado se mete entre os Infectados e atrapalha todos.','neutra','Afastar ou devolver o filhote.'],['Macho territorial','Chega atraído pelo barulho e disputa o território.','hostil','Afugentar ou intimidar.'],['Carniceiros oportunistas','Rondam à espera de que alguém caia.','hostil','Espantar o bando.'],['Parasita agarrado','Grudou em um Infectado e se alimenta dele.','hostil','Arrancar com cuidado.'],['Observador astuto','Uma criatura menor estuda o grupo e avisa as maiores.','hostil','Capturar ou fugir de vista.'],['Animal protetor','Um bicho leal cuida da criatura principal.','neutra','Convencer a recuar.']]
-},
-{id:'pessoa',nm:'Pessoas',x:'Grupos, bandos, comunidades e multidões.',cor:'ame',
- c:[
-  ['Bloqueio de bando','Um grupo armado fechou a estrada com carros e cobra passagem de quem aparece.','hostil'],
-  ['Disputa de Refúgio','Dois lados de uma comunidade se enfrentam por um estoque, e os Infectados são os únicos de fora presentes.','neutra'],
-  ['Interrogatório','Uma patrulha acusa o grupo de esconder algo e quer respostas antes de liberar a saída.','hostil'],
-  ['Mercado tenso','Um negócio vira discussão, e a multidão começa a escolher lados.','neutra'],
-  ['Caçadores de mutantes','Um grupo de matadores segue o rastro dos Infectados e quer uma resposta definitiva.','hostil'],
-  ['Pedido de socorro','Sobreviventes cercados por algo pedem ajuda, desconfiados de qualquer rosto novo.','amigável'],
-  ['Julgamento improvisado','Um grupo reunido na praça pretende punir alguém antes do anoitecer, por uma razão frágil.','neutra'],
-  ['Fuga em massa','Moradores em pânico atravancam as saídas de um Refúgio, e tudo que se faz atrapalha alguém.','neutra'],
-  ['Emboscada de saqueadores','Alguém armou uma cilada para o próximo comboio, e o grupo caiu nela por acidente.','hostil'],
-  ['Rival do Refúgio','Um líder rival quer humilhar os Infectados diante dos seus e propõe uma disputa pública.','neutra'],
-  ['Seita fervorosa','Devotos cercam um local sagrado e veem os Infectados como sinal de profecia ou de maldição.','hostil'],
-  ['Refém em jogo','Alguém é mantido refém por gente que nunca quis violência e agora não sabe como sair.','neutra']
- ],
- at:{
-  c:[['C','Golpe','Causa {d} de dano à Saúde a um alvo.'],['CC','Ameaça aberta','Um Infectado perde a posição: A investidos em diplomacia valem metade até o fim da rodada.'],['CC','Apontar o dedo','A multidão passa a desconfiar de um Infectado: ele não pode receber ajuda por B nesta rodada.'],['CCC','Tiro ou arremesso','Causa {d} de dano à Saúde a um alvo à distância.'],['CCCC','Cerco fechado','Todos perdem 2A já investidos em Fuga.']],
-  a:[['AA','Voz da razão','Um dos presentes se declara a favor dos Infectados: cancele a próxima ativação de ataque.'],['AAA','Dívida velha','Alguém reconhece um Infectado e abre uma porta: o próximo objetivo social custa 2A a menos.'],['AAA','Confissão','Um dos presentes revela o verdadeiro motivo do Conflito.'],['AAAA','Mão estendida','Um dos antagonistas muda de lado e passa a ajudar até o fim do Conflito.']],
-  b:[['BB','Fofoca rápida','Uma versão distorcida corre: o próximo teste de persuasão dos Infectados perde 1A.'],['BBB','Chamar reforços','Adicione 1 Dado 6 à pilha de dados do Conflito.'],['BBB','Desarmar','Remove um equipamento das mãos de um Infectado.'],['BBCC','Render o alvo','O alvo é rendido e precisa de AAA para se soltar.']]
- },
- ob:[['Vencer o confronto','Dominar os adversários pela força ou pela esperteza.'],['Negociar uma saída','Chegar a um acordo que todos aceitem.'],['Convencer a maioria','Mudar a opinião do grupo e quebrar a disputa.'],['Passar despercebidos','Escapar dos olhares sem chamar atenção.']],
- os:[['Obter informações','Individual. Revela as intenções do outro lado e facilita o desafio.'],['Ocultar algo valioso','Imediato. Impede que o outro lado perceba um item do grupo.'],['Identificar o líder real','Imediato. Revela quem manda e quais são os pontos fracos dele.'],['Ganhar um aliado','Imediato. Um dos presentes passa a ajudar os Infectados.'],['Libertar um prisioneiro','Imediato. Muda o equilíbrio de forças na cena.'],['Documentar o acordo','Após a cena. Garante uma recompensa concreta.']],
- cd:[['Testemunhas','O que os Infectados fizerem terá peso na narrativa fluida, para o bem e para o mal.'],['Honra em jogo','A primeira ativação C em cada rodada fica mais grave se um Infectado agir com desrespeito.'],['Código do bando','Ao sofrer uma ativação CC ou mais, o antagonista recebe 1A de graça nesta rodada.'],['Aliados escondidos','Uma vez, o(a) Assimilador(a) pode revelar um aliado do bando, adicionando um Dado 6 à pilha.']],
- am:[['Atirador no alto','Mira de longe e espera um erro.','hostil','Localizar e obrigá-lo a recuar.'],['Líder exaltado','Quer provar valor diante do grupo.','hostil','Acalmar ou humilhar.'],['Informante dúbio','Vende informação a quem pagar.','neutra','Comprar o silêncio.'],['Multidão inquieta','Qualquer faísca vira tumulto.','neutra','Dispersar ou acalmar.'],['Caçador de recompensa','Tem um alvo, e pode ser um Infectado.','hostil','Desviar o interesse.'],['Curandeira desconfiada','Quer ajudar, mas não sabe de que lado.','amigável','Ganhar a confiança dela.']]
-},
-{id:'coisa',nm:'Coisas e lugares',x:'Construções, máquinas, armadilhas e terrenos perigosos.',cor:'rec',
- c:[
-  ['Ponte instável','Uma ponte de cabos cede um pouco a cada passo, e há pressa para chegar ao outro lado.','neutra'],
-  ['Galpão armadilhado','Quem montou as armadilhas já se foi, mas os mecanismos ainda esperam um pé desatento.','hostil'],
-  ['Silo desmoronando','Estruturas rangem enquanto grãos escorrem, e quem entra pode ficar soterrado.','neutra'],
-  ['Máquina enlouquecida','Um maquinário antigo religado por acaso trabalha sem parar e destrói o que estiver por perto.','hostil'],
-  ['Subsolo alagado','Um porão de água turva esconde o que o grupo procura, e o nível sobe devagar.','neutra'],
-  ['Torre de rádio','Uma torre tomada por trepadeiras ainda emite um sinal que alguém precisa desligar ou captar.','neutra'],
-  ['Mina abandonada','Túneis escuros, gases e vigas podres guardam materiais valiosos.','neutra'],
-  ['Barragem rachada','Uma barragem pequena vaza por uma fresta nova, e a vila de baixo ainda não sabe.','neutra'],
-  ['Caminhão tombado','Um caminhão bloqueia a estrada, e na carga há mais do que mercadoria.','neutra'],
-  ['Estufa descontrolada','Plantas cresceram além de qualquer controle e fecharam todas as saídas.','hostil'],
-  ['Cerca eletrificada','Um cercado ainda recebe energia de um gerador e fecha a passagem para o que o grupo precisa alcançar.','hostil'],
-  ['Casarão em ruínas','Andares apodrecidos guardam segredos e uma queda em cada degrau.','neutra']
- ],
- at:{
-  c:[['C','Estilhaços','Causa {d} de dano à Saúde a um alvo.'],['CC','Desabamento','Causa {d} de dano à Saúde a quem estiver no ponto e bloqueia a passagem até haver A.'],['CC','Falha de apoio','Um Infectado cai: perde a ação da próxima rodada, a menos que alguém gaste B para segurá-lo.'],['CCC','Colapso em cadeia','Todos perdem 1A já investido em objetivos de travessia.'],['CCCC','Estrutura cede','Consequência dramática: parte do local deixa de ser acessível.']],
-  a:[['AA','Apoio firme','Uma estrutura se mostra segura: ações de travessia custam B a menos nesta rodada.'],['AAA','Atalho','O grupo encontra um caminho mais curto: a Fuga custa 2A a menos.'],['AAA','Achado útil','Um recurso aparece no meio dos destroços.'],['AAAA','Mecanismo desativado','Um perigo do local é desligado até o fim do Conflito.']],
-  b:[['BB','Ranger de aviso','Quem agir sem cautela sofre +1 de dano na próxima ativação com C.'],['BBB','Mecanismo oculto','Revele uma nova ativação do Conflito.'],['BBCC','Trava de segurança','O local se fecha: a Fuga custa 2A a mais.'],['BBB','Vazamento','Adicione 1 Dado 6 à pilha de dados do Conflito.']]
- },
- ob:[['Atravessar o local','Chegar ao outro lado e seguir viagem.'],['Desativar o perigo','Parar o mecanismo ou cortar a fonte do problema.'],['Estabilizar a estrutura','Consertar o suficiente para que ninguém mais se machuque.'],['Retirar o que importa','Pegar o objeto-alvo e sair antes que tudo desabe.']],
- os:[['Inspecionar a estrutura','Imediato. Revela os pontos fracos do local.'],['Improvisar um apoio','Imediato. Uma ativação de queda perde 1 de dano.'],['Achar o painel de controle','Imediato. Permite desligar um perigo mais tarde.'],['Resgatar um item','Após a cena. Rende um equipamento ou recurso.'],['Abrir uma passagem lateral','Um corredor fica livre por 1 rodada.'],['Cortar a energia','Imediato. Neutraliza ativações elétricas do Conflito.']],
- cd:[['Estrutura fraca','Ações de peso (carregar ou escalar com carga) exigem B para render mais de 1A.'],['Gás acumulado','Faíscas e chamas adicionam 1 Dado 6 à pilha do Conflito.'],['Escuridão total','Ações de precisão custam B extra enquanto não houver luz.'],['Maquinário barulhento','Comunicação entre os Infectados custa B enquanto o mecanismo estiver ligado.']],
- am:[['Gás acumulado','Um vazamento sutil atrapalha quem respira.','neutra','Ventilar ou vedar a fonte.'],['Fiação solta','Uma descarga ocasional atinge quem encosta.','hostil','Isolar ou cortar a energia.'],['Fauna escondida','Algo mora dentro e reage ao barulho.','hostil','Afastar ou isolar.'],['Chão podre','Um trecho cede sob o peso.','neutra','Escorar ou evitar.'],['Alarme sonoro','Um alarme chama atenção de quem estiver por perto.','hostil','Desligar.'],['Fogo pequeno','Começou sem alarde e só cresce.','hostil','Abafar.']]
-},
-{id:'fenomeno',nm:'Fenômenos',x:'A Assimilação em ação: névoas, esporos, ecos e mudanças.',cor:'ass',
- c:[
-  ['Névoa que confunde','Uma névoa colorida muda a percepção de quem entra, e as direções deixam de fazer sentido.','hostil'],
-  ['Chuva de esporos','Esporos caem do céu em ondas, grudam na roupa e dão sonhos ruins.','hostil'],
-  ['Eco que copia','Um lugar repete cada som com atraso, e as repetições começam a dar ordens.','hostil'],
-  ['Maré de raízes','Raízes brotam do chão e tentam agarrar tudo que se mexe, seguindo um ritmo estranho.','hostil'],
-  ['Calor que pulsa','O ar esquenta e esfria em ondas regulares, e o corpo acompanha sem querer.','neutra'],
-  ['Sonho coletivo','Todos adormecem de repente e compartilham o mesmo sonho, onde é preciso achar a saída.','neutra'],
-  ['Luz que chama','Uma luz tênue atrai os mais cansados para uma clareira de onde ninguém voltou inteiro.','hostil'],
-  ['Silêncio denso','Num trecho onde nenhum som se propaga, só gestos e confiança permitem se comunicar.','neutra'],
-  ['Gravidade solta','Objetos e pessoas flutuam por instantes, em intervalos imprevisíveis, dentro de uma área.','neutra'],
-  ['Floração súbita','Flores de cheiro doce desabrocham por toda parte e deixam quem as respira estranhamente feliz.','amigável'],
-  ['Onda de calor vivo','Uma onda quente corre pelo chão, vinda de um ponto da terra que bateu forte.','hostil'],
-  ['Rastro de vozes','Vozes de gente que passou por ali há muito tempo falam na mata, pedindo algo ao grupo.','neutra']
- ],
- at:{
-  c:[['C','Ardência','Causa {d} de dano à Saúde a um alvo por contato com o fenômeno.'],['CC','Desorientar','Um Infectado perde o rumo: suas ações de deslocamento custam B extra.'],['CC','Sussurros','Um Infectado fica abalado: a próxima ação dele gasta B extra para render A.'],['CCC','Contágio','Um Infectado faz um Teste de Assimilação, conforme as regras do livro.'],['CCCC','Maré do fenômeno','O fenômeno cresce: adicione 2 Dados 6 à pilha do Conflito.']],
-  a:[['AA','Janela de calma','O fenômeno cede por um instante: cancele a próxima ativação com C.'],['AAA','Padrão revelado','Alguém percebe o ritmo do fenômeno: objetivos de conter ou atravessar custam 2A a menos.'],['AAA','Abrigo','Surge um refúgio natural: a Fuga custa 2A a menos.'],['AAAA','Sintonia','Um Infectado se alinha com o fenômeno e ganha uma percepção que muda o rumo da cena.']],
-  b:[['BB','Ressoar','Revele o próximo efeito antes que ele aconteça.'],['BBB','Ampliar','Repita uma ativação já cumprida sem pagar o custo de novo.'],['BBCC','Distorcer','Troque de lugar dois alvos na cena.'],['BBB','Cobrir o caminho','Adicione 1 Dado 6 à pilha do Conflito.']]
- },
- ob:[['Atravessar o fenômeno','Passar pelo meio e sair do outro lado.'],['Conter o fenômeno','Impedir que ele se espalhe mais.'],['Dispersar o fenômeno','Fazer a origem recuar ou se enfraquecer.'],['Seguir até a origem','Descobrir de onde ele vem e encerrar na fonte.']],
- os:[['Registrar o padrão','Imediato. Revela o ritmo do fenômeno e facilita um objetivo.'],['Proteger um aliado','Impede que ele seja alvo de uma ativação com C.'],['Colher uma amostra','Após a cena. Rende material útil ou perigoso.'],['Marcar o limite','Imediato. Define até onde o fenômeno alcança.'],['Reunir o grupo','Imediato. Anula penalidades de desorientação por 1 rodada.'],['Anotar o que se vê','Após a cena. Rende uma pista narrativa sobre a origem.']],
- cd:[['Distorção sensorial','Um sentido aleatório de cada Infectado falha: ações que dependem dele custam B extra.'],['Ritmo do fenômeno','A cada 2 rodadas, o(a) Assimilador(a) adiciona um Dado 6 à pilha do Conflito até que o padrão seja registrado.'],['Contágio ao toque','Contato físico entre Infectados transmite a pressão do fenômeno ao aliado.'],['Memória embaralhada','Quem investir B para ajudar um aliado esquece algo relevante ao fim da cena.']],
- am:[['Sombra que segue','Algo vago acompanha o grupo, sempre atrás.','hostil','Encarar ou perder de vista.'],['Voz persuasiva','Uma voz propõe trocas tentadoras.','hostil','Recusar com firmeza.'],['Planta ansiosa','Uma vegetação tenta se agarrar ao grupo.','hostil','Cortar ou queimar.'],['Visitante curioso','Um ser inofensivo, atraído pelo fenômeno, atrapalha.','neutra','Afastar com jeito.'],['Calor errático','A temperatura muda sem aviso.','neutra','Achar o ponto frio.'],['Memória invasiva','Lembranças alheias invadem a cabeça de um Infectado.','hostil','Resistir ou externalizar.']]
-}
-];
-var TBYT={}; TIPOS.forEach(function(t){TBYT[t.id]=t;});
-
-/* ================= CONFLITOS: GERAÇÃO ================= */
+/* ================= AMEAÇAS: GERAÇÃO ================= */
 function rint(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function pickU(arr,used){
   var free=arr.filter(function(x){return !used[x[1]];});
@@ -1096,88 +1269,68 @@ function fmtAtiv(a,g){
   return {cost:a[0],nome:a[1],texto:a[2].replace('{d}',String(dano))};
 }
 function ordemAtiv(x){ var c=/C/.test(x.cost), a=/A/.test(x.cost), b=/B/.test(x.cost); return c&&!a&&!b?0:(a&&!c&&!b?2:1); }
-function genAtiv(tp,g,intn,used,extraN,wantB){
-  var p=tp.at, out=[];
-  out.push(fmtAtiv(pickU(p.c,used),g));
-  out.push(fmtAtiv(pickU(p.a,used),g));
+function genAtiv(pool,g,intn,extraN){
+  var used={}, out=[];
+  out.push(fmtAtiv(pickU(pool.c,used),g));
+  out.push(fmtAtiv(pickU(pool.a,used),g));
   var wt={hostil:[5,2,3],neutra:[3,3,4],'amigável':[2,4,4]}[intn]||[3,3,4];
   for(var i=0;i<extraN;i++){
-    var kinds=['c','a','b'], x=Math.random()*(wt[0]+wt[1]+wt[2]), k='b';
-    if(wantB&&i===0) k='b'; else k=x<wt[0]?'c':(x<wt[0]+wt[1]?'a':'b');
-    out.push(fmtAtiv(pickU(p[k],used),g));
+    var x=Math.random()*(wt[0]+wt[1]+wt[2]), k=x<wt[0]?'c':(x<wt[0]+wt[1]?'a':'b');
+    out.push(fmtAtiv(pickU(pool[k],used),g));
   }
   out.sort(function(a,b){return ordemAtiv(a)-ordemAtiv(b);});
   return out;
 }
-function genObjs(cf){
-  var g=cf.g, base=cf.climax?g.cli:g.sim, used={}, out=[];
-  var a=pickU(cf.tp.ob,used), b=pickU(cf.tp.ob,used);
-  out.push({nome:a[0],desc:a[1],n:base[0],por:base[1]});
-  out.push({nome:b[0],desc:b[1],n:base[0]+1,por:Math.max(1,base[1]-(g.id>2?1:0))});
-  out.push({nome:'Fuga',desc:'Voltar ao ponto de partida sem criar novos problemas.',n:0,por:g.id+1,fuga:true});
+function genTracos(g){
+  var n=g.id>=3?2:(Math.random()<.6?1:0), used={}, out=[];
+  for(var i=0;i<n;i++){ var t=pickU(TRACOS,used); out.push({nome:t[0],texto:t[1]}); }
   return out;
 }
-function genSecs(cf){
-  var used={}, out=[], g=cf.g;
-  for(var i=0;i<3;i++){
-    var s=pickU(cf.tp.os,used);
-    out.push({nome:s[0],desc:s[1],n:2+g.id+rint(0,2),por:Math.random()<.4?1:0,ind:/Individual/.test(s[1])});
-  }
+function genSecs(){
+  var used={}, out=[];
+  for(var i=0;i<2;i++){ var s=pickU(SECS,used); out.push({nome:s[0],base:s[1],texto:s[2]}); }
   return out;
 }
-function genConds(cf){
-  var used={}, pool=cf.tp.cd.concat(GENCOND), out=[], n=cf.g.id>=3?2:1;
-  for(var i=0;i<n;i++){ var c=pickU(pool,used); out.push({nome:c[0],texto:c[1]}); }
-  return out;
+function genPrincipais(a){
+  var g=a.g;
+  return [
+    {nome:'Neutralizar a ameaça',n:Math.ceil((g.sim[0]+g.cli[0])/2),por:Math.max(1,Math.round(g.sim[1]*.6)),desc:'Impedir que a ameaça continue agindo, de forma letal ou não.'},
+    {nome:'Afugentar',n:g.sim[0]+1,por:Math.max(1,Math.round(g.sim[1]*.4)),desc:'Fazer a ameaça recuar ou ir embora, sem encerrá-la de vez.'},
+    {nome:'Fuga',n:2*g.id+2,por:0,fuga:true,desc:'Voltar ao ponto de partida sem criar novos problemas. Cada vez que a ameaça se cansar ou perder força, o custo cai 1A por Infectado.'}
+  ];
 }
-function genAmeacas(cf,count){
-  var g=cf.g, usedN={}, out=[];
-  for(var i=0;i<count;i++){
-    var a=pickU(cf.tp.am,usedN);
-    var ative=genAtiv(cf.tp,g,a[2],cf.usedAtiv,g.id>=3?1:0,false);
-    out.push({nome:a[0],desc:a[1],int:a[2],neut:a[3],dados:comporDados(g.ab+g.ap*cf.n,a[2]),ativ:ative,custoNeut:g.id+3});
-  }
-  return out;
+function gerarAmeaca(o){
+  var cat=o.cat==='rand'?pick(CATS):CBY[o.cat], c=pick(cat.l), g=GR[o.grau-1];
+  var intn=(o.int&&o.int!=='auto')?o.int:c[2];
+  var a={cat:cat,nome:c[0],desc:c[1],neutDesc:c[3],int:intn,g:g,n:o.n,dif:DIFS[o.dif],final:!!o.final,pool:POOLS[cat.pool]};
+  a.dados=comporDados(g.ab+g.ap*o.n,intn);
+  a.ativ=genAtiv(a.pool,g,intn,[1,1,2,2][g.id-1]+(a.final?1:0));
+  a.tracos=genTracos(g);
+  a.neutN=g.neut+(a.tracos.some(function(t){return t.nome==='Resistente';})?2:0)-(a.tracos.some(function(t){return t.nome==='Ferida';})?1:0);
+  a.neutPor=g.id>=2?(g.id>=4?2:1):0;
+  a.especial=pick(ESPECIAIS); a.conseq=pick(CONSEQS);
+  a.secs=genSecs();
+  a.princ=a.final?genPrincipais(a):null;
+  a.xp=Math.min(6,[1,2,2,3][g.id-1]+(a.final?2:0)+rint(0,1));
+  return a;
 }
-function genXp(cf){
-  var x=[1,2,2,3][cf.g.id-1]+rint(0,1)+(cf.climax?2:0)+(cf.ame.length?0:0);
-  return Math.max(1,Math.min(6,x));
-}
-function ameCount(mode,cf){
-  if(mode==='0') return 0; if(mode==='1') return 1; if(mode==='2') return 2;
-  var r=Math.random(), n=r<.4?0:(r<.85?1:2);
-  if(cf.climax&&n<1) n=1;
-  return n;
-}
-function gerarConflito(o){
-  var tp=o.tipo==='rand'?pick(TIPOS):TBYT[o.tipo], co=pick(tp.c);
-  var intn=(o.int&&o.int!=='auto')?o.int:co[2];
-  var cf={tp:tp,co:co,g:GR[o.grau-1],n:o.n,dif:DIFS[o.dif],climax:!!o.climax,int:intn,onde:pick(LOCAIS),jogo:pick(JOGO),det:pick(DET),usedAtiv:{},ame:[],opts:o};
-  cf.dados=comporDados(cf.g.cb+cf.g.cp*cf.n,intn);
-  cf.ativ=genAtiv(tp,cf.g,intn,cf.usedAtiv,[1,2,2,3][cf.g.id-1],false);
-  cf.princ=genObjs(cf); cf.sec=genSecs(cf); cf.cond=genConds(cf);
-  cf.ame=genAmeacas(cf,ameCount(o.ame,cf));
-  cf.xp=genXp(cf);
-  return cf;
-}
-function cfTexto(cf){
-  function d(x){return [x.d2?x.d2+'× Dado 2':'',x.d1?x.d1+'× Dado 1':'',x.d6?x.d6+'× Dado 6':''].filter(Boolean).join(', ');}
-  function cs(o){return o.fuga?(o.por+'A por Infectado'):(o.n+'A (+'+o.por+'A por Infectado além do primeiro)');}
+function diceTxt(x){return [x.d2?x.d2+'× Dado 2':'',x.d1?x.d1+'× Dado 1':'',x.d6?x.d6+'× Dado 6':''].filter(Boolean).join(', ');}
+function ameacaTexto(a){
   var L=[];
-  L.push('CONFLITO: '+cf.co[0]+' ('+cf.tp.nm+', '+cf.g.nm+', '+cf.n+(cf.n===1?' Infectado':' Infectados')+', intenção '+INTS[cf.int].toLowerCase()+(cf.climax?', clímax':'')+')');
-  L.push(cf.co[1]); L.push('Onde: '+cf.onde+'. Em jogo: '+cf.jogo+'. Detalhe: '+cf.det+'.');
-  L.push('Dados do Conflito: '+d(cf.dados)+(cf.dif.ex?(' (+'+cf.dif.ex+' Dado 2 rolado e não mantido, dificuldade '+cf.dif.nm+')'):''));
-  L.push('Ativações: '+cf.ativ.map(function(a){return a.cost+' '+a.nome+' ('+a.texto+')';}).join(' | '));
-  L.push('Objetivos principais: '+cf.princ.map(function(o){return o.nome+' '+cs(o);}).join(' | '));
-  L.push('Objetivos secundários: '+cf.sec.map(function(o){return o.nome+' '+o.n+'A'+(o.por?' (+'+o.por+'A por Infectado além do primeiro)':'');}).join(' | '));
-  L.push('Condicionantes: '+cf.cond.map(function(c){return c.nome+' ('+c.texto+')';}).join(' | '));
-  cf.ame.forEach(function(a){L.push('Ameaça: '+a.nome+' ('+INTS[a.int].toLowerCase()+'). Dados: '+d(a.dados)+'. Ativações: '+a.ativ.map(function(x){return x.cost+' '+x.nome;}).join(', ')+'. Neutralizar: '+a.custoNeut+'A ('+a.neut+')');});
-  L.push('Recompensa: '+cf.xp+' de experiência.');
+  L.push('AMEAÇA: '+a.nome+' ('+a.cat.nm+', '+a.g.nm+', intenção '+INTS[a.int].toLowerCase()+(a.final?', ameaça final':'')+')');
+  L.push(a.desc);
+  L.push('Dados: '+diceTxt(a.dados)+(a.dif.ex?(' (+'+a.dif.ex+' Dado 2 rolado e não mantido, dificuldade '+a.dif.nm+')'):'')+'. Para '+a.n+(a.n===1?' Infectado.':' Infectados.'));
+  if(a.tracos.length) L.push('Traços: '+a.tracos.map(function(t){return t.nome+' ('+t.texto+')';}).join(' | '));
+  L.push('Ativações: '+a.ativ.map(function(x){return x.cost+' '+x.nome+' ('+x.texto+')';}).join(' | '));
+  L.push('Neutralização: '+a.neutN+'A'+(a.neutPor?(' (+'+a.neutPor+'A por Infectado além do primeiro)'):'')+'. '+a.neutDesc+' Especial: '+a.especial+' '+a.conseq);
+  L.push('Objetivos secundários: '+a.secs.map(function(s){return s.nome+' '+s.base+'A ('+s.texto+')';}).join(' | '));
+  if(a.princ) L.push('Objetivos principais: '+a.princ.map(function(o){return o.nome+' '+o.n+'A'+(o.por?(' (+'+o.por+'A por Infectado além do primeiro)'):' por Infectado');}).join(' | '));
+  L.push('Se virar personagem: Ficha de Infectado com '+(a.g.id===1?'a experiência inicial':a.g.x)+'. Recompensa sugerida: '+a.xp+' de experiência.');
   return L.join('\n');
 }
 
-/* ================= CONFLITOS: INTERFACE ================= */
-var CP={tipo:'rand',grau:2,n:3,dif:0,climax:false,int:'auto',ame:'auto'}, CF=null;
+/* ================= AMEAÇAS: INTERFACE ================= */
+var AP={cat:'rand',grau:2,n:3,dif:0,int:'auto',final:false,qtd:1}, AR=[];
 function costNode(spec){
   var el=h('span',{class:'cost'});
   var m=/^(\d+)A$/.exec(spec);
@@ -1201,102 +1354,92 @@ function ativNode(a){
   return h('li',{class:'ativ'},costNode(a.cost),h('div',null,h('strong',null,a.nome),h('p',null,a.texto)));
 }
 function objCost(o){
-  if(o.fuga) return h('span',{class:'ocost'},costNode(o.por+'A'),h('span',{class:'hint'},'por Infectado'));
+  if(o.fuga) return h('span',{class:'ocost'},costNode(o.n+'A'),h('span',{class:'hint'},'por Infectado'));
   return h('span',{class:'ocost'},costNode(o.n+'A'),h('span',{class:'hint'},'+'+o.por+'A por Infectado além do primeiro'));
 }
-function fichaNode(cf){
-  var d=cf.dados, g=cf.g;
-  var root=h('article',{class:'ficha t-'+cf.tp.cor});
-  root.append(h('div',{class:'fhead'},artNode(cf.tp.id==='criatura'?'criatura':cf.tp.id,'fart'),
+function fichaAmeaca(a,idx){
+  var g=a.g;
+  var root=h('article',{class:'ficha t-'+a.cat.cor});
+  root.append(h('div',{class:'fhead'},artNode(a.cat.art,'fart'),
     h('div',{class:'ftxt'},
-      h('span',{class:'lbl'},cf.tp.nm+' · '+g.nm+(cf.climax?' · clímax':'')),
-      h('h2',null,cf.co[0]),
-      h('p',null,cf.co[1]),
-      h('div',{class:'meta'},
-        h('span',{class:'tag'},'Intenção: '+INTS[cf.int].toLowerCase()),
-        h('span',{class:'tag'},cf.n+(cf.n===1?' Infectado':' Infectados')),
-        h('span',{class:'tag'},cf.dif.nm),
-        h('span',{class:'tag'},'Recompensa: '+cf.xp+' XP')))));
-  root.append(h('div',{class:'cena'},
-    h('div',null,h('span',{class:'lbl'},'Onde'),h('p',null,cf.onde)),
-    h('div',null,h('span',{class:'lbl'},'Em jogo'),h('p',null,cf.jogo)),
-    h('div',null,h('span',{class:'lbl'},'Detalhe'),h('p',null,cf.det)),
-    h('button',{type:'button',class:'btn sm',onclick:function(){cf.onde=pick(LOCAIS);cf.jogo=pick(JOGO);cf.det=pick(DET);mostrarFicha();}},'Trocar cenário')));
-  var dsec=h('section',{class:'fsec'},secHead('Dados do Conflito',function(){cf.dados=comporDados(g.cb+g.cp*cf.n,cf.int);mostrarFicha();}),
-    diceNode(d,cf.dif.ex),
-    h('p',{class:'hint'},'Valor dos dados: Dado 6 vale 1, Dado 1 vale 2 e Dado 2 vale 3. Total: '+(g.cb+g.cp*cf.n)+' ('+g.cb+' + '+g.cp+' por Infectado). O(a) Assimilador(a) rola e mantém todos os dados do Conflito.'+(cf.dif.ex?(' Na dificuldade '+cf.dif.nm+', role '+cf.dif.ex+' Dado 2 extra, sem manter.'):'')));
-  root.append(dsec);
-  root.append(h('section',{class:'fsec'},secHead('Ativações do Conflito',function(){cf.usedAtiv={};cf.ativ=genAtiv(cf.tp,g,cf.int,cf.usedAtiv,[1,2,2,3][g.id-1],false);cf.ame.forEach(function(a){a.ativ.forEach(function(x){cf.usedAtiv[x.nome]=1;});});mostrarFicha();}),
-    h('ul',{class:'ativs'},cf.ativ.map(ativNode)),
-    h('p',{class:'hint'},'Sempre há ao menos uma ativação só com C e uma só com A. Dano em pontos de Saúde, sugerido para este grau.')));
-  root.append(h('section',{class:'fsec'},secHead('Objetivos principais',function(){cf.princ=genObjs(cf);mostrarFicha();}),
-    h('ul',{class:'objs'},cf.princ.map(function(o){return h('li',null,h('strong',null,o.nome),objCost(o),h('p',null,o.desc));}))));
-  root.append(h('section',{class:'fsec'},secHead('Objetivos secundários',function(){cf.sec=genSecs(cf);mostrarFicha();}),
-    h('ul',{class:'objs'},cf.sec.map(function(o){return h('li',null,h('strong',null,o.nome),h('span',{class:'ocost'},costNode(o.n+'A'),o.por?h('span',{class:'hint'},'+'+o.por+'A por Infectado além do primeiro'):null),h('p',null,o.desc));}))));
-  root.append(h('section',{class:'fsec'},secHead('Condicionantes',function(){cf.cond=genConds(cf);mostrarFicha();}),
-    h('ul',{class:'conds'},cf.cond.map(function(c){return h('li',null,h('strong',null,c.nome),h('p',null,c.texto));}))));
-  var ames=h('section',{class:'fsec'},secHead('Ameaças',function(){cf.ame=genAmeacas(cf,ameCount(CP.ame,cf));mostrarFicha();}));
-  if(!cf.ame.length) ames.append(h('p',{class:'hint'},'Sem ameaças neste conflito: todos os elementos têm a mesma intenção. Use “Sortear de novo” para tentar com ameaças.'));
-  cf.ame.forEach(function(a){
-    ames.append(h('div',{class:'ame'},
-      h('div',{class:'amh'},h('strong',null,a.nome),h('span',{class:'tag'},'Intenção '+INTS[a.int].toLowerCase())),
+      h('span',{class:'lbl'},a.cat.nm+' · '+g.nm+(a.final?' · ameaça final':'')),
+      h('h2',null,a.nome),
       h('p',null,a.desc),
-      h('div',{class:'row'},h('span',{class:'lbl'},'Dados da ameaça'),diceNode(a.dados)),
-      h('ul',{class:'ativs'},a.ativ.map(ativNode)),
-      h('p',{class:'hint'},'Neutralizar: '+a.custoNeut+'A. '+a.neut+' A neutralização pode ser parcial.')));
-  });
-  root.append(ames);
+      h('div',{class:'meta'},
+        h('span',{class:'tag'},'Intenção: '+INTS[a.int].toLowerCase()),
+        h('span',{class:'tag'},a.n+(a.n===1?' Infectado':' Infectados')),
+        h('span',{class:'tag'},a.dif.nm),
+        h('span',{class:'tag'},'Recompensa: '+a.xp+' XP')))));
+  root.append(h('section',{class:'fsec'},secHead('Dados da ameaça',function(){a.dados=comporDados(g.ab+g.ap*a.n,a.int);mostrar();}),
+    diceNode(a.dados,a.dif.ex),
+    h('p',{class:'hint'},'Dado 6 vale 1, Dado 1 vale 2 e Dado 2 vale 3. Total: '+(g.ab+g.ap*a.n)+' ('+g.ab+' + '+g.ap+' por Infectado). A ameaça rola e mantém todos os dados.'+(a.dif.ex?(' Na dificuldade '+a.dif.nm+', role '+a.dif.ex+' Dado 2 extra, sem manter.'):''))));
+  if(a.tracos.length) root.append(h('section',{class:'fsec'},secHead('Traços',function(){a.tracos=genTracos(g);mostrar();}),
+    h('ul',{class:'conds'},a.tracos.map(function(t){return h('li',null,h('strong',null,t.nome),h('p',null,t.texto));}))));
+  root.append(h('section',{class:'fsec'},secHead('Ativações da ameaça',function(){a.ativ=genAtiv(a.pool,g,a.int,[1,1,2,2][g.id-1]+(a.final?1:0));mostrar();}),
+    h('ul',{class:'ativs'},a.ativ.map(ativNode)),
+    h('p',{class:'hint'},'Sempre há ao menos uma ativação só com C e uma só com A. C são desfavoráveis aos Infectados e A são favoráveis. Dano em pontos de Saúde, sugerido para este grau.')));
+  root.append(h('section',{class:'fsec'},secHead('Neutralização',function(){a.especial=pick(ESPECIAIS);a.conseq=pick(CONSEQS);mostrar();}),
+    h('div',{class:'neut'},costNode(a.neutN+'A'),h('span',{class:'hint'},a.neutPor?('+'+a.neutPor+'A por Infectado além do primeiro'):'custo fixo')),
+    h('p',null,h('strong',null,'Como: '),a.neutDesc+' A neutralização pode ser parcial e não precisa ser letal.'),
+    h('p',null,h('strong',null,'Especial: '),a.especial),
+    h('p',null,h('strong',null,'Consequência: '),a.conseq.replace(/^Ao ser neutralizada, /,'').replace(/^./,function(c){return c.toUpperCase();}))));
+  root.append(h('section',{class:'fsec'},secHead('Objetivos secundários',function(){a.secs=genSecs();mostrar();}),
+    h('ul',{class:'objs'},a.secs.map(function(s){return h('li',null,h('strong',null,s.nome),h('span',{class:'ocost'},costNode(s.base+'A')),h('p',null,s.texto));}))));
+  if(a.princ) root.append(h('section',{class:'fsec'},secHead('Objetivos principais (ameaça final)'),
+    h('ul',{class:'objs'},a.princ.map(function(o){return h('li',null,h('strong',null,o.nome),objCost(o),h('p',null,o.desc));})),
+    h('p',{class:'hint'},'Quando a ameaça é a única geradora do Conflito, ela vira o próprio Conflito: as ativações dela passam a ser as ativações do Conflito.')));
+  root.append(h('section',{class:'fsec'},h('p',{class:'hint'},'Se a ameaça ganhar importância e virar personagem, monte uma Ficha de Infectado com '+(g.id===1?'a experiência da ficha inicial':g.x)+', priorizando o conceito e as ativações dela.'),
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn pri',onclick:function(){addLog('Ameaça',a.nome+' ('+a.cat.nm+', '+g.nm+')',ameacaTexto(a));}},'Enviar ao diário'),
+      h('button',{type:'button',class:'btn',onclick:function(){copyText(ameacaTexto(a),'Ameaça copiada.');}},'Copiar'),
+      h('button',{type:'button',class:'btn',onclick:function(){AR[idx]=gerarAmeaca(AP.cat==='rand'?{cat:a.cat.id,grau:AP.grau,n:AP.n,dif:AP.dif,int:AP.int,final:AP.final}:AP);mostrar();}},'Outra desta categoria'))));
   return root;
 }
-function mostrarFicha(){
-  var box=$('cf-out'); if(!box) return;
+function mostrar(){
+  var box=$('am-out'); if(!box) return;
   box.textContent='';
-  if(!CF){ box.append(h('div',{class:'empty'},artNode('vazio','eart'),h('h3',null,'Nenhum conflito ainda'),h('p',null,'Escolha o tipo, o grau e o número de Infectados e toque em Gerar conflito.'))); return; }
-  box.append(fichaNode(CF));
-  box.append(h('div',{class:'row',style:'margin-top:14px'},
-    h('button',{type:'button',class:'btn pri',onclick:function(){addLog('Conflito',CF.co[0]+' ('+CF.tp.nm+', '+CF.g.nm+')',cfTexto(CF));}},'Enviar ao diário'),
-    h('button',{type:'button',class:'btn',onclick:function(){copyText(cfTexto(CF),'Conflito copiado.');}},'Copiar')));
+  if(!AR.length){ box.append(h('div',{class:'empty'},artNode('vazio','eart'),h('h3',null,'Nenhuma ameaça ainda'),h('p',null,'Escolha a categoria, o grau e o número de Infectados, e toque em Gerar ameaça.'))); return; }
+  AR.forEach(function(a,i){ box.append(fichaAmeaca(a,i)); });
 }
-function gerarAgora(){ CF=gerarConflito(CP); mostrarFicha(); var o=$('cf-out'); if(o&&o.scrollIntoView&&window.innerWidth<700){try{o.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}} }
-function renderConflitos(){
-  var root=$('v-conflitos'); root.textContent='';
-  var tipos=h('div',{class:'tipos'},[{id:'rand',nm:'Qualquer',x:'Sortear o tipo',cor:'ink'}].concat(TIPOS).map(function(t){
-    var b=h('button',{type:'button',class:'tipo t-'+(t.cor||'ink'),'aria-pressed':String(CP.tipo===t.id),onclick:function(){CP.tipo=t.id;renderConflitos();}},
-      t.id==='rand'?h('div',{class:'art rand'},h('span',null,'?')):artNode(t.id),
+function gerarAgora(){
+  AR=[]; for(var i=0;i<AP.qtd;i++) AR.push(gerarAmeaca(AP));
+  mostrar();
+  var o=$('am-out'); if(o&&o.scrollIntoView&&window.innerWidth<700){try{o.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}}
+}
+function renderAmeacas(){
+  var root=$('v-ameacas'); root.textContent='';
+  var tiles=[{id:'rand',nm:'Qualquer',x:'Sortear a categoria',cor:'ink'}].concat(CATS).map(function(t){
+    return h('button',{type:'button',class:'tipo t-'+(t.cor||'ink'),'aria-pressed':String(AP.cat===t.id),onclick:function(){AP.cat=t.id;renderAmeacas();}},
+      t.id==='rand'?h('div',{class:'art rand'},h('span',null,'?')):artNode(t.art),
       h('strong',null,t.nm),h('span',{class:'hint'},t.x));
-    return b;
-  }));
+  });
   var graus=h('div',{class:'chips'},GR.map(function(g){
-    return h('button',{type:'button',class:'chip','aria-pressed':String(CP.grau===g.id),title:g.x,onclick:function(){CP.grau=g.id;renderConflitos();}},g.nm);
+    return h('button',{type:'button',class:'chip','aria-pressed':String(AP.grau===g.id),title:g.x,onclick:function(){AP.grau=g.id;renderAmeacas();}},g.nm);
   }));
-  var gsel=GR[CP.grau-1];
-  var nsel=h('select',{id:'cp-n','aria-label':'Número de Infectados'},[1,2,3,4,5,6].map(function(n){return h('option',{value:n},n+(n===1?' Infectado':' Infectados'));})); nsel.value=String(CP.n);
-  nsel.addEventListener('change',function(){CP.n=+nsel.value;});
-  var dsel=h('select',{id:'cp-d','aria-label':'Dificuldade'},DIFS.map(function(d){return h('option',{value:d.id},d.nm+' ('+d.x+')');})); dsel.value=String(CP.dif);
-  dsel.addEventListener('change',function(){CP.dif=+dsel.value;});
-  var isel=h('select',{id:'cp-i','aria-label':'Intenção'},[['auto','Automática'],['hostil','Hostil'],['neutra','Neutra'],['amigável','Amigável']].map(function(p){return h('option',{value:p[0]},p[1]);})); isel.value=CP.int;
-  isel.addEventListener('change',function(){CP.int=isel.value;});
-  var asel=h('select',{id:'cp-a','aria-label':'Ameaças'},[['auto','Automático'],['0','Nenhuma'],['1','Uma'],['2','Duas']].map(function(p){return h('option',{value:p[0]},p[1]);})); asel.value=CP.ame;
-  asel.addEventListener('change',function(){CP.ame=asel.value;});
-  var cl=h('input',{type:'checkbox',id:'cp-c'}); cl.checked=CP.climax; cl.addEventListener('change',function(){CP.climax=cl.checked;});
+  function sel(id,label,opts,val,onch){
+    var s=h('select',{id:id,'aria-label':label},opts.map(function(p){return h('option',{value:p[0]},p[1]);})); s.value=String(val);
+    s.addEventListener('change',function(){onch(s.value);});
+    return h('label',{class:'field','for':id},h('span',{class:'lbl'},label),s);
+  }
+  var fin=h('input',{type:'checkbox',id:'am-fin'}); fin.checked=AP.final; fin.addEventListener('change',function(){AP.final=fin.checked;});
   root.append(h('div',{class:'panel'},
-    h('div',{class:'field'},h('span',{class:'lbl'},'Tipo de conflito'),tipos),
-    h('div',{class:'field'},h('span',{class:'lbl'},'Grau de progressão dos Infectados · '+gsel.x),graus),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Categoria da ameaça'),h('div',{class:'tipos tipos-sm'},tiles)),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Grau de progressão dos Infectados · '+GR[AP.grau-1].x),graus),
     h('div',{class:'cpgrid'},
-      h('label',{class:'field','for':'cp-n'},h('span',{class:'lbl'},'Infectados'),nsel),
-      h('label',{class:'field','for':'cp-d'},h('span',{class:'lbl'},'Dificuldade'),dsel),
-      h('label',{class:'field','for':'cp-i'},h('span',{class:'lbl'},'Intenção do conflito'),isel),
-      h('label',{class:'field','for':'cp-a'},h('span',{class:'lbl'},'Ameaças'),asel)),
-    h('label',{class:'check','for':'cp-c'},cl,'Conflito de clímax (fim de um arco ou desafio extraordinário)'),
+      sel('am-n','Infectados',[1,2,3,4,5,6].map(function(n){return [n,n+(n===1?' Infectado':' Infectados')];}),AP.n,function(v){AP.n=+v;}),
+      sel('am-d','Dificuldade',DIFS.map(function(d){return [d.id,d.nm+' ('+d.x+')'];}),AP.dif,function(v){AP.dif=+v;}),
+      sel('am-i','Intenção',[['auto','Automática'],['hostil','Hostil'],['neutra','Neutra'],['amigável','Amigável']],AP.int,function(v){AP.int=v;}),
+      sel('am-q','Quantas ameaças',[[1,'Uma'],[2,'Duas'],[3,'Três']],AP.qtd,function(v){AP.qtd=+v;})),
+    h('label',{class:'check','for':'am-fin'},fin,'Ameaça final (a ameaça é o próprio Conflito, com objetivos principais)'),
     h('div',{class:'row'},
-      h('button',{type:'button',class:'btn pri',onclick:function(){CP.n=+nsel.value;CP.dif=+dsel.value;CP.int=isel.value;CP.ame=asel.value;CP.climax=cl.checked;gerarAgora();}},'Gerar conflito'),
+      h('button',{type:'button',class:'btn pri',onclick:function(){AP.final=fin.checked;gerarAgora();}},'Gerar ameaça'),
       h('span',{class:'legenda'},h('span',{class:'sym sA'},'A'),' Sucesso ',h('span',{class:'sym sB'},'B'),' Adaptação ',h('span',{class:'sym sC'},'C'),' Pressão'))));
-  root.append(h('div',{id:'cf-out',style:'margin-top:16px'}));
-  mostrarFicha();
+  root.append(h('div',{id:'am-out',class:'amlist',style:'margin-top:16px'}));
+  mostrar();
 }
 
 /* ================= ABAS ================= */
-var VIEWS=['baralho','tabelas','oraculos','conflitos','tramas','diario'];
+var VIEWS=['baralho','tabelas','oraculos','ameacas','tramas','diario'];
 function go(v){
   VIEWS.forEach(function(x){
     $('v-'+x).hidden=(x!==v);
@@ -1795,7 +1938,7 @@ load();
 updateBadge();
 resetDeck(); DK.hand=DK.draw.splice(0,3); DK.fresh=true;
 THEMES[0].t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());});
-renderBaralho(); renderTabelas(); renderOraculos(); renderConflitos(); renderTramas();
+renderBaralho(); renderTabelas(); renderOraculos(); renderAmeacas(); renderTramas();
 $('hero').innerHTML=ART.hero;
 document.querySelectorAll('.tab').forEach(function(b){
   b.addEventListener('click',function(){go(b.dataset.v);});
