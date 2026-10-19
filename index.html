@@ -1075,83 +1075,102 @@ var CATS=[
  ['Inquisidores','Interrogam, acusam e queimam quem carrega marcas.','hostil','Desmentir ou escapar.'],
  ['Devotos da Assimilação','Veem os Infectados como sinal divino e cercam o grupo com devoção sufocante.','amigável','Moderar o fervor.']
 ]},
-{id:'criaturas',nm:'Criaturas comuns',x:'Animais sem alteração, mas famintos ou acuados.',art:'animal',cor:'nat',pool:'criatura',l:[
- ['Onça faminta','Um felino grande e magro ronda o acampamento.','hostil','Afugentar com fogo ou barulho.'],
- ['Matilha de cães ferais','Perdeu o medo de gente.','hostil','Dominar o líder da matilha.'],
- ['Javali furioso','Ferido e sem saída, ataca tudo.','neutra','Abrir um caminho de fuga.'],
- ['Cobra no mato alto','Escondida, só reage a quem pisa.','neutra','Afastá-la sem ferir.'],
- ['Jacaré no vau','Vigia a travessia com paciência.','hostil','Atraí-lo para longe.'],
- ['Ursa com filhotes','Defende a cria de qualquer um.','hostil','Recuar e dar espaço.'],
- ['Enxame de abelhas','Reage a fumaça e a movimento.','hostil','Afastar com fumaça.'],
- ['Lobo solitário','Persegue sem se mostrar.','hostil','Encarar e afugentar.'],
- ['Ave de rapina','Ataca de cima e escolhe os mais lentos.','hostil','Proteger-se e espantar.'],
- ['Rebanho em debandada','Disparado pelo susto, não distingue nada.','neutra','Desviar o curso.']
+{id:'animais',nm:'Animais e criaturas',x:'Bichos de verdade, naturais ou mudados pela Assimilação.',art:'animal',artA:'criatura',cor:'nat',pool:'criatura',mut:'fauna',l:[
+ ['Onça-pintada','f','Felino grande e magro que ronda o acampamento ao anoitecer.','hostil','Afugentar com fogo e barulho.',['CC','Bote','Causa {d} de dano à Saúde e prende o alvo ao chão.']],
+ ['Lobo-guará','m','Percorre o campo aberto e vigia o grupo de longe, atento a quem fica para trás.','neutra','Mostrar força sem encurralá-lo.',['C','Cerco','Um Infectado que se afastar do grupo neste turno sofre {d} de dano à Saúde.']],
+ ['Matilha de cães ferais','f','Cães que perderam o medo de gente e caçam em formação.','hostil','Dominar o líder da matilha.',['CC','Ataque coordenado','Causa {d} de dano à Saúde a dois alvos diferentes.']],
+ ['Javali ferido','m','Encurralado e com dor, ataca tudo que se move.','neutra','Abrir um caminho de fuga para ele.',['CC','Investida cega','Causa {d} de dano à Saúde e empurra o alvo para longe.']],
+ ['Jararaca','f','Imóvel entre folhas secas, só reage a quem pisa perto.','neutra','Afastá-la sem tocar.',['C','Picada','Causa {d} de dano à Saúde e deixa o alvo enjoado até o fim da cena.']],
+ ['Jacaré do vau','m','Vigia a travessia do rio com a paciência de quem nunca perde a presa.','hostil','Atraí-lo para longe da passagem.',['CC','Mordida de rolagem','Causa {d} de dano à Saúde e arrasta o alvo para a água.']],
+ ['Ursa com filhotes','f','Defende a cria de qualquer um que chegue perto.','hostil','Recuar devagar e dar espaço.',['CCC','Patada devastadora','Causa {d} de dano à Saúde e derruba o alvo.']],
+ ['Enxame de abelhas','m','Reage a fumaça, barulho e movimento brusco.','hostil','Afastá-lo com fumaça densa.',['CC','Ferroadas em nuvem','Causa {d} de dano à Saúde a todos em alcance curto.']],
+ ['Cardume de piranhas','m','Sente sangue na água e vira uma nuvem de dentes.','hostil','Sair da água ou criar distração rio abaixo.',['CC','Frenesi','Causa {d} de dano à Saúde a quem estiver na água.']],
+ ['Gavião-real','m','Ataca de cima e escolhe sempre o alvo mais isolado.','hostil','Proteger-se e espantá-lo com barulho.',['C','Mergulho','Causa {d} de dano à Saúde ao alvo mais afastado do grupo.']],
+ ['Colônia de morcegos','f','Acorda em revoada quando alguém invade o abrigo.','neutra','Sair sem luz forte e sem barulho.',['CB','Revoada cega','Ações que dependem de enxergar custam 1B a mais neste turno.']],
+ ['Aranha-armadeira','f','Caminha à noite e se esconde em sapatos, caixas e roupas.','neutra','Tirá-la do esconderijo com cuidado.',['C','Picada de emboscada','Causa {d} de dano à Saúde ao primeiro que mexer no esconderijo.']],
+ ['Escorpião-amarelo','m','Pequeno, discreto e perigoso em ninho.','neutra','Afastá-lo com um objeto longo.',['C','Ferrão','Causa {d} de dano à Saúde e deixa o alvo trêmulo até o fim do turno.']],
+ ['Touro bravio','m','Solto e enfurecido por algo que ninguém viu.','hostil','Desviar o foco com um pano ou barulho.',['CC','Chifrada','Causa {d} de dano à Saúde e arremessa o alvo.']],
+ ['Cavalo em pânico','m','Corre sem direção e atropela quem estiver no caminho.','neutra','Acalmar com voz e movimentos lentos.',['CC','Disparada','Causa {d} de dano à Saúde a quem estiver na trilha.']],
+ ['Bando de corvos','m','Segue o grupo e avisa os outros bichos de cada passo.','neutra','Espantar ou ignorar até desistirem.',['B','Grasnado de alerta','As outras ameaças da cena ficam cientes da posição do grupo.']],
+ ['Correição de formigas','f','Fluxo de formigas que devora tudo no caminho.','hostil','Abrir um desvio com fogo ou água.',['CC','Marcha devoradora','Causa {d} de dano à Saúde a quem ficar parado e destrói um item de madeira ou tecido.']],
+ ['Cão abandonado','m','Magro, assustado e fiel a quem lhe dá um pouco de comida.','amigável','Ganhar a confiança com comida e calma.',['A','Abanar o rabo','O animal se aproxima e traz algo útil que encontrou.']],
+ ['Jaguatirica','f','Caça em silêncio, ataca pelas costas e some.','hostil','Encarar de frente e mostrar presença.',['C','Salto pelas costas','Causa {d} de dano à Saúde ao alvo que estiver de costas.']],
+ ['Bando de macacos','m','Agem juntos: roubam, gritam e atiram o que acham.','neutra','Negociar com comida ou assustar o líder.',['CB','Roubo coletivo','Um item de um Infectado é levado para o alto das árvores.']],
+ ['Tamanduá-bandeira','m','Calmo, mas reage com garras enormes se for tocado.','neutra','Contorná-lo sem tocar.',['CC','Abraço defensivo','Causa {d} de dano à Saúde e imobiliza o alvo.']],
+ ['Sucuri','f','Vive enrolada na lama e espera a presa dar o primeiro passo.','hostil','Cortar o laço antes de ser apertado.',['CC','Aperto','Prende o alvo e causa {d} de dano à Saúde a cada rodada, até que alguém invista 1A para soltá-lo.']],
+ ['Poraquê','m','Enguia elétrica que carrega de energia a água ao redor.','hostil','Sair da água ou isolar o corpo.',['CCC','Descarga','Causa {d} de dano à Saúde a todos que estiverem na água.']],
+ ['Mula de carga','f','Teimosa, resistente e leal a quem a trata bem.','amigável','Tratar bem e dar direção firme.',['A','Passo firme','O grupo atravessa o trecho difícil sem custo extra neste turno.']],
+ ['Revoada de urubus','f','Círculos lentos no céu e olhos atentos aos fracos.','neutra','Mostrar vigor e não parecer presa.',['BC','Voo de espreita','Revela onde há carniça ou perigo oculto, mas denuncia a posição do grupo.']]
 ]},
-{id:'assimiladas',nm:'Criaturas assimiladas',x:'Feras e seres mudados pela Assimilação.',art:'criatura',cor:'ass',pool:'criatura',l:[
- ['Fera de espinhos','Um predador de carapaça farpada que ataca por emboscada.','hostil','Furar a couraça ou afugentar.'],
- ['Besta de olhos demais','Vê em todas as direções e avisa os seus.','hostil','Cegar ou enganar.'],
- ['Mãe de patas demais','Protege o ninho entre as raízes.','hostil','Recuar ou distrair.'],
- ['Guardião da nascente','Dorme na água e acorda de mau humor.','neutra','Acalmar.'],
- ['Imitador de vozes','Copia vozes humanas para atrair presas.','hostil','Revelar a farsa.'],
- ['Enxame de zumbido grave','Nuvem de insetos que responde a calor.','hostil','Esfriar ou dispersar.'],
- ['Gigante pacífico','Segue o grupo por curiosidade e destrói sem querer.','amigável','Guiá-lo para longe.'],
- ['Caçador noturno','Rastreia lanternas sem se expor.','hostil','Apagar a luz e recuar.'],
- ['Bicho de mimetismo','Vira parte do cenário e ataca de perto.','hostil','Descobrir o disfarce.'],
- ['Ave colossal','Mergulha de cima e leva o que alcançar.','hostil','Abatê-la ou afugentá-la.'],
- ['Besta domesticada','Obedece a um dono que já se foi.','neutra','Dar novas ordens.'],
- ['Cria assustada','Um filhote perdido e o pânico dele atrapalham todos.','neutra','Acalmar ou devolver.']
+{id:'plantas',nm:'Plantas e fungos',x:'Vegetação, mofo e cogumelos, naturais ou alterados.',art:'planta',cor:'nat',pool:'plantas',mut:'flora',l:[
+ ['Cipó-estrangulador','m','Desce das copas e se enrola em quem passa embaixo.','hostil','Cortar na base ou queimar.',['CC','Laço','Prende o alvo e causa {d} de dano à Saúde.']],
+ ['Figueira mata-pau','f','Abraça outras árvores e vai sufocando o que encontra.','neutra','Cortar os braços mais grossos.',['C','Galho-chicote','Causa {d} de dano à Saúde e empurra o alvo.']],
+ ['Mandacaru','m','Cacto alto que estoura espinhos quando algo bate nele.','neutra','Contornar sem encostar.',['C','Espinhos','Causa {d} de dano à Saúde a quem tocar ou passar perto.']],
+ ['Urtiga-gigante','f','Folhas que queimam a pele e deixam coceira por horas.','neutra','Cortar com luvas ou lavar a área.',['C','Queimação','Causa {d} de dano à Saúde e o alvo fica inquieto até o fim da cena.']],
+ ['Capim-navalha','m','Campo de lâminas finas que corta pele e tecido.','neutra','Abrir picada com cuidado.',['C','Cortes finos','Causa {d} de dano à Saúde a quem atravessar o campo.']],
+ ['Bambuzal','m','Hastes que rangem, se fecham e escondem o céu.','neutra','Achar a trilha pelo som.',['B','Rangido enganoso','Os sons confundem: quem busca o caminho precisa de 1B a mais.']],
+ ['Cogumelo de chapéu largo','m','Solta uma nuvem de esporos ao ser pisado.','hostil','Cobrir o rosto e passar rápido.',['CC','Nuvem de esporos','Causa {d} de dano à Saúde a todos em alcance curto.']],
+ ['Mofo-negro','m','Cobre paredes e comida e piora o ar.','hostil','Queimar ou lavar com cinzas.',['C','Ar viciado','Quem respirar perto sofre {d} de dano à Saúde.']],
+ ['Líquen luminoso','m','Brilha de leve, guia o caminho e também atrai bichos.','amigável','Colher com cuidado.',['A','Brilho guia','A próxima ação de exploração ou travessia custa 1B a menos.']],
+ ['Dama-da-noite','f','Perfume doce que dá sono e abaixa a guarda.','neutra','Cobrir o rosto e afastar-se.',['C','Perfume sonífero','Um Infectado escolhido perde a próxima ação.']],
+ ['Trepadeira de espinhos','f','Rasteja entre o mato e se enrosca nas pernas.','hostil','Podar com cuidado.',['CC','Emaranhado','Causa {d} de dano à Saúde e prende os pés do alvo.']],
+ ['Mangue de raízes','m','Raízes aéreas formam uma teia onde é fácil se perder.','neutra','Seguir a maré e contar os passos.',['CB','Lama sugadora','O alvo afunda: sair da lama custa 1B a mais.']],
+ ['Plantação abandonada','f','Cultivo que cresceu sem dono e ocupa trilhas e casas.','neutra','Podar e abrir caminho.',['B','Tomar o espaço','O terreno fica difícil: toda travessia custa 1B a mais.']],
+ ['Seringueira sangrenta','f','Quando cortada, jorra uma seiva vermelha que gruda.','neutra','Evitar o corte ou usar luvas.',['C','Seiva grudenta','Prende uma ferramenta ou arma do alvo à árvore.']],
+ ['Cardo-bravo','m','Emaranhado denso que se fecha atrás de quem passa.','neutra','Queimar ou cortar a base.',['C','Fechar a passagem','A saída pelo caminho de volta se fecha: retornar custa 1A a mais.']],
+ ['Fungo de madeira podre','m','Amolece vigas e pisos até desabar.','hostil','Reforçar o apoio ou evitar o local.',['CC','Piso cedendo','Causa {d} de dano à Saúde a quem estiver no chão podre.']],
+ ['Pomar esquecido','m','Árvores carregadas de fruta madura que ninguém colheu.','amigável','Colher com calma.',['A','Fartura','Os Infectados se alimentam: o grupo está descansado até o fim do turno.']],
+ ['Musgo molhado','m','Cobre pedras e troncos e tira o chão de quem passa.','neutra','Evitar o trecho e testar o apoio.',['C','Escorregão','Causa {d} de dano à Saúde a quem se mover com pressa.']]
 ]},
-{id:'plantas',nm:'Plantas e fungos',x:'Vegetação traiçoeira, esporos e mata viva.',art:'planta',cor:'nat',pool:'plantas',l:[
- ['Cipó estrangulador','Se enrosca em quem passa.','hostil','Cortar ou queimar.'],
- ['Arbusto bebedor','Flores que atraem e espinhos que sugam.','hostil','Podar com cuidado.'],
- ['Fungo de esporos','Solta nuvens que dão sonhos e febre.','hostil','Abafar ou lavar.'],
- ['Flor de aroma doce','Seduz com o cheiro e adormece.','neutra','Cobrir o rosto.'],
- ['Mata fechada viva','Os galhos se fecham sobre quem entra.','neutra','Abrir picada.'],
- ['Raiz que puxa','Brota sob os pés e arrasta.','hostil','Cortar na base.'],
- ['Musgo escorregadio','Cobre as pedras e tira o chão.','neutra','Evitar o trecho.'],
- ['Árvore ocupada','Abriga um ninho e se defende com ele.','hostil','Afastar os moradores.'],
- ['Plantação rebelde','Um cultivo que cresce e ocupa tudo.','neutra','Podar e conter.'],
- ['Trepadeira que sussurra','Imita vozes ao vento.','hostil','Silenciar com fogo.']
+{id:'clima',nm:'Clima e gases',x:'Tempestades, névoas, fogo e ar ruim, naturais ou estranhos.',art:'clima',artA:'fenomeno',cor:'rec',pool:'clima',mut:'clima',l:[
+ ['Tempestade de raios','f','Ventania e relâmpagos que descem onde bem querem.','hostil','Achar abrigo longe de metal e árvores.',['CCC','Raio','Causa {d} de dano à Saúde a um alvo exposto.']],
+ ['Nevoeiro denso','m','Esconde passos e desorienta quem anda sem guia.','neutra','Marcar o caminho com corda ou luz.',['CB','Perder-se','Os Infectados se dispersam: ações em grupo custam 1B a mais neste turno.']],
+ ['Onda de calor','f','Seca a água e embaça a clareza.','neutra','Refrescar e proteger a cabeça.',['C','Insolação','Causa {d} de dano à Saúde a quem estiver exposto.']],
+ ['Enchente repentina','f','Transforma o chão em rio em poucos minutos.','neutra','Subir para o alto e se agarrar.',['CC','Correnteza','Arrasta o alvo e causa {d} de dano à Saúde.']],
+ ['Incêndio florestal','m','Cresce com o vento e come tudo que é seco.','hostil','Abrir um aceiro e recuar.',['CC','Línguas de fogo','Causa {d} de dano à Saúde e queima um item inflamável.']],
+ ['Geada súbita','f','Congela água, plantas e dedos em minutos.','hostil','Acender fogo e juntar o grupo.',['C','Congelamento','Causa {d} de dano à Saúde e deixa o alvo duro de frio até se aquecer.']],
+ ['Vendaval','m','Derruba árvores e arranca telhados.','hostil','Abrigar-se atrás de algo pesado.',['CC','Rajada','Derruba o alvo e causa {d} de dano à Saúde.']],
+ ['Tempestade de areia','f','Arranha tudo que não está coberto e tapa a visão.','hostil','Cobrir-se e esperar.',['C','Areia nos olhos','Causa {d} de dano à Saúde e cega o alvo até o fim do turno.']],
+ ['Chuva de granizo','f','Pedras de gelo despencam sem aviso.','hostil','Cobrir a cabeça e buscar telhado.',['CC','Saraivada','Causa {d} de dano à Saúde a todos que estiverem descobertos.']],
+ ['Seca prolongada','f','Poços vazios e terra rachada.','neutra','Achar água e racionar.',['CB','Sede','Consumir água custa 1B a mais neste turno.']],
+ ['Gás de pântano','m','Inflama e anestesia quem respira.','hostil','Ventilar a área e evitar fogo.',['CC','Respirar o gás','Causa {d} de dano à Saúde e deixa o alvo tonto.']],
+ ['Vazamento de gás tóxico','m','Fumaça densa que escorre pelo chão.','hostil','Vedar a fonte e subir.',['CCC','Nuvem tóxica','Causa {d} de dano à Saúde a todos na área.']],
+ ['Fumaça espessa','f','Esconde saídas e queima os olhos.','neutra','Cobrir o rosto e rastejar.',['C','Sufoco','Causa {d} de dano à Saúde a quem estiver de pé.']],
+ ['Chuva torrencial','f','Dias de água que apodrecem o chão e abafam os sons.','neutra','Abrigar-se e secar o equipamento.',['CB','Encharcar','Os itens do grupo molham: fogo e pólvora ficam inúteis neste turno.']],
+ ['Nevasca fora de época','f','Neve densa em lugar onde nunca nevou.','hostil','Acender fogo e dividir mantas.',['CC','Frio cortante','Causa {d} de dano à Saúde e reduz o movimento.']],
+ ['Calmaria sufocante','f','O ar para e o calor aperta o peito.','neutra','Mover-se pouco e hidratar-se.',['C','Falta de ar','A próxima ação física do alvo custa 1B a mais.']]
 ]},
-{id:'clima',nm:'Clima e gases',x:'Tempestades, névoas, fogo, enchentes e ar ruim.',art:'clima',cor:'rec',pool:'clima',l:[
- ['Tempestade parada','Ventania, raios e chuva que não passam.','hostil','Achar abrigo.'],
- ['Neblina cerrada','Esconde os passos e desorienta.','neutra','Marcar o caminho.'],
- ['Gás de pântano','Inflama e anestesia quem respira.','hostil','Ventilar a área.'],
- ['Onda de calor','Seca a água e rouba a clareza.','neutra','Refrescar e proteger.'],
- ['Enchente repentina','Transforma o chão em rio.','neutra','Subir para o alto.'],
- ['Incêndio no mato','Cresce com o vento.','hostil','Abrir um aceiro.'],
- ['Nevasca fora de época','Esfria o ar e o corpo.','hostil','Acender fogo.'],
- ['Chuva de cinzas','Cobre tudo e irrita os pulmões.','neutra','Proteger o rosto.'],
- ['Ventania de areia','Arranha tudo que não está coberto.','hostil','Cobrir-se e esperar.'],
- ['Raios secos','Estalam sem chuva e caem onde querem.','hostil','Afastar-se de metal e árvores.'],
- ['Vazamento tóxico','Fumaça densa que escorre pelo chão.','hostil','Vedar a fonte.'],
- ['Geada súbita','Congela água, plantas e dedos em minutos.','hostil','Aquecer o grupo.']
+{id:'fenomenos',nm:'Fenômenos',x:'Eventos da natureza e do céu, comuns ou estranhos.',art:'natureza',artA:'fenomeno',cor:'ass',pool:'fenomeno',mut:'fenom',l:[
+ ['Terremoto','m','O chão treme e racha sob os pés.','hostil','Afastar-se de paredes e abrir espaço.',['CC','Abalo','Derruba os Infectados e causa {d} de dano à Saúde a quem estiver perto de estruturas.']],
+ ['Deslizamento de terra','m','A encosta inteira desce, primeiro em silêncio e depois em estrondo.','hostil','Correr de lado, não para baixo.',['CCC','Avalanche de lama','Causa {d} de dano à Saúde e soterra o alvo.']],
+ ['Maré alta','f','A água sobe depressa e corta o caminho de volta.','neutra','Sair antes de ficar ilhado.',['CB','Água subindo','O caminho de volta se fecha: voltar custa 1A a mais.']],
+ ['Aurora no céu','f','Luzes coloridas que hipnotizam e confundem a noite.','neutra','Desviar o olhar e continuar andando.',['B','Luzes hipnóticas','Um Infectado fica distraído e perde a próxima ação, a menos que gaste 1B.']],
+ ['Eclipse','m','O dia vira noite no meio da manhã.','neutra','Acender luzes e juntar o grupo.',['CB','Escuridão repentina','Ações que dependem de visão custam 1B a mais.']],
+ ['Redemoinho de poeira','m','Gira sobre si e arrasta tudo que é leve.','neutra','Esperar passar protegido.',['C','Arrastar','Leva um item do alvo para longe.']],
+ ['Miragem','f','Água, abrigo ou aliados que não existem.','neutra','Verificar de perto antes de seguir.',['CB','Falsa promessa','Um Infectado corre até a miragem e se afasta do grupo.']],
+ ['Apagão','m','Todas as luzes e máquinas morrem de uma vez.','neutra','Acender fogo ou improvisar luz.',['CB','Escuridão total','Sem uma fonte de fogo, ações que dependem de visão custam 1B a mais.']],
+ ['Fonte de águas quentes','f','Brota do chão e cobre o terreno de vapor.','neutra','Contornar e aproveitar o calor.',['C','Jato de vapor','Causa {d} de dano à Saúde a quem estiver perto.']],
+ ['Chuva de meteoros','f','Faíscas riscam o céu e algumas caem de verdade.','hostil','Buscar abrigo e cobrir a cabeça.',['CCC','Impacto','Causa {d} de dano à Saúde em uma área pequena.']],
+ ['Sumidouro','m','O chão cede e engole o que estiver em cima.','hostil','Saltar para a borda firme.',['CC','Queda','O alvo cai e sofre {d} de dano à Saúde.']],
+ ['Dia que não acaba','m','O sol não se põe e ninguém consegue dormir.','neutra','Criar escuridão artificial e descansar.',['C','Insônia','Ninguém descansa direito: o grupo não recupera Saúde até resolver.']],
+ ['Cheia do rio','f','O rio transborda e leva o que encontra.','neutra','Subir para terreno alto.',['CC','Cheia','Arrasta o alvo e causa {d} de dano à Saúde.']],
+ ['Estática no ar','f','Cabelos se arrepiam e o metal dá choque.','hostil','Soltar metais e se afastar.',['C','Choque','Causa {d} de dano à Saúde a quem tocar metal.']]
 ]},
-{id:'assimilacao',nm:'Fenômenos da Assimilação',x:'A Assimilação agindo sobre o lugar.',art:'fenomeno',cor:'ass',pool:'fenomeno',l:[
- ['Névoa colorida','Muda a percepção de quem entra.','hostil','Sair em linha, de mãos dadas.'],
- ['Chuva de esporos','Grudam, dão sonhos e febre.','hostil','Proteger-se e lavar.'],
- ['Eco que copia','Repete os sons com atraso e começa a dar ordens.','hostil','Calar o lugar.'],
- ['Maré de raízes','Brotam e agarram o que se move.','hostil','Ficar parado e cortar.'],
- ['Pulsar de calor','O ar esquenta e esfria em ritmo regular.','neutra','Acompanhar o ritmo.'],
- ['Sonho coletivo','Todos dormem e sonham a mesma cena.','neutra','Achar a saída no sonho.'],
- ['Luz que chama','Atrai os cansados para uma clareira.','hostil','Resistir e apagar a luz.'],
- ['Silêncio denso','Nenhum som se propaga.','neutra','Combinar gestos.'],
- ['Gravidade solta','Objetos e pessoas flutuam sem aviso.','neutra','Ancorar-se.'],
- ['Floração súbita','Flores doces deixam todos felizes demais.','amigável','Resistir ao entorpecimento.'],
- ['Rastro de vozes','Vozes antigas pedem algo ao grupo.','neutra','Ouvir e responder, ou ignorar.'],
- ['Onda de calor vivo','Corre pelo chão a partir de um ponto.','hostil','Subir e esperar.']
-]},
-{id:'doencas',nm:'Doenças e pragas',x:'Febres, parasitas, contágio e infestações.',art:'praga',cor:'ame',pool:'doencas',l:[
- ['Febre do mato','Sobe e some, e volta mais forte.','hostil','Tratar com a erva certa.'],
- ['Praga de insetos','Corroem estoques e picam à noite.','hostil','Afastar com fumaça.'],
- ['Parasita intestinal','Passa pela água e pelo prato.','hostil','Ferver e isolar.'],
- ['Pó que coça','Irrita a pele e cega por horas.','neutra','Lavar e cobrir.'],
- ['Mofo que avança','Cobre paredes e estoques.','neutra','Secar e raspar.'],
- ['Peste de ratos','Invadem armazéns e espalham doenças.','hostil','Fechar as entradas.'],
- ['Intoxicação de comida','Atinge quem comeu do mesmo pote.','neutra','Identificar a fonte.'],
- ['Tosse seca','Contagia o acampamento aos poucos.','hostil','Isolar os doentes.'],
- ['Carrapatos assimilados','Se fartam e mudam o hospedeiro.','hostil','Retirar um a um.'],
- ['Mal da água','Quem bebe fica sonolento e fraco.','hostil','Trocar a fonte.']
+{id:'doencas',nm:'Doenças e pragas',x:'Febres, parasitas e infestações, comuns ou alteradas.',art:'praga',cor:'ame',pool:'doencas',mut:'praga',l:[
+ ['Febre do mato','f','Sobe e some, volta mais forte.','hostil','Tratar com a erva certa e isolar.',['C','Surto de febre','Um Infectado sofre {d} de dano à Saúde e perde a próxima ação.']],
+ ['Sarna','f','Coça e se espalha entre quem divide roupas e abrigo.','neutra','Banhar e queimar tecidos.',['CB','Contágio por contato','Quem dividir abrigo se contagia: ações finas custam 1B a mais.']],
+ ['Nuvem de gafanhotos','f','Cobre o céu e devora plantações e roupas.','hostil','Dispersar com fumaça.',['CC','Devoração','Destrói provisões e causa {d} de dano à Saúde a quem estiver sem abrigo.']],
+ ['Praga de ratos','f','Roem estoques e espalham doenças.','hostil','Fechar entradas e usar armadilhas.',['C','Roer provisões','Destrói parte das provisões do grupo.']],
+ ['Infestação de piolhos','f','Pequenos, persistentes e difíceis de achar.','neutra','Banhar e fazer higiene.',['CB','Coceira constante','O alvo não consegue descansar direito neste turno.']],
+ ['Intoxicação alimentar','f','Comida que parece boa e derruba o grupo.','neutra','Beber água limpa e repousar.',['C','Mal-estar','Causa {d} de dano à Saúde e o alvo precisa descansar.']],
+ ['Água contaminada','f','Poço ou rio com cheiro e gosto de ferrugem.','hostil','Ferver, filtrar ou buscar outra fonte.',['CC','Gole perigoso','Causa {d} de dano à Saúde a quem beber.']],
+ ['Enxame de mosquitos','m','Nuvem sobre a lama, picando até através da roupa.','hostil','Fumaça e telas.',['C','Picadas','Causa {d} de dano à Saúde e o alvo adoece nas próximas rodadas.']],
+ ['Verminose','f','Parasitas que consomem por dentro.','neutra','Tratar com ervas e água limpa.',['C','Fraqueza','O alvo perde 1B nas ações físicas.']],
+ ['Mofo no estoque','m','Estraga comida e remédios sem avisar.','neutra','Secar e separar o que sobrar.',['CB','Perda silenciosa','Parte dos suprimentos se estraga.']],
+ ['Colônia de cupins','f','Devora vigas, móveis e armas de madeira.','neutra','Queimar a madeira ou tratá-la com fumaça.',['C','Estrutura frágil','Uma estrutura de madeira cede e causa {d} de dano à Saúde.']],
+ ['Carrapatos','m','Grudam na pele e passam doenças.','neutra','Revisar o corpo a cada parada.',['C','Mordida infecciosa','Causa {d} de dano à Saúde, que só aparece na próxima rodada.']],
+ ['Ferrugem nas plantações','f','Alaranjada, apodrece o cultivo e o que sobrar.','neutra','Queimar a parte infectada.',['CB','Colheita perdida','Os suprimentos plantados se perdem.']],
+ ['Tosse seca','f','Rouca, constante, passa de pessoa para pessoa.','neutra','Isolar e cuidar dos doentes.',['C','Acesso','O alvo perde o fôlego: ações físicas custam 1B a mais.']]
 ]},
 {id:'estruturas',nm:'Estruturas e armadilhas',x:'Construções, máquinas e engenhos perigosos.',art:'coisa',cor:'rec',pool:'coisa',l:[
  ['Ponte de cabos','Cede um pouco a cada passo.','neutra','Reforçar.'],
@@ -1202,6 +1221,80 @@ var CATS=[
  ['Memória invasiva','Uma lembrança alheia ocupa a cabeça.','hostil','Externalizar a lembrança.']
 ]}
 ];
+var MUTS={
+fauna:[
+ ['Pelagem que engole a luz','O pelo absorve a claridade e o bicho some nas sombras.',['BC','Emboscada na sombra','Surge de onde ninguém olhava e causa {d} de dano à Saúde.']],
+ ['Espinhos de vidro','Lâminas translúcidas crescem no dorso.',['CC','Chuva de lascas','Causa {d} de dano à Saúde a todos em alcance curto.']],
+ ['Olhos demais','Dezenas de olhos pelo corpo, nenhum piscando.',['C','Olhar total','Ninguém na cena consegue se esconder neste turno.']],
+ ['Voz humana','Imita a voz de quem o grupo já perdeu.',['C','Chamado falso','Um Infectado escolhido ouve alguém querido, se vira e perde a próxima ação.']],
+ ['Corpo que se refaz','As feridas se fecham em instantes.',['C','Regeneração','Remove 1A já investido na neutralização.']],
+ ['Membros em excesso','Patas extras surgem onde não deveriam.',['CC','Agarrar e arrastar','Causa {d} de dano à Saúde e puxa o alvo para perto.']],
+ ['Tamanho desmedido','Cresceu muito além do normal.',['CCC','Pisão','Causa {d} de dano à Saúde e derruba todos em alcance curto.']],
+ ['Brilho nervoso','Pontos de luz pulsam sob a pele quando se agita.',['A','Luz denunciadora','O brilho revela o ponto fraco: a próxima ação de neutralização custa 1A a menos.']],
+ ['Laço com a mente','Sente o que os Infectados sentem.',['BC','Eco emocional','Reflete uma emoção forte: um Infectado escolhido fica assustado e não investe A no próximo turno.']],
+ ['Crosta de fungos','Fungos cobrem o corpo e soltam esporos.',['CC','Nuvem de esporos','Causa {d} de dano à Saúde a todos em alcance curto.']],
+ ['Mansidão estranha','Perdeu o medo e segue o grupo à distância, sem motivo.',['A','Aproximação curiosa','Se um Infectado oferecer calma, a ameaça perde a próxima rodada.']],
+ ['Sangue corrosivo','Cada ferida solta um líquido que queima.',['C','Respingo ácido','Quem a ferir sofre {d} de dano à Saúde e danifica um item.']],
+ ['Sono de pedra','Alterna agitação e imobilidade total.',['A','Imobilidade','A criatura congela: ela perde a próxima rodada.']],
+ ['Rastro que contagia','Onde passa, o chão adoece.',['BC','Rastro infectado','O trecho percorrido causa {d} de dano à Saúde a quem o pisar.']]
+],
+flora:[
+ ['Raízes que andam','As raízes se arrastam e perseguem quem se mexe.',['CC','Raízes errantes','Causa {d} de dano à Saúde e prende o alvo ao chão.']],
+ ['Seiva ácida','Um líquido corrosivo escorre pelo caule.',['C','Respingo de seiva','Causa {d} de dano à Saúde e danifica um item.']],
+ ['Flores que cantam','As flores entoam uma melodia que dá sono.',['C','Canto de flor','Um Infectado escolhido adormece e perde a próxima ação.']],
+ ['Crescimento acelerado','Brota e cobre mais espaço a cada minuto.',['C','Brotamento','A planta ocupa outra área da cena: o terreno difícil aumenta.']],
+ ['Esporos luminosos','Esporos brilham e se prendem à roupa.',['BC','Marca de luz','Os esporos marcam um Infectado: todas as ameaças sabem onde ele está.']],
+ ['Fruto-isca','Frutos lindos soltam um cheiro irresistível.',['CB','Fruto sedutor','Um Infectado sente fome súbita e é atraído até a planta.']],
+ ['Troncos com rosto','Cascas formam feições quase humanas.',['C','Olhar de casca','O alvo hesita: perde a próxima ação, a menos que gaste 1B.']],
+ ['Rede de micélio','Fios finos ligam tudo na cena e sentem os passos.',['C','Alarme subterrâneo','A ameaça sabe a posição de todos até o fim do turno.']],
+ ['Pólen que adormece','Uma poeira dourada pesa nas pálpebras.',['CC','Nuvem de pólen','Causa {d} de dano à Saúde e deixa o alvo sonolento.']],
+ ['Casca que endurece','Camadas duras protegem o interior.',['A','Casca rachada','Uma rachadura expõe o ponto fraco: neutralizar custa 1A a menos.']],
+ ['Raiz com memória','Repete lembranças de quem pisou nela.',['B','Sussurro do chão','Um Infectado revive uma lembrança e perde 1B na próxima ação.']],
+ ['Rebrota','Brotos nascem de qualquer corte.',['C','Brotar de novo','Cortes sem fogo não adiantam: remove 1A já investido.']]
+],
+clima:[
+ ['Chuva que queima','As gotas queimam a pele e o tecido.',['CC','Gotas ácidas','Causa {d} de dano à Saúde a quem estiver descoberto.']],
+ ['Névoa que sussurra','A neblina repete frases que ninguém disse.',['CB','Vozes na névoa','Os Infectados se dispersam: ações em grupo custam 1B a mais.']],
+ ['Raios que escolhem','Os raios parecem escolher alvos.',['CCC','Raio escolhido','Causa {d} de dano à Saúde ao Infectado com mais itens metálicos.']],
+ ['Cores impossíveis','O céu fica com tons que não existem.',['B','Cor hipnótica','Quem olhar para cima perde a próxima ação, a menos que gaste 1B.']],
+ ['Ar com gosto de ferro','Cada respiração arranha a garganta.',['C','Respirar metal','Causa {d} de dano à Saúde a quem respira sem proteção.']],
+ ['Vento com intenção','Rajadas se movem de forma deliberada.',['CC','Rajada guiada','Arrasta um Infectado escolhido e causa {d} de dano à Saúde.']],
+ ['Frio que vem de dentro','O frio começa no peito e se espalha.',['C','Gelo interno','O alvo perde fôlego: a próxima ação física custa 1B a mais.']],
+ ['Calor que pulsa','O ar esquenta e esfria em ritmo regular.',['A','Pulso previsível','O ritmo é anotado: a próxima ação custa 1B a menos se acompanhar o ritmo.']],
+ ['Gotas que sobem','A água sobe do chão para o céu.',['B','Chuva invertida','Itens molhados flutuam: um item de cada Infectado se perde do alcance.']],
+ ['Silêncio dentro da tempestade','Nenhum som, mesmo com raios e vento.',['CB','Mudez','O grupo não consegue se comunicar: ações que exigem fala custam 1B a mais.']],
+ ['Neblina de lembranças','A neblina revela cenas de outros tempos.',['C','Memória alheia','O alvo revive uma cena e perde a próxima ação.']],
+ ['Poeira viva','As partículas se movem em formações.',['CC','Enxame de pó','Causa {d} de dano à Saúde a todos descobertos.']]
+],
+fenom:[
+ ['Ecos fora de tempo','Os sons chegam antes de acontecerem.',['A','Aviso antecipado','Os Infectados ouvem o que virá: a próxima ativação da ameaça fica visível.']],
+ ['Gravidade irregular','O peso das coisas varia sem aviso.',['CC','Peso trocado','Derruba o alvo e causa {d} de dano à Saúde.']],
+ ['Cores que machucam','Certas cores dão enjoo e dor de cabeça.',['C','Cor dolorosa','Causa {d} de dano à Saúde a quem olhar para a fonte.']],
+ ['Tempo repetido','Alguns segundos se repetem em ciclo.',['B','Ciclo','Uma ação falhada pode ser repetida uma vez, com custo de 1B.']],
+ ['Sombras sem dono','Há sombras que se movem sozinhas.',['C','Sombra errante','Um Infectado perde o apoio da própria sombra e fica exposto.']],
+ ['Pulsar vivo','O fenômeno respira em ritmo regular.',['A','Ritmo conhecido','Os Infectados aprendem o ritmo: a próxima ação custa 1B a menos.']],
+ ['Chamado coletivo','Todos sentem vontade de ir a um ponto.',['CB','Atração','Um Infectado escolhido caminha até o ponto de origem.']],
+ ['Atração magnética','O metal se move sozinho em direção ao centro.',['CC','Puxão de metal','Um item de metal escolhido voa e causa {d} de dano à Saúde.']],
+ ['Luz que dá sono','A claridade pesa nas pálpebras.',['C','Luz sonífera','Um Infectado perde a próxima ação.']],
+ ['Som que vira dor','Os ruídos viram dor física.',['CC','Ruído doloroso','Causa {d} de dano à Saúde a todos que estiverem ouvindo.']],
+ ['Frio ao contrário','O frio aparece junto ao calor.',['C','Choque térmico','Causa {d} de dano à Saúde e o alvo perde o equilíbrio.']],
+ ['Presença de pessoas','Sente-se gente onde não há ninguém.',['B','Presença invisível','Os Infectados se sentem observados: ações furtivas custam 1B a mais.']]
+],
+praga:[
+ ['Contágio pelo olhar','Basta olhar para um doente para adoecer.',['CC','Olhar contaminado','Causa {d} de dano à Saúde ao alvo que encarar o doente.']],
+ ['Febre que fala','Os doentes delirantes repetem frases iguais.',['CB','Delírio coletivo','Os doentes confundem os Infectados: ações sociais custam 1B a mais.']],
+ ['Sintomas que migram','A doença muda de lugar no corpo.',['C','Dor errante','O alvo sofre {d} de dano à Saúde e não sabe de onde vem.']],
+ ['Sonhos compartilhados','Todos os doentes sonham o mesmo sonho.',['B','Sonho comum','Um Infectado vê o que os outros sonham e perde 1B na próxima ação.']],
+ ['Pele que muda de cor','A pele ganha tons estranhos conforme a doença avança.',['A','Sinal visível','A cor mostra o estágio: a próxima ação de cuidado custa 1B a menos.']],
+ ['Fome que não passa','Quem adoece come sem parar.',['C','Fome insaciável','Destrói provisões e causa {d} de dano à Saúde.']],
+ ['Resistência ao fogo','O fogo não adianta contra a praga.',['C','Imune ao fogo','O fogo falha: neutralizar com fogo custa 1A a mais.']],
+ ['Incubação instantânea','A doença se manifesta em segundos.',['CC','Surto imediato','Causa {d} de dano à Saúde e o alvo perde a próxima ação.']],
+ ['Parasita com vontade','O parasita escolhe o hospedeiro.',['CB','Escolha do parasita','O parasita assume um Infectado escolhido por uma rodada.']],
+ ['Cheiro doce','Um perfume doce atrai e adoece.',['C','Atração fatal','Um Infectado se aproxima da fonte e sofre {d} de dano à Saúde.']],
+ ['Voz de pragas','O enxame emite sons que parecem palavras.',['B','Murmúrio','O enxame repete o que o grupo diz e revela planos.']],
+ ['Doença que copia','Imita a doença de quem se aproxima.',['BC','Contágio espelhado','Um Infectado fica com um sintoma de outro Infectado.']]
+]
+};
 var CBY={}; CATS.forEach(function(c){CBY[c.id]=c;});
 
 var TRACOS=[
@@ -1266,20 +1359,47 @@ function comporDados(total,intencao){
 }
 function fmtAtiv(a,g){
   var nC=(a[0].match(/C/g)||[]).length, dano=nC*(g.id>=3?2:1);
-  return {cost:a[0],nome:a[1],texto:a[2].replace('{d}',String(dano))};
+  return {cost:a[0],nome:a[1],texto:a[2].replace(/\{d\}/g,String(dano))};
 }
 function ordemAtiv(x){ var c=/C/.test(x.cost), a=/A/.test(x.cost), b=/B/.test(x.cost); return c&&!a&&!b?0:(a&&!c&&!b?2:1); }
-function genAtiv(pool,g,intn,extraN){
+function pureC(x){return /^C+$/.test(x.cost);}
+function pureA(x){return /^A+$/.test(x.cost);}
+function genAtiv(pool,g,intn,total,fixos){
   var used={}, out=[];
-  out.push(fmtAtiv(pickU(pool.c,used),g));
-  out.push(fmtAtiv(pickU(pool.a,used),g));
+  (fixos||[]).forEach(function(f){ if(f){ used[f[1]]=1; out.push(fmtAtiv(f,g)); } });
+  if(!out.some(pureC)) out.push(fmtAtiv(pickU(pool.c,used),g));
+  if(!out.some(pureA)) out.push(fmtAtiv(pickU(pool.a,used),g));
   var wt={hostil:[5,2,3],neutra:[3,3,4],'amigável':[2,4,4]}[intn]||[3,3,4];
-  for(var i=0;i<extraN;i++){
+  var guard=0;
+  while(out.length<total&&guard++<20){
     var x=Math.random()*(wt[0]+wt[1]+wt[2]), k=x<wt[0]?'c':(x<wt[0]+wt[1]?'a':'b');
     out.push(fmtAtiv(pickU(pool[k],used),g));
   }
   out.sort(function(a,b){return ordemAtiv(a)-ordemAtiv(b);});
   return out;
+}
+function totalAtiv(a){ return [3,3,4,4][a.g.id-1]+(a.final?1:0)+(a.assim?1:0); }
+function pickMuts(tipo,g){
+  var n=(g.id>=3&&Math.random()<.4)?2:1, used={}, out=[];
+  for(var i=0;i<n;i++){ var m=pickU(MUTS[tipo],used); out.push({nome:m[0],texto:m[1],ativ:m[2]}); }
+  return out;
+}
+function normEnt(c){
+  return c.length>=6?{nome:c[0],gen:c[1],desc:c[2],int:c[3],neut:c[4],sig:c[5]}
+                   :{nome:c[0],gen:'m',desc:c[1],int:c[2],neut:c[3],sig:null};
+}
+function aplicarAss(a,on){
+  var e=a.ent;
+  a.assim=!!on&&!!a.cat.mut;
+  a.nome=e.nome+(a.assim?(e.gen==='f'?' assimilada':' assimilado'):'');
+  a.mut=a.assim?pickMuts(a.cat.mut,a.g):[];
+  a.art=(a.assim&&a.cat.artA)||a.cat.art;
+  a.cor=a.assim?'ass':a.cat.cor;
+  refazFixos(a);
+}
+function refazFixos(a){
+  a.fixos=[a.ent.sig].concat((a.mut||[]).map(function(m){return m.ativ;})).filter(Boolean);
+  a.ativ=genAtiv(a.pool,a.g,a.int,totalAtiv(a),a.fixos);
 }
 function genTracos(g){
   var n=g.id>=3?2:(Math.random()<.6?1:0), used={}, out=[];
@@ -1300,12 +1420,15 @@ function genPrincipais(a){
   ];
 }
 function gerarAmeaca(o){
-  var cat=o.cat==='rand'?pick(CATS):CBY[o.cat], c=pick(cat.l), g=GR[o.grau-1];
-  var intn=(o.int&&o.int!=='auto')?o.int:c[2];
-  var a={cat:cat,nome:c[0],desc:c[1],neutDesc:c[3],int:intn,g:g,n:o.n,dif:DIFS[o.dif],final:!!o.final,pool:POOLS[cat.pool]};
+  var cat=o.cat==='rand'?pick(CATS):CBY[o.cat], e=normEnt(pick(cat.l)), g=GR[o.grau-1];
+  var intn=(o.int&&o.int!=='auto')?o.int:e.int;
+  var a={cat:cat,ent:e,nome:e.nome,desc:e.desc,neutDesc:e.neut,int:intn,g:g,n:o.n,dif:DIFS[o.dif],final:!!o.final,pool:POOLS[cat.pool]};
+  var as=o.assim||'sorteio';
+  var on=cat.mut?(as==='assim'||(as==='sorteio'&&Math.random()<.4)):false;
   a.dados=comporDados(g.ab+g.ap*o.n,intn);
-  a.ativ=genAtiv(a.pool,g,intn,[1,1,2,2][g.id-1]+(a.final?1:0));
   a.tracos=genTracos(g);
+  a.assim=false; a.mut=[]; a.art=cat.art; a.cor=cat.cor;
+  aplicarAss(a,on);
   a.neutN=g.neut+(a.tracos.some(function(t){return t.nome==='Resistente';})?2:0)-(a.tracos.some(function(t){return t.nome==='Ferida';})?1:0);
   a.neutPor=g.id>=2?(g.id>=4?2:1):0;
   a.especial=pick(ESPECIAIS); a.conseq=pick(CONSEQS);
@@ -1317,8 +1440,9 @@ function gerarAmeaca(o){
 function diceTxt(x){return [x.d2?x.d2+'× Dado 2':'',x.d1?x.d1+'× Dado 1':'',x.d6?x.d6+'× Dado 6':''].filter(Boolean).join(', ');}
 function ameacaTexto(a){
   var L=[];
-  L.push('AMEAÇA: '+a.nome+' ('+a.cat.nm+', '+a.g.nm+', intenção '+INTS[a.int].toLowerCase()+(a.final?', ameaça final':'')+')');
+  L.push('AMEAÇA: '+a.nome+' ('+a.cat.nm+(a.cat.mut?(a.assim?', assimilada':', natural'):'')+', '+a.g.nm+', intenção '+INTS[a.int].toLowerCase()+(a.final?', ameaça final':'')+')');
   L.push(a.desc);
+  if(a.cat.mut) L.push(a.assim?('Assimilação: '+a.mut.map(function(m){return m.nome+' ('+m.texto+')';}).join(' | ')):'Natureza: sem alteração da Assimilação.');
   L.push('Dados: '+diceTxt(a.dados)+(a.dif.ex?(' (+'+a.dif.ex+' Dado 2 rolado e não mantido, dificuldade '+a.dif.nm+')'):'')+'. Para '+a.n+(a.n===1?' Infectado.':' Infectados.'));
   if(a.tracos.length) L.push('Traços: '+a.tracos.map(function(t){return t.nome+' ('+t.texto+')';}).join(' | '));
   L.push('Ativações: '+a.ativ.map(function(x){return x.cost+' '+x.nome+' ('+x.texto+')';}).join(' | '));
@@ -1330,7 +1454,7 @@ function ameacaTexto(a){
 }
 
 /* ================= AMEAÇAS: INTERFACE ================= */
-var AP={cat:'rand',grau:2,n:3,dif:0,int:'auto',final:false,qtd:1}, AR=[];
+var AP={cat:'rand',grau:2,n:3,dif:0,int:'auto',final:false,qtd:1,assim:'sorteio'}, AR=[];
 function costNode(spec){
   var el=h('span',{class:'cost'});
   var m=/^(\d+)A$/.exec(spec);
@@ -1359,10 +1483,10 @@ function objCost(o){
 }
 function fichaAmeaca(a,idx){
   var g=a.g;
-  var root=h('article',{class:'ficha t-'+a.cat.cor});
-  root.append(h('div',{class:'fhead'},artNode(a.cat.art,'fart'),
+  var root=h('article',{class:'ficha t-'+a.cor});
+  root.append(h('div',{class:'fhead'},artNode(a.art,'fart'),
     h('div',{class:'ftxt'},
-      h('span',{class:'lbl'},a.cat.nm+' · '+g.nm+(a.final?' · ameaça final':'')),
+      h('span',{class:'lbl'},a.cat.nm+(a.cat.mut?(a.assim?' · assimilada':' · natural'):'')+' · '+g.nm+(a.final?' · ameaça final':'')),
       h('h2',null,a.nome),
       h('p',null,a.desc),
       h('div',{class:'meta'},
@@ -1370,12 +1494,17 @@ function fichaAmeaca(a,idx){
         h('span',{class:'tag'},a.n+(a.n===1?' Infectado':' Infectados')),
         h('span',{class:'tag'},a.dif.nm),
         h('span',{class:'tag'},'Recompensa: '+a.xp+' XP')))));
+  if(a.cat.mut) root.append(h('section',{class:'fsec'},
+    secHead(a.assim?'Alterações da Assimilação':'Natureza',a.assim?function(){a.mut=pickMuts(a.cat.mut,g);refazFixos(a);mostrar();}:null),
+    a.assim?h('ul',{class:'conds'},a.mut.map(function(m){return h('li',null,h('strong',null,m.nome),h('p',null,m.texto+' Ativação própria: '+m.ativ[1]+'.'));}))
+           :h('p',null,'Esta ameaça é natural, sem alteração da Assimilação.'),
+    h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:function(){aplicarAss(a,!a.assim);mostrar();}},a.assim?'Tornar natural':'Assimilar'))));
   root.append(h('section',{class:'fsec'},secHead('Dados da ameaça',function(){a.dados=comporDados(g.ab+g.ap*a.n,a.int);mostrar();}),
     diceNode(a.dados,a.dif.ex),
     h('p',{class:'hint'},'Dado 6 vale 1, Dado 1 vale 2 e Dado 2 vale 3. Total: '+(g.ab+g.ap*a.n)+' ('+g.ab+' + '+g.ap+' por Infectado). A ameaça rola e mantém todos os dados.'+(a.dif.ex?(' Na dificuldade '+a.dif.nm+', role '+a.dif.ex+' Dado 2 extra, sem manter.'):''))));
   if(a.tracos.length) root.append(h('section',{class:'fsec'},secHead('Traços',function(){a.tracos=genTracos(g);mostrar();}),
     h('ul',{class:'conds'},a.tracos.map(function(t){return h('li',null,h('strong',null,t.nome),h('p',null,t.texto));}))));
-  root.append(h('section',{class:'fsec'},secHead('Ativações da ameaça',function(){a.ativ=genAtiv(a.pool,g,a.int,[1,1,2,2][g.id-1]+(a.final?1:0));mostrar();}),
+  root.append(h('section',{class:'fsec'},secHead('Ativações da ameaça',function(){a.ativ=genAtiv(a.pool,g,a.int,totalAtiv(a),a.fixos);mostrar();}),
     h('ul',{class:'ativs'},a.ativ.map(ativNode)),
     h('p',{class:'hint'},'Sempre há ao menos uma ativação só com C e uma só com A. C são desfavoráveis aos Infectados e A são favoráveis. Dano em pontos de Saúde, sugerido para este grau.')));
   root.append(h('section',{class:'fsec'},secHead('Neutralização',function(){a.especial=pick(ESPECIAIS);a.conseq=pick(CONSEQS);mostrar();}),
@@ -1392,7 +1521,7 @@ function fichaAmeaca(a,idx){
     h('div',{class:'row'},
       h('button',{type:'button',class:'btn pri',onclick:function(){addLog('Ameaça',a.nome+' ('+a.cat.nm+', '+g.nm+')',ameacaTexto(a));}},'Enviar ao diário'),
       h('button',{type:'button',class:'btn',onclick:function(){copyText(ameacaTexto(a),'Ameaça copiada.');}},'Copiar'),
-      h('button',{type:'button',class:'btn',onclick:function(){AR[idx]=gerarAmeaca(AP.cat==='rand'?{cat:a.cat.id,grau:AP.grau,n:AP.n,dif:AP.dif,int:AP.int,final:AP.final}:AP);mostrar();}},'Outra desta categoria'))));
+      h('button',{type:'button',class:'btn',onclick:function(){AR[idx]=gerarAmeaca(AP.cat==='rand'?{cat:a.cat.id,grau:AP.grau,n:AP.n,dif:AP.dif,int:AP.int,final:AP.final,assim:AP.assim}:AP);mostrar();}},'Outra desta categoria'))));
   return root;
 }
 function mostrar(){
@@ -1429,6 +1558,7 @@ function renderAmeacas(){
       sel('am-n','Infectados',[1,2,3,4,5,6].map(function(n){return [n,n+(n===1?' Infectado':' Infectados')];}),AP.n,function(v){AP.n=+v;}),
       sel('am-d','Dificuldade',DIFS.map(function(d){return [d.id,d.nm+' ('+d.x+')'];}),AP.dif,function(v){AP.dif=+v;}),
       sel('am-i','Intenção',[['auto','Automática'],['hostil','Hostil'],['neutra','Neutra'],['amigável','Amigável']],AP.int,function(v){AP.int=v;}),
+      sel('am-as','Assimilação',[['sorteio','Sortear (pode vir assimilada)'],['normal','Só natural'],['assim','Sempre assimilada']],AP.assim,function(v){AP.assim=v;}),
       sel('am-q','Quantas ameaças',[[1,'Uma'],[2,'Duas'],[3,'Três']],AP.qtd,function(v){AP.qtd=+v;})),
     h('label',{class:'check','for':'am-fin'},fin,'Ameaça final (a ameaça é o próprio Conflito, com objetivos principais)'),
     h('div',{class:'row'},
@@ -1971,6 +2101,7 @@ go(VIEWS.indexOf(hv)>=0?hv:'baralho');
 })();
 })();
 </script>
+
 
 <script>
 if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
