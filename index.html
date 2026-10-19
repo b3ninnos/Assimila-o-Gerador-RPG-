@@ -177,6 +177,11 @@ textarea{resize:vertical;min-height:5rem;line-height:1.5}
 .meter .mbar span{display:block;height:100%;background:var(--s-nat);transition:width .4s}
 .meter.warn .mbar span{background:var(--s-rec)}
 .meter.full .mbar span{background:var(--s-ame)}
+.meter.morte{border-color:var(--s-ame)}
+.meter.morte .mbar span{background:var(--s-ame)}
+.arqi .epit{margin:4px 0 0;font-style:italic}
+.meter .epit{margin:0;font:italic 400 1.05rem/1.5 var(--f-body);border-left:3px solid var(--s-ame);padding:2px 0 2px 12px}
+.meter textarea{min-height:4.5rem}
 .meter .mtit{font:700 1.15rem/1.1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;margin:0}
 .arq{margin-top:26px;display:flex;flex-direction:column;gap:10px}
 .arq h3{margin:0;font:700 1.1rem/1.1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
@@ -814,7 +819,7 @@ function saveFile(name,data){
 /* ================= ESTADO ================= */
 var KEY='gerador-aventuras-assimiladas-v1';
 var LIMITE=175000, MAXE=5000;
-var ST={metodo:'padrao',diario:[],over:{},narrador:'',tom:TONS[0],fechado:false,num:1,arquivo:[]};
+var ST={metodo:'padrao',diario:[],over:{},narrador:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[]};
 function charsDe(list){ return list.reduce(function(n,e){return n+(e.titulo?e.titulo.length:0)+(e.texto?e.texto.length:0);},0); }
 function fmtN(n){ try{return n.toLocaleString('pt-BR');}catch(e){return String(n);} }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
@@ -835,12 +840,15 @@ function load(){
     if(typeof o.narrador==='string') ST.narrador=o.narrador.slice(0,80);
     if(TONS.indexOf(o.tom)>=0) ST.tom=o.tom;
     ST.fechado=!!o.fechado;
+    ST.motivo=['cheio','morte'].indexOf(o.motivo)>=0?o.motivo:'';
+    ST.epitafio=typeof o.epitafio==='string'?o.epitafio.slice(0,400):'';
     if(+o.num>=1) ST.num=Math.floor(+o.num);
     if(Array.isArray(o.arquivo)) ST.arquivo=o.arquivo.map(function(d){
       if(!d||typeof d!=='object'||!Array.isArray(d.entradas)) return null;
       var ent=d.entradas.map(cleanEntry).filter(Boolean);
       return {id:String(d.id||Math.random()).slice(0,40),num:Math.max(1,Math.floor(+d.num||1)),narrador:String(d.narrador||'').slice(0,80),
-        tom:String(d.tom||'').slice(0,60),fechadoEm:+d.fechadoEm||Date.now(),entradas:ent};
+        tom:String(d.tom||'').slice(0,60),fechadoEm:+d.fechadoEm||Date.now(),entradas:ent,
+        motivo:['cheio','morte','guardado'].indexOf(d.motivo)>=0?d.motivo:'',epitafio:typeof d.epitafio==='string'?d.epitafio.slice(0,400):''};
     }).filter(Boolean).slice(0,200);
   }catch(e){}
 }
@@ -1898,9 +1906,9 @@ function renderTramas(){
 }
 
 /* ================= DIÁRIO ================= */
-var editing=null, narrating=false, ctl=null, confirmClear=false, lastNew=null, confirmEnc=false, confirmNovo=false, verArq=null, delArq=null;
+var editing=null, narrating=false, ctl=null, confirmClear=false, lastNew=null, confirmEnc=false, confirmNovo=false, confirmMorte=false, confirmRest=null, epitTxt='', verArq=null, delArq=null;
 function diarioJson(){
-  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:ST.num,narrador:ST.narrador,tom:ST.tom,
+  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:ST.num,narrador:ST.narrador,tom:ST.tom,motivo:ST.fechado?ST.motivo:'',epitafio:ST.fechado?ST.epitafio:'',
     diario:ST.diario.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};})},null,2);
 }
 function cleanEntry(e){
@@ -1930,23 +1938,43 @@ function importarDiario(text){
   toast(n?(n+(n===1?' entrada importada':' entradas importadas')+(dup?(' ('+dup+' já existiam)'):'')+'.'):(dup?'Nada novo: essas entradas já estavam no diário.':'Nenhuma entrada válida no arquivo.'));
 }
 function arqJson(d){
-  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:d.num,narrador:d.narrador,tom:d.tom,diario:d.entradas},null,2);
+  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:d.num,narrador:d.narrador,tom:d.tom,motivo:d.motivo||'',epitafio:d.epitafio||'',diario:d.entradas},null,2);
 }
 function arqMd(d){
   var L=['# Diário nº '+d.num+(d.narrador?(' de '+d.narrador):''),''];
+  if(d.motivo==='morte') L.push('> O dono deste diário morreu.'+(d.epitafio?(' '+d.epitafio):''),'');
   d.entradas.slice().reverse().forEach(function(e){ L.push('## '+e.kind+(e.titulo?(' — '+e.titulo):''),'',e.texto,''); });
   return L.join('\n');
 }
-function encerrarDiario(){
-  ST.fechado=true; confirmEnc=false; save(); renderDiario();
-  toast('Diário encerrado.');
+function encerrarDiario(motivo,epit){
+  ST.fechado=true; ST.motivo=motivo||'cheio'; ST.epitafio=(epit||'').trim().slice(0,400);
+  confirmEnc=false; confirmMorte=false; save(); renderDiario();
+  toast(ST.motivo==='morte'?'Diário encerrado. Descanse em paz.':'Diário encerrado.');
+}
+function proxNum(){ return ST.arquivo.reduce(function(m,d){return Math.max(m,d.num);},ST.num)+1; }
+function copiaEntradas(list){
+  return list.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};});
 }
 function novoDiario(){
+  var morte=ST.fechado&&ST.motivo==='morte';
   ST.arquivo.unshift({id:'d'+Date.now().toString(36),num:ST.num,narrador:ST.narrador,tom:ST.tom,fechadoEm:Date.now(),
-    entradas:ST.diario.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};})});
-  ST.diario=[]; ST.fechado=false; ST.num++; confirmNovo=false; confirmEnc=false; editing=null;
+    motivo:ST.fechado?ST.motivo:'guardado',epitafio:ST.epitafio,entradas:copiaEntradas(ST.diario)});
+  ST.diario=[]; ST.fechado=false; ST.motivo=''; ST.epitafio=''; ST.num=proxNum();
+  if(morte) ST.narrador='';
+  confirmNovo=false; confirmEnc=false; confirmMorte=false; editing=null;
   save(); updateBadge(); renderDiario();
   toast('Novo diário começado. O anterior ficou guardado em Diários anteriores.');
+}
+function restaurarArq(d){
+  var atual=copiaEntradas(ST.diario);
+  ST.arquivo=ST.arquivo.filter(function(x){return x!==d;});
+  if(atual.length) ST.arquivo.unshift({id:'d'+Date.now().toString(36),num:ST.num,narrador:ST.narrador,tom:ST.tom,fechadoEm:Date.now(),
+    motivo:ST.fechado?ST.motivo:'guardado',epitafio:ST.epitafio,entradas:atual});
+  ST.diario=d.entradas.map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};});
+  ST.num=d.num; if(d.narrador) ST.narrador=d.narrador; if(TONS.indexOf(d.tom)>=0) ST.tom=d.tom;
+  ST.fechado=false; ST.motivo=''; ST.epitafio=''; confirmRest=null; verArq=null; editing=null;
+  save(); updateBadge(); renderDiario();
+  toast('Diário nº '+d.num+' recuperado.');
 }
 function fmtTs(ts){
   try{return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}
@@ -2014,12 +2042,18 @@ function renderArquivo(root){
   ST.arquivo.forEach(function(d){
     var tot=charsDe(d.entradas), abre=(verArq===d.id);
     var it=h('div',{class:'arqi'},
-      h('div',null,h('strong',null,'Diário nº '+d.num+(d.narrador?(' · '+d.narrador):'')),
-        h('p',{class:'hint'},d.entradas.length+(d.entradas.length===1?' entrada':' entradas')+' · '+fmtN(tot)+' caracteres · encerrado em '+fmtTs(d.fechadoEm))),
+      h('div',null,h('strong',null,(d.motivo==='morte'?'† ':'')+'Diário nº '+d.num+(d.narrador?(' · '+d.narrador):'')),
+        h('p',{class:'hint'},d.entradas.length+(d.entradas.length===1?' entrada':' entradas')+' · '+fmtN(tot)+' caracteres · '+(d.motivo==='morte'?'o personagem morreu em ':(d.motivo==='guardado'?'guardado em ':'encerrado em '))+fmtTs(d.fechadoEm)),
+        d.motivo==='morte'&&d.epitafio?h('p',{class:'epit hint'},d.epitafio):null),
       h('div',{class:'row'},
         h('button',{type:'button',class:'btn sm',onclick:function(){verArq=abre?null:d.id;renderDiario();}},abre?'Ocultar':'Ler'),
         downloads?h('button',{type:'button',class:'btn sm',onclick:function(){saveFile('diario-'+d.num+'.json',arqJson(d));}},'Exportar'):null,
         h('button',{type:'button',class:'btn sm',onclick:function(){copyText(arqMd(d),'Diário copiado.');}},'Copiar texto'),
+        confirmRest===d.id
+          ?[h('span','hint',ST.diario.length?'O diário atual será guardado no lugar. Recuperar?':'Recuperar este diário?'),
+            h('button',{type:'button',class:'btn sm pri',onclick:function(){restaurarArq(d);}},'Sim, recuperar'),
+            h('button',{type:'button',class:'btn sm',onclick:function(){confirmRest=null;renderDiario();}},'Cancelar')]
+          :h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmRest=d.id;renderDiario();}},'Recuperar'),
         h('span',{class:'grow'}),
         delArq===d.id
           ?[h('span','hint','Apagar de vez?'),
@@ -2049,25 +2083,39 @@ function renderDiario(){
   var nova=h('textarea',{id:'nota',maxlength:'2000',disabled:ST.fechado,placeholder:'Escreva sua própria anotação: o que o narrador decidiu, quem encontrou, o que sentiu.'});
   var novos=ST.diario.filter(function(e){return !e.usado&&e.kind!=='Texto';}).length;
   var tot=charsDe(ST.diario), pct=Math.min(100,tot/LIMITE*100), cheio=tot>=LIMITE, ro=ST.fechado;
-  var acoes=[];
+  var acoes=[], morte=ro&&ST.motivo==='morte';
   if(ro){
     acoes.push(confirmNovo
-      ?[h('span','hint','Começar um novo diário? Este ficará guardado em Diários anteriores.'),
+      ?[h('span','hint',morte?'Começar um novo diário, com outro personagem? Este ficará guardado em Diários anteriores.':'Começar um novo diário? Este ficará guardado em Diários anteriores.'),
         h('button',{type:'button',class:'btn sm pri',onclick:novoDiario},'Sim, começar novo'),
         h('button',{type:'button',class:'btn sm',onclick:function(){confirmNovo=false;renderDiario();}},'Cancelar')]
       :[h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmNovo=true;renderDiario();}},'Começar novo diário'),
-        h('button',{type:'button',class:'btn sm',onclick:function(){ST.fechado=false;save();renderDiario();toast('Diário reaberto.');}},'Reabrir este diário')]);
-  }else if(cheio){
-    acoes.push(confirmEnc
-      ?[h('span','hint','Encerrar este diário? Ele fica só para leitura e você pode começar outro.'),
-        h('button',{type:'button',class:'btn sm pri',onclick:encerrarDiario},'Sim, encerrar'),
-        h('button',{type:'button',class:'btn sm',onclick:function(){confirmEnc=false;renderDiario();}},'Continuar escrevendo')]
-      :h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmEnc=true;renderDiario();}},'Encerrar diário'));
+        h('button',{type:'button',class:'btn sm',onclick:function(){ST.fechado=false;ST.motivo='';ST.epitafio='';save();renderDiario();toast('Diário recuperado.');}},'Recuperar este diário')]);
+  }else{
+    if(cheio){
+      acoes.push(confirmEnc
+        ?[h('span','hint','Encerrar este diário? Ele fica só para leitura e você pode começar outro.'),
+          h('button',{type:'button',class:'btn sm pri',onclick:function(){encerrarDiario('cheio','');}},'Sim, encerrar'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){confirmEnc=false;renderDiario();}},'Continuar escrevendo')]
+        :h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmEnc=true;confirmMorte=false;renderDiario();}},'Encerrar diário (sem espaço)'));
+    }
+    if(confirmMorte){
+      var ep=h('textarea',{maxlength:'400','aria-label':'Como foi o fim do personagem (opcional)',placeholder:'Como foi o fim? (opcional) Ex.: caiu defendendo o refúgio.'}); ep.value=epitTxt;
+      ep.addEventListener('input',function(){epitTxt=ep.value;});
+      acoes.push(h('div',{class:'field',style:'width:100%'},
+        h('span','hint','O dono do diário morreu? O diário fica só para leitura e dá para recuperá-lo depois.'),ep,
+        h('div','row',
+          h('button',{type:'button',class:'btn sm bad',onclick:function(){var t=epitTxt;epitTxt='';encerrarDiario('morte',t);}},'Encerrar: o personagem morreu'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){confirmMorte=false;renderDiario();}},'Cancelar'))));
+    }else{
+      acoes.push(h('button',{type:'button',class:'btn sm bad',disabled:!ST.diario.length,onclick:function(){confirmMorte=true;confirmEnc=false;renderDiario();}},'Encerrar: o personagem morreu'));
+    }
   }
-  var meter=h('div',{class:'panel meter'+(cheio?' full':(tot>=LIMITE*.9?' warn':''))},
-    h('div',{class:'bar'},h('h3',{class:'mtit'},'Diário nº '+ST.num+(ro?' · encerrado':'')),h('span',{class:'hint grow',style:'text-align:right'},fmtN(tot)+' de '+fmtN(LIMITE)+' caracteres')),
+  var meter=h('div',{class:'panel meter'+(morte?' morte':(cheio?' full':(tot>=LIMITE*.9?' warn':'')))},
+    h('div',{class:'bar'},h('h3',{class:'mtit'},(morte?'† ':'')+'Diário nº '+ST.num+(ro?' · encerrado':'')),h('span',{class:'hint grow',style:'text-align:right'},fmtN(tot)+' de '+fmtN(LIMITE)+' caracteres')),
     h('div',{class:'mbar',role:'progressbar','aria-label':'Espaço usado no diário','aria-valuemin':'0','aria-valuemax':String(LIMITE),'aria-valuenow':String(Math.min(tot,LIMITE))},h('span',{style:'width:'+pct+'%'})),
-    ro?h('p',{class:'hint'},'Este diário foi encerrado e está só para leitura.')
+    ro?(morte?[h('p',{class:'hint'},'O dono deste diário morreu. Ele está só para leitura.'),ST.epitafio?h('p',{class:'epit'},ST.epitafio):null]
+             :h('p',{class:'hint'},'Este diário foi encerrado e está só para leitura.'))
       :(cheio?h('p',{class:'hint'},'O diário chegou ao espaço de um caderno (175.000 caracteres). Você pode encerrá-lo e começar outro, ou continuar escrevendo se preferir.')
              :(tot>=LIMITE*.9?h('p',{class:'hint'},'Faltam '+fmtN(LIMITE-tot)+' caracteres para o diário encher.'):null)),
     acoes.length?h('div',{class:'row'},acoes):null);
