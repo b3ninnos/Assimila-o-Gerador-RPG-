@@ -1,6 +1,6 @@
 /* Service worker: deixa o app funcionar sem internet.
    Ao mudar o index.html, aumente a VERSAO para os aparelhos pegarem a versão nova. */
-var VERSAO = 'v6';
+var VERSAO = 'v8';
 var CACHE = 'gerador-aventuras-' + VERSAO;
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
