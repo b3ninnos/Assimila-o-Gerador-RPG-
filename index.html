@@ -172,6 +172,15 @@ textarea{resize:vertical;min-height:5rem;line-height:1.5}
 
 /* Diário */
 .log{display:flex;flex-direction:column;gap:0}
+.meter{margin-bottom:14px}
+.meter .mbar{height:10px;background:var(--line);border-radius:2px;overflow:hidden}
+.meter .mbar span{display:block;height:100%;background:var(--s-nat);transition:width .4s}
+.meter.warn .mbar span{background:var(--s-rec)}
+.meter.full .mbar span{background:var(--s-ame)}
+.meter .mtit{font:700 1.15rem/1.1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;margin:0}
+.arq{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+.arq h3{margin:0;font:700 1.1rem/1.1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
+.arqi{background:var(--surface);border:1px solid var(--line);border-radius:2px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .entry{display:grid;grid-template-columns:6.2rem minmax(0,1fr);gap:4px 16px;padding:14px 0;border-top:1px solid var(--line)}
 .entry:first-child{border-top:0}
 .kind{font:600 .66rem/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -804,13 +813,16 @@ function saveFile(name,data){
 
 /* ================= ESTADO ================= */
 var KEY='gerador-aventuras-assimiladas-v1';
-var ST={metodo:'padrao',diario:[],over:{},narrador:'',tom:TONS[0]};
+var LIMITE=175000, MAXE=5000;
+var ST={metodo:'padrao',diario:[],over:{},narrador:'',tom:TONS[0],fechado:false,num:1,arquivo:[]};
+function charsDe(list){ return list.reduce(function(n,e){return n+(e.titulo?e.titulo.length:0)+(e.texto?e.texto.length:0);},0); }
+function fmtN(n){ try{return n.toLocaleString('pt-BR');}catch(e){return String(n);} }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
 function load(){
   try{
     var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(!o||typeof o!=='object') return;
     if(DIST[o.metodo]) ST.metodo=o.metodo;
-    if(Array.isArray(o.diario)) ST.diario=o.diario.filter(function(e){return e&&typeof e.texto==='string';}).slice(0,500).map(function(e){
+    if(Array.isArray(o.diario)) ST.diario=o.diario.filter(function(e){return e&&typeof e.texto==='string';}).slice(0,MAXE).map(function(e){
       return {id:String(e.id||Math.random()),kind:String(e.kind||'Nota'),titulo:String(e.titulo||''),texto:String(e.texto),usado:!!e.usado,ts:+e.ts||Date.now()};
     });
     if(o.over&&typeof o.over==='object') Object.keys(o.over).forEach(function(tid){
@@ -822,6 +834,14 @@ function load(){
     });
     if(typeof o.narrador==='string') ST.narrador=o.narrador.slice(0,80);
     if(TONS.indexOf(o.tom)>=0) ST.tom=o.tom;
+    ST.fechado=!!o.fechado;
+    if(+o.num>=1) ST.num=Math.floor(+o.num);
+    if(Array.isArray(o.arquivo)) ST.arquivo=o.arquivo.map(function(d){
+      if(!d||typeof d!=='object'||!Array.isArray(d.entradas)) return null;
+      var ent=d.entradas.map(cleanEntry).filter(Boolean);
+      return {id:String(d.id||Math.random()).slice(0,40),num:Math.max(1,Math.floor(+d.num||1)),narrador:String(d.narrador||'').slice(0,80),
+        tom:String(d.tom||'').slice(0,60),fechadoEm:+d.fechadoEm||Date.now(),entradas:ent};
+    }).filter(Boolean).slice(0,200);
   }catch(e){}
 }
 function rolar(){
@@ -830,8 +850,9 @@ function rolar(){
   return w.length-1;
 }
 function addLog(kind,titulo,texto){
+  if(ST.fechado){ toast('O diário está encerrado. Comece um novo na aba Diário.'); return; }
   ST.diario.unshift({id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),kind:kind,titulo:titulo,texto:texto,usado:false,ts:Date.now()});
-  ST.diario=ST.diario.slice(0,500);
+  ST.diario=ST.diario.slice(0,MAXE);
   lastNew=ST.diario[0].id;
   save(); updateBadge(); if(!$('v-diario').hidden) renderDiario();
   toast('Enviado ao diário.');
@@ -1877,9 +1898,9 @@ function renderTramas(){
 }
 
 /* ================= DIÁRIO ================= */
-var editing=null, narrating=false, ctl=null, confirmClear=false, lastNew=null;
+var editing=null, narrating=false, ctl=null, confirmClear=false, lastNew=null, confirmEnc=false, confirmNovo=false, verArq=null, delArq=null;
 function diarioJson(){
-  return JSON.stringify({tipo:'diario-assimilado',versao:1,narrador:ST.narrador,tom:ST.tom,
+  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:ST.num,narrador:ST.narrador,tom:ST.tom,
     diario:ST.diario.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};})},null,2);
 }
 function cleanEntry(e){
@@ -1893,6 +1914,7 @@ function importarDiario(text){
   try{o=JSON.parse(text);}catch(e){toast('Arquivo inválido: não é um diário em JSON.');return;}
   var list=Array.isArray(o)?o:(o&&Array.isArray(o.diario)?o.diario:null);
   if(!list){toast('Arquivo inválido: não encontrei entradas de diário.');return;}
+  if(ST.fechado){toast('O diário está encerrado. Reabra ou comece um novo para importar.');return;}
   var have={}; ST.diario.forEach(function(e){have[e.id]=1;});
   var n=0, dup=0;
   list.forEach(function(raw){
@@ -1901,11 +1923,30 @@ function importarDiario(text){
     have[e.id]=1; ST.diario.push(e); n++;
   });
   ST.diario.sort(function(a,b){return b.ts-a.ts;});
-  ST.diario=ST.diario.slice(0,500);
+  ST.diario=ST.diario.slice(0,MAXE);
   if(!o.length&&o&&typeof o.narrador==='string'&&!ST.narrador) ST.narrador=o.narrador.slice(0,80);
   if(o&&TONS.indexOf(o.tom)>=0&&!Array.isArray(o)) ST.tom=o.tom;
   save(); updateBadge(); renderDiario();
   toast(n?(n+(n===1?' entrada importada':' entradas importadas')+(dup?(' ('+dup+' já existiam)'):'')+'.'):(dup?'Nada novo: essas entradas já estavam no diário.':'Nenhuma entrada válida no arquivo.'));
+}
+function arqJson(d){
+  return JSON.stringify({tipo:'diario-assimilado',versao:1,numero:d.num,narrador:d.narrador,tom:d.tom,diario:d.entradas},null,2);
+}
+function arqMd(d){
+  var L=['# Diário nº '+d.num+(d.narrador?(' de '+d.narrador):''),''];
+  d.entradas.slice().reverse().forEach(function(e){ L.push('## '+e.kind+(e.titulo?(' — '+e.titulo):''),'',e.texto,''); });
+  return L.join('\n');
+}
+function encerrarDiario(){
+  ST.fechado=true; confirmEnc=false; save(); renderDiario();
+  toast('Diário encerrado.');
+}
+function novoDiario(){
+  ST.arquivo.unshift({id:'d'+Date.now().toString(36),num:ST.num,narrador:ST.narrador,tom:ST.tom,fechadoEm:Date.now(),
+    entradas:ST.diario.filter(function(e){return !e.writing;}).map(function(e){return {id:e.id,kind:e.kind,titulo:e.titulo,texto:e.texto,usado:!!e.usado,ts:e.ts};})});
+  ST.diario=[]; ST.fechado=false; ST.num++; confirmNovo=false; confirmEnc=false; editing=null;
+  save(); updateBadge(); renderDiario();
+  toast('Novo diário começado. O anterior ficou guardado em Diários anteriores.');
 }
 function fmtTs(ts){
   try{return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}
@@ -1941,7 +1982,7 @@ function buildPrompt(items){
   ].join('\n');
 }
 async function escrever(){
-  if(narrating||!sample) return;
+  if(narrating||!sample||ST.fechado) return;
   var items=ST.diario.filter(function(e){return !e.usado&&e.kind!=='Texto'&&e.kind!=='Nota';}).slice(0,12).reverse();
   var notas=ST.diario.filter(function(e){return !e.usado&&e.kind==='Nota';}).slice(0,6).reverse();
   items=items.concat(notas);
@@ -1967,27 +2008,83 @@ async function escrever(){
     narrating=false; ctl=null; save(); updateBadge(); renderDiario();
   }
 }
+function renderArquivo(root){
+  if(!ST.arquivo.length) return;
+  var box=h('div',{class:'arq'},h('h3',null,'Diários anteriores'));
+  ST.arquivo.forEach(function(d){
+    var tot=charsDe(d.entradas), abre=(verArq===d.id);
+    var it=h('div',{class:'arqi'},
+      h('div',null,h('strong',null,'Diário nº '+d.num+(d.narrador?(' · '+d.narrador):'')),
+        h('p',{class:'hint'},d.entradas.length+(d.entradas.length===1?' entrada':' entradas')+' · '+fmtN(tot)+' caracteres · encerrado em '+fmtTs(d.fechadoEm))),
+      h('div',{class:'row'},
+        h('button',{type:'button',class:'btn sm',onclick:function(){verArq=abre?null:d.id;renderDiario();}},abre?'Ocultar':'Ler'),
+        downloads?h('button',{type:'button',class:'btn sm',onclick:function(){saveFile('diario-'+d.num+'.json',arqJson(d));}},'Exportar'):null,
+        h('button',{type:'button',class:'btn sm',onclick:function(){copyText(arqMd(d),'Diário copiado.');}},'Copiar texto'),
+        h('span',{class:'grow'}),
+        delArq===d.id
+          ?[h('span','hint','Apagar de vez?'),
+            h('button',{type:'button',class:'btn sm bad',onclick:function(){ST.arquivo=ST.arquivo.filter(function(x){return x!==d;});delArq=null;if(verArq===d.id)verArq=null;save();renderDiario();}},'Apagar'),
+            h('button',{type:'button',class:'btn sm',onclick:function(){delArq=null;renderDiario();}},'Cancelar')]
+          :h('button',{type:'button',class:'btn sm bad',onclick:function(){delArq=d.id;renderDiario();}},'Excluir')));
+    box.append(it);
+    if(abre){
+      var log=h('div',{class:'log'});
+      d.entradas.forEach(function(e){
+        var pap=(e.kind==='Nota'||e.kind==='Texto');
+        log.append(h('article','entry'+(e.kind==='Texto'?' txt':'')+(pap?' paper':''),
+          h('div','kind',pap?(e.kind==='Nota'?'Anotação':'Entrada do diário'):e.kind),
+          h('div',{class:'ebody'},e.titulo?h('h4',null,e.titulo):'',h('p',null,e.texto),h('div','row',h('span','hint',fmtTs(e.ts))))));
+      });
+      box.append(log);
+    }
+  });
+  root.append(box);
+}
 function renderDiario(){
   var root=$('v-diario'); root.textContent='';
   var nome=h('input',{type:'text',id:'narr',maxlength:'80',placeholder:'Nome de quem escreve o diário'}); nome.value=ST.narrador;
   nome.addEventListener('input',function(){ST.narrador=nome.value;save();});
   var tom=h('select',{id:'tom'},TONS.map(function(t){return h('option',{value:t},t);})); tom.value=ST.tom;
   tom.addEventListener('change',function(){ST.tom=tom.value;save();});
-  var nova=h('textarea',{id:'nota',maxlength:'2000',placeholder:'Escreva sua própria anotação: o que o narrador decidiu, quem encontrou, o que sentiu.'});
+  var nova=h('textarea',{id:'nota',maxlength:'2000',disabled:ST.fechado,placeholder:'Escreva sua própria anotação: o que o narrador decidiu, quem encontrou, o que sentiu.'});
   var novos=ST.diario.filter(function(e){return !e.usado&&e.kind!=='Texto';}).length;
+  var tot=charsDe(ST.diario), pct=Math.min(100,tot/LIMITE*100), cheio=tot>=LIMITE, ro=ST.fechado;
+  var acoes=[];
+  if(ro){
+    acoes.push(confirmNovo
+      ?[h('span','hint','Começar um novo diário? Este ficará guardado em Diários anteriores.'),
+        h('button',{type:'button',class:'btn sm pri',onclick:novoDiario},'Sim, começar novo'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){confirmNovo=false;renderDiario();}},'Cancelar')]
+      :[h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmNovo=true;renderDiario();}},'Começar novo diário'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){ST.fechado=false;save();renderDiario();toast('Diário reaberto.');}},'Reabrir este diário')]);
+  }else if(cheio){
+    acoes.push(confirmEnc
+      ?[h('span','hint','Encerrar este diário? Ele fica só para leitura e você pode começar outro.'),
+        h('button',{type:'button',class:'btn sm pri',onclick:encerrarDiario},'Sim, encerrar'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){confirmEnc=false;renderDiario();}},'Continuar escrevendo')]
+      :h('button',{type:'button',class:'btn sm pri',onclick:function(){confirmEnc=true;renderDiario();}},'Encerrar diário'));
+  }
+  var meter=h('div',{class:'panel meter'+(cheio?' full':(tot>=LIMITE*.9?' warn':''))},
+    h('div',{class:'bar'},h('h3',{class:'mtit'},'Diário nº '+ST.num+(ro?' · encerrado':'')),h('span',{class:'hint grow',style:'text-align:right'},fmtN(tot)+' de '+fmtN(LIMITE)+' caracteres')),
+    h('div',{class:'mbar',role:'progressbar','aria-label':'Espaço usado no diário','aria-valuemin':'0','aria-valuemax':String(LIMITE),'aria-valuenow':String(Math.min(tot,LIMITE))},h('span',{style:'width:'+pct+'%'})),
+    ro?h('p',{class:'hint'},'Este diário foi encerrado e está só para leitura.')
+      :(cheio?h('p',{class:'hint'},'O diário chegou ao espaço de um caderno (175.000 caracteres). Você pode encerrá-lo e começar outro, ou continuar escrevendo se preferir.')
+             :(tot>=LIMITE*.9?h('p',{class:'hint'},'Faltam '+fmtN(LIMITE-tot)+' caracteres para o diário encher.'):null)),
+    acoes.length?h('div',{class:'row'},acoes):null);
+  root.append(meter);
   var panel=h('div','panel',
     h('div',{class:'bar'},
       h('div',{class:'field grow'},h('label',{class:'lbl','for':'narr'},'Narrador(a)'),nome),
       h('div',{class:'field',style:'min-width:14rem'},h('label',{class:'lbl','for':'tom'},'Tom da escrita'),tom)),
     h('div','field',h('label',{class:'lbl','for':'nota'},'Nova anotação'),nova),
     h('div','row',
-      h('button',{type:'button',class:'btn sm',onclick:function(){
+      h('button',{type:'button',class:'btn sm',disabled:ST.fechado,onclick:function(){
         var v=nova.value.trim(); if(!v){toast('Escreva algo antes de adicionar.');return;}
         addLog('Nota','',v);
       }},'Adicionar anotação'),
       sample?(narrating
         ?h('button',{type:'button',class:'btn sm bad',onclick:function(){if(ctl) ctl.abort();}},'Parar escrita')
-        :h('button',{type:'button',class:'btn sm pri',disabled:!novos,onclick:escrever},'Escrever entrada com Claude ('+novos+' novos)'))
+        :h('button',{type:'button',class:'btn sm pri',disabled:!novos||ST.fechado,onclick:escrever},'Escrever entrada com Claude ('+novos+' novos)'))
        :h('span','hint','A escrita automática só funciona dentro do Claude.')));
   root.append(panel);
   var impFile=h('input',{type:'file',accept:'.json,application/json',hidden:true,'aria-label':'Importar diário'});
@@ -2004,17 +2101,18 @@ function renderDiario(){
     downloads?h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){saveFile('diario-assimilado.json',diarioJson());}},'Exportar diário'):null,
     downloads?h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){saveFile('diario-assimilado.md',diarioMd());}},'Salvar .md'):null,
     h('button',{type:'button',class:'btn sm',disabled:!ST.diario.length,onclick:function(){copyText(diarioJson(),'Backup do diário copiado (JSON).');}},'Copiar backup'),
-    h('button',{type:'button',class:'btn sm',onclick:function(){impFile.click();}},'Importar diário'),
+    h('button',{type:'button',class:'btn sm',disabled:ST.fechado,onclick:function(){impFile.click();}},'Importar diário'),
     impFile,
     h('span',{class:'grow'}),
     confirmClear?[h('span','hint','Apagar todo o diário?'),
       h('button',{type:'button',class:'btn sm bad',onclick:function(){ST.diario=[];confirmClear=false;save();updateBadge();renderDiario();}},'Apagar'),
       h('button',{type:'button',class:'btn sm',onclick:function(){confirmClear=false;renderDiario();}},'Cancelar')]
-     :h('button',{type:'button',class:'btn sm bad',disabled:!ST.diario.length,onclick:function(){confirmClear=true;renderDiario();}},'Limpar diário'));
+     :h('button',{type:'button',class:'btn sm bad',disabled:!ST.diario.length||ST.fechado,onclick:function(){confirmClear=true;renderDiario();}},'Limpar diário'));
   root.append(tools);
   if(!ST.diario.length){
     root.append(h('div','empty',h('h3',null,'O diário está vazio'),
       h('p',null,'Use o botão “Enviar ao diário” em qualquer sorteio das outras abas. Eles aparecem aqui, do mais novo para o mais antigo, para você editar, copiar ou transformar em texto.')));
+    renderArquivo(root);
     return;
   }
   var log=h('div',{class:'log'});
@@ -2031,14 +2129,15 @@ function renderDiario(){
         h('div','row',
           h('span','hint',fmtTs(e.ts)),
           e.usado&&e.kind!=='Texto'?h('span','usedmark','usado na escrita'):null,
-          e.writing?null:h('button',{type:'button',class:'btn sm',onclick:function(){editing=e.id;renderDiario();var t=$('ed-'+e.id);if(t)t.focus();}},'Editar'),
-          e.writing?null:h('button',{type:'button',class:'btn sm',onclick:function(){ST.diario=ST.diario.filter(function(x){return x!==e;});save();updateBadge();renderDiario();}},'Excluir')));
+          (e.writing||ST.fechado)?null:h('button',{type:'button',class:'btn sm',onclick:function(){editing=e.id;renderDiario();var t=$('ed-'+e.id);if(t)t.focus();}},'Editar'),
+          (e.writing||ST.fechado)?null:h('button',{type:'button',class:'btn sm',onclick:function(){ST.diario=ST.diario.filter(function(x){return x!==e;});save();updateBadge();renderDiario();}},'Excluir')));
     }
     var pap=(e.kind==='Nota'||e.kind==='Texto');
     log.append(h('article','entry'+(e.kind==='Texto'?' txt':'')+(pap?' paper':'')+(e.id===lastNew?' fresh':''),h('div','kind',pap?(e.kind==='Nota'?'Anotação':'Entrada do diário'):e.kind),body));
   });
   lastNew=null;
   root.append(log);
+  renderArquivo(root);
 }
 
 
@@ -2101,7 +2200,6 @@ go(VIEWS.indexOf(hv)>=0?hv:'baralho');
 })();
 })();
 </script>
-
 
 <script>
 if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
