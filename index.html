@@ -285,6 +285,14 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
 /* Imagens reais: cada área usa um recorte (foco --p e zoom --z) de uma das três artes */
 .ph{position:relative;overflow:hidden;background:var(--raised)}
 .ph::before{content:'';position:absolute;inset:0;background:var(--i) var(--p,50% 50%)/cover no-repeat;transform:scale(var(--z,1));transform-origin:var(--p,50% 50%)}
+.cform{display:flex;flex-direction:column;gap:10px}
+.cform .bar{display:flex;gap:12px;flex-wrap:wrap}
+.clist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.crow{--c:var(--ink);background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:2px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.crow p{margin:0}
+.crow .ctop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.crow .rank{font:700 1.1rem/1 var(--f-display);color:var(--c);min-width:1.8rem}
+.crow .tag.mod{border-color:var(--s-rec);color:var(--s-rec)}
 /* mapa dos recortes: imagem, foco e zoom */
 .ph-hero{--i:var(--imgF);--p:50% 58%;--z:1}
 .ph-pessoa{--i:var(--imgA);--p:47% 40%;--z:1.9}
@@ -442,14 +450,14 @@ var CARDS_RAW=[
 ['ame','2','Rastros grandes','Pegadas de algo pesado cruzam o caminho, recentes. O que deixou aquilo caça por perto e ainda não foi visto.','ameaça'],
 ['ame','3','Mensageiro ferido','Alguém chega cambaleando com um recado que precisa chegar a outro lugar. Ajudar custa tempo e talvez traga perseguidores.','dilema'],
 ['ame','4','Pedágio','Um grupo bloqueia a passagem e cobra para deixar passar. O preço é negociável, mas a paciência deles não.','dilema'],
-['ame','5','Saque em andamento','Quem passa vê um Refúgio pequeno sendo saqueado. Intervir é arriscado, e ir embora também tem seu preço.','ameaça'],
+['ame','5','Saque em andamento','Quem passa vê um abrigo sendo saqueado, seja um acampamento de poucas pessoas ou uma comunidade inteira. Intervir é arriscado, e ir embora também tem seu preço.','ameaça'],
 ['ame','6','Acusação','Alguém do grupo é acusado de esconder uma mudança no corpo. A acusação pode ser falsa, e a reação da multidão importa mais que a verdade.','dilema'],
 ['ame','7','Cerco silencioso','Ninguém ataca, mas os movimentos fecham a área aos poucos. Quando perceberem, as saídas já terão dono.','ameaça'],
 ['ame','8','Pequena traição','Um contato de confiança vende uma informação sobre o grupo por pouco. Descobrir quem foi muda em quem se confia dali em diante.','dilema'],
 ['ame','9','Fugitivos','Famílias exaustas pedem abrigo, perseguidas por algo que não explicam direito. Aceitar divide a comida e atrai a perseguição.','dilema'],
 ['ame','10','Armadilha velha','Um caminho comum esconde uma armadilha antiga, feita por quem já se foi. Ela ainda funciona.','ameaça'],
 ['ame','J','Disputa por água','Dois grupos discutem por uma fonte, e os Infectados ficam no meio. Tomar partido, mediar ou lucrar são opções com consequências.','dilema'],
-['ame','Q','Boato que esquenta','Um comentário vira certeza em poucas horas, e a vizinhança pede ação contra alguém. O tempo para desfazer o estrago é curto.','ameaça'],
+['ame','Q','Boato que esquenta','Um comentário vira certeza em poucas horas, e quem está por perto, de um grupo pequeno a uma comunidade, pede ação contra alguém. O tempo para desfazer o estrago é curto.','ameaça'],
 ['ame','K','Chefe de bando oferece trato','O líder de um bando propõe uma aliança vantajosa, com uma condição que ele só revela depois do aperto de mão.','dilema'],
 
 ['ass','A','Febre de três dias','Alguém é tomado por febre alta sem causa aparente. Ela passa sozinha e deixa um detalhe novo no corpo ou na mente.','ameaça'],
@@ -471,7 +479,7 @@ var CARDS_RAW=[
 ['rec','3','Caravana de comerciantes','Mascates chegam com mercadorias raras e notícias frescas. Ficam pouco, e os preços dependem de quem negocia.','oportunidade'],
 ['rec','4','Poço contaminado','A água de uma fonte comum fica turva ou ganha cheiro. Beber sem tratar é arriscado, e achar outra fonte toma tempo.','ameaça'],
 ['rec','5','Achado em ruína','Uma varredura numa construção abandonada rende um lote bom de suprimentos. Alguém mais já deixou rastro lá.','oportunidade'],
-['rec','6','Ferramenta quebrada','Um item essencial do grupo ou do Refúgio falha de vez. Consertar exige peça, ajuda ou engenho.','ameaça'],
+['rec','6','Ferramenta quebrada','Um item essencial do grupo ou do abrigo falha de vez. Consertar exige peça, ajuda ou engenho.','ameaça'],
 ['rec','7','Troca vantajosa','Alguém aceita trocar algo valioso por um serviço pequeno, e a pressa dele parece maior que o preço.','oportunidade'],
 ['rec','8','Combustível desviado','Parte do estoque some, e as suspeitas apontam para mais de uma pessoa. Cobrar respostas custa confiança.','dilema'],
 ['rec','9','Remédios vencidos','Um lote de remédios foi encontrado, mas a validade passou faz tempo. Usar vale o risco quando não há mais nada.','dilema'],
@@ -491,7 +499,7 @@ CARDS_RAW=CARDS_RAW.concat([
 ['ame','+1','Cães de rua','Uma matilha magra segue o grupo a distância. Se alguém jogar comida, ela vai segui-lo para sempre.','dilema'],
 ['ame','+2','Viajante sorridente','Alguém muito simpático oferece companhia no caminho. Pergunta demais e responde de menos.','dilema'],
 ['ame','+3','Sinal de fumaça','Uma coluna de fumaça sobe em três tufos, o sinal que alguns bandos usam para pedir encontro. Ninguém sabe de quem é.','dilema'],
-['ame','+4','Ronda armada','Uma patrulha de outro Refúgio exige revistar a carga. Se a recusa vira desconfiança, a revista vira ameaça.','ameaça'],
+['ame','+4','Ronda armada','Uma patrulha armada, de uma comunidade ou de um bando, exige revistar a carga. Se a recusa vira desconfiança, a revista vira ameaça.','ameaça'],
 ['ame','+5','Criança sozinha','Uma criança aparece no caminho sem adultos por perto. Pode estar perdida, ou ser a isca de algo pior.','dilema'],
 ['ame','+6','Incêndio criminoso','Um celeiro pega fogo à noite. Há cheiro de querosene, e quem acordou primeiro sabe mais do que diz.','ameaça'],
 ['ass','+1','Dormência','Parte do corpo de alguém perde o tato por uma hora. Depois volta mais sensível do que antes.','ameaça'],
@@ -501,7 +509,7 @@ CARDS_RAW=CARDS_RAW.concat([
 ['ass','+5','Relógio parado','Todos os relógios e mecanismos do grupo param no mesmo instante e voltam sozinhos, atrasados em horas.','dilema'],
 ['ass','+6','Cura rápida','Um ferimento fecha em uma noite, deixando uma cicatriz com padrão. Ninguém sabe o preço.','oportunidade'],
 ['rec','+1','Ferro velho bom','Um monte de sucata guarda peças úteis, mas o lugar já tem dono, e ele não está à vista.','oportunidade'],
-['rec','+2','Roubo de cabras','Os animais do Refúgio somem em uma noite. As pegadas se misturam de propósito.','ameaça'],
+['rec','+2','Roubo de cabras','Os animais do grupo ou do abrigo somem em uma noite. As pegadas se misturam de propósito.','ameaça'],
 ['rec','+3','Mel selvagem','Uma colmeia grande está ao alcance. Há muito para colher, e muitas abelhas para enfrentar.','dilema'],
 ['rec','+4','Moinho consertado','Alguém põe um moinho velho para funcionar. Todos querem usá-lo, e há briga pela vez.','oportunidade'],
 ['rec','+5','Sal escasso','O sal acaba. Quem sabe onde achar mais vai querer algo em troca.','ameaça'],
@@ -516,16 +524,16 @@ CARDS_RAW=CARDS_RAW.concat([
 ['nat','+14','Ventania de cinzas','Um vento seco traz cinzas de um incêndio distante. O dia escurece, filtros entopem e dá para ver, ao longe, a cor alaranjada do céu.','ameaça'],
 ['nat','+15','Floresta que murmura','O vento passa entre as árvores de um jeito quase falado. Ninguém entende, mas os mais cansados juram reconhecer uma frase.','dilema'],
 ['nat','+16','Estiagem que acaba','A primeira chuva em meses cai pesada. A terra respira, os baldes enchem e todo mundo tem de decidir como aproveitar antes que passe.','oportunidade'],
-['ame','+7','Fila para o escambo','Uma feira improvisada junta gente de vários Refúgios. Há boas trocas, olhares tortos e quem finja ser mercador só para escolher vítimas.','oportunidade'],
+['ame','+7','Fila para o escambo','Uma feira improvisada junta gente de vários grupos e comunidades. Há boas trocas, olhares tortos e quem finja ser mercador só para escolher vítimas.','oportunidade'],
 ['ame','+8','Cartaz de procurado','Alguém pregou, num poste, o retrato desenhado de um dos Infectados, com uma recompensa. O desenho é ruim, mas o suficiente.','ameaça'],
 ['ame','+9','Simpatizante discreto','Um morador deixa comida e um recado na porta do abrigo: “eu estou do lado de vocês”. Pode ser verdade, ou uma forma de se aproximar.','dilema'],
 ['ame','+10','Caçadores de mutantes','Um grupo armado percorre a região atrás de qualquer um com marca da Assimilação. Eles dizem que protegem os outros, e muita gente concorda.','ameaça'],
-['ame','+11','Assembleia do Refúgio','O Refúgio decide em voz alta o que fazer com os recém-chegados. Falar muda o voto, mas também chama atenção.','dilema'],
+['ame','+11','Decisão coletiva','Quem vive no abrigo, em três ou em trezentos, decide em voz alta o que fazer com os recém-chegados. Falar muda o voto, mas também chama atenção.','dilema'],
 ['ame','+12','Guia oferecido','Alguém aparece oferecendo guiar o grupo por um atalho, sem cobrar nada. O atalho existe, e o grupo é quem vai pagar por ele.','dilema'],
 ['ame','+13','Casa trancada por dentro','Uma casa no meio do caminho está com portas e janelas trancadas por dentro. Dentro, há sinais de gente viva e ninguém responde.','ameaça'],
-['ame','+14','Batedor perdido','Um batedor de outro Refúgio aparece desorientado e com o mapa rasgado. Ajudá-lo cria uma dívida; deixá-lo à própria sorte vira boato.','dilema'],
+['ame','+14','Batedor perdido','Um batedor de outro grupo aparece desorientado e com o mapa rasgado. Ajudá-lo cria uma dívida; deixá-lo à própria sorte vira boato.','dilema'],
 ['ame','+15','Fogueira acesa demais','Uma fogueira grande arde no meio da noite, bem visível. Quem a acendeu quer ser notado, e nem todo mundo que vier terá boas intenções.','ameaça'],
-['ame','+16','Casamento no Refúgio','Uma festa rara junta todos no pátio. Há comida, música e uma oportunidade de trocar informações, e também de alguém se aproveitar do descuido.','oportunidade'],
+['ame','+16','Festa rara','Uma ocasião especial junta todos, numa fogueira pequena ou num pátio cheio. Há comida, música e uma oportunidade de trocar informações, e também de alguém se aproveitar do descuido.','oportunidade'],
 ['ass','+7','Gosto de metal','Todo mundo sente, ao mesmo tempo, um gosto de moeda velha na boca. Dura meia hora, e, depois, os sonhos da noite ficam muito nítidos.','dilema'],
 ['ass','+8','Sombra atrasada','A sombra de alguém demora um instante a acompanhar seus movimentos. Com o tempo, o atraso aumenta, e ela passa a fazer pequenas escolhas.','ameaça'],
 ['ass','+9','Flor que acompanha','Uma flor desconhecida brota perto de quem dorme e vira o rosto para essa pessoa. Quando murcha, deixa a pessoa estranhamente leve.','dilema'],
@@ -539,16 +547,72 @@ CARDS_RAW=CARDS_RAW.concat([
 ['rec','+7','Estoque de laboratório','Um armário velho de laboratório guarda frascos ainda lacrados. Pode ter remédio raro, ou algo que ninguém devia abrir.','oportunidade'],
 ['rec','+8','Biomassa abundante','Um brejo cheio de matéria orgânica fresca está ao alcance. Há muito para coletar, e muita coisa viva também.','oportunidade'],
 ['rec','+9','Ração estragada','Parte do estoque de grãos mofou sem aviso. Salvar o resto exige decisão rápida, e alguém vai ter de abrir mão do que contava ter.','ameaça'],
-['rec','+10','Oficina emprestada','Um Refúgio vizinho empresta a oficina por um dia. Quem usar vai querer algo em troca, e o consenso sobre o que é justo ainda não existe.','dilema'],
+['rec','+10','Oficina emprestada','Um grupo vizinho empresta a oficina ou as ferramentas por um dia. Quem usar vai querer algo em troca, e o consenso sobre o que é justo ainda não existe.','dilema'],
 ['rec','+11','Caravana de sal','Uma caravana passa vendendo sal, couro e conserva. A negociação é boa, mas o preço também vem em informações.','oportunidade'],
 ['rec','+12','Carrinho de ferramentas','Um carrinho abandonado na estrada tem ferramentas em bom estado. Está parado perto demais de uma casa onde alguém espia pela fresta.','oportunidade'],
-['rec','+13','Cisterna rachada','A reserva de água do Refúgio pinga por uma rachadura. Consertar exige material, e até lá é preciso decidir quem bebe primeiro.','ameaça'],
+['rec','+13','Cisterna rachada','A reserva de água do abrigo pinga por uma rachadura. Consertar exige material, e até lá é preciso decidir quem bebe primeiro.','ameaça'],
 ['rec','+14','Troca injusta','Um mercador oferece um bom negócio com um detalhe escondido: o que parece barato custa caro depois. Descobrir antes de fechar é a parte difícil.','dilema'],
-['rec','+15','Paiol esquecido','Um paiol esquecido guarda munição e peças. O dono pediu, antes de morrer, que ninguém tocasse, e a vizinhança ainda lembra o motivo.','dilema'],
-['rec','+16','Safra boa','O Refúgio colhe mais do que esperava. Há fartura, vontade de guardar e visitantes de olho no que sobrou.','oportunidade'],
+['rec','+15','Paiol esquecido','Um paiol esquecido guarda munição e peças. O dono pediu, antes de morrer, que ninguém tocasse, e quem mora por perto ainda lembra o motivo.','dilema'],
+['rec','+16','Safra boa','O grupo ou o abrigo colhe mais do que esperava. Há fartura, vontade de guardar e visitantes de olho no que sobrou.','oportunidade'],
+['nat','+17','Orvalho de manhã cedo','A madrugada traz um frescor raro. Dá para consertar, lavar e planejar com calma, mas alguém acorda com a sensação de ter perdido um sonho importante.','oportunidade'],
+['nat','+18','Chuva fina e constante','Uma garoa que não para. Apaga rastros, abafa sons e deixa tudo úmido: bom para quem quer passar despercebido, ruim para fogo e secagem.','dilema'],
+['nat','+19','Céu limpo à noite','As estrelas aparecem como há anos. O grupo pode se orientar, descansar ou notar algo que se move bem ao longe.','oportunidade'],
+['nat','+20','Terreno alagado','Uma baixada encharca por completo. Atravessar custa tempo e calçado; contornar custa distância e pode expor o grupo.','dilema'],
+['nat','+21','Pássaros calados','Os pássaros que cantavam se calam de uma vez. Ninguém vê nada, mas todos sentem que o silêncio tem causa.','ameaça'],
+['nat','+22','Trilha de animais','Uma trilha batida por bichos cruza o caminho. Segui-la economiza esforço e leva à água, mas também a quem caça por ali.','dilema'],
+['nat','+23','Sombra de um morro','O dia se encurta atrás de um morro alto. Quem decide acampar ali tem abrigo do vento, e quem segue enfrenta o escuro.','dilema'],
+['nat','+24','Galhos no chão','Uma ventania derruba lenha em quantidade. Há combustível de sobra, e o barulho da coleta pode chamar atenção.','oportunidade'],
+['nat','+25','Estrada tomada pela mata','Uma estrada que o grupo conhecia ficou irreconhecível. Ainda leva a algum lugar, e algo gosta de usá-la.','dilema'],
+['nat','+26','Vento a favor','Um vento firme sopra na direção do destino. Dá para andar mais e mais rápido, mas o cheiro do grupo também vai à frente.','oportunidade'],
+['nat','+27','Pó de pedra','Uma obra velha ou um deslizamento solta uma nuvem fina de poeira branca. Cobre tudo e denuncia quem passou por ali.','ameaça'],
+['nat','+28','Calor no fim da tarde','O dia esquenta de uma vez no fim da tarde. A sombra vale mais que a comida, e todo mundo quer o mesmo abrigo.','dilema'],
+['nat','+29','Madrugada gelada','A temperatura despenca. Quem dorme junto aquece, e quem dorme sozinho paga caro.','ameaça'],
+['nat','+30','Clareira inesperada','Entre árvores fechadas, uma clareira ampla. Boa para dormir e boa para ser vista de longe.','dilema'],
+['ame','+17','Visitante cansado','Alguém chega ao abrigo, de dois ou de duzentos, pedindo pouso por uma noite. Tem uma história que parece verdadeira e detalhes que não batem.','dilema'],
+['ame','+18','Briga pequena','Uma discussão por algo pequeno cresce: comida, lugar, uma frase. Quem toma partido muda a dinâmica do grupo por dias.','dilema'],
+['ame','+19','Segredo guardado','Alguém do grupo, ou de um grupo vizinho, esconde algo e está prestes a ser descoberto. Revelar ou proteger o segredo é uma escolha.','dilema'],
+['ame','+20','Boa notícia','Chega uma notícia boa: um caminho livre, um parente vivo, uma colheita salva. Todos querem comemorar, e alguém quer cobrar.','oportunidade'],
+['ame','+21','Dívida cobrada','Alguém aparece cobrando um favor antigo, feito por quem o grupo conhece. Pagar custa caro, e recusar custa a reputação.','ameaça'],
+['ame','+22','Pedido de socorro','Um grito ou sinal pede ajuda ao longe. Pode ser verdade, pode ser isca, e o tempo para decidir é curto.','dilema'],
+['ame','+23','Mapa vendido','Alguém oferece um mapa de um lugar que o grupo procura. O preço é bom, o mapa parece real e o vendedor sabe demais.','dilema'],
+['ame','+24','Dois caminhos','O grupo se divide sobre o que fazer. Cada lado tem razões, e ouvir os dois pode ser mais importante que escolher.','dilema'],
+['ame','+25','Estranho gentil','Alguém muito gentil ajuda sem ser pedido e não aceita nada em troca. Ou é bondade pura, ou tem um preço escondido.','dilema'],
+['ame','+26','Vigia dormindo','Quem devia vigiar adormece. Nada aconteceu ainda, e todo mundo sabe que poderia ter acontecido.','ameaça'],
+['ame','+27','Reencontro','Alguém do passado aparece, mudado pelo tempo e pela Assimilação. A conversa pode curar ou reabrir feridas.','dilema'],
+['ame','+28','Hora da história','Em volta do fogo, alguém conta algo que ninguém sabia. O grupo se aproxima, e uma pista sobre o mundo aparece sem esforço.','oportunidade'],
+['ame','+29','Filho de ninguém','Uma criança, um jovem ou um velho sem grupo pede para ficar. Aceitar muda o ritmo, e a decisão é de todos.','dilema'],
+['ame','+30','Caravana amiga','Um grupo conhecido passa por perto, com notícias e coisas a trocar. A passagem é curta, e boa parte das notícias vem misturada com boatos.','oportunidade'],
+['ass','+17','Sonho que se repete','Todos sonham, na mesma noite, a mesma cena, vista de ângulos diferentes. Ao acordar, cada um sabe uma parte.','dilema'],
+['ass','+18','Cheiro no vento','Um cheiro doce vem de longe e some, mais forte conforme se caminha numa direção. Segui-lo promete algo, e a Assimilação tem gosto por promessas.','dilema'],
+['ass','+19','Animal que sabe','Um bicho comum olha fixo para alguém do grupo e o segue em silêncio. Parece saber algo que ninguém sabe.','dilema'],
+['ass','+20','Água que muda','A água de um poço ou rio ganha uma cor ou um gosto novo durante a noite. Beber pode ser seguro, útil ou outra coisa.','ameaça'],
+['ass','+21','Brotos nas paredes','Pequenos brotos surgem em lugares sem terra: concreto, metal, tecido. Crescem rápido e respondem à presença das pessoas.','dilema'],
+['ass','+22','Marca nova','Um Infectado ou alguém por perto acorda com uma marca nova na pele. Não dói, não some e parece desenhar algo.','dilema'],
+['ass','+23','Eco de um lugar','Um lugar guarda o eco de coisas que aconteceram ali, visto ou ouvido por quem se aproxima. O eco muda conforme quem escuta.','dilema'],
+['ass','+24','Sede estranha','Uma sede forte e específica atinge o grupo. Saciá-la com a água certa traz alívio, e com a errada, algo mais.','ameaça'],
+['ass','+25','Pulsar da terra','O chão pulsa, devagar, como algo respirando. Em alguns pontos o pulsar acelera e, nesses pontos, o mato muda de cor.','ameaça'],
+['ass','+26','Cura estranha','Um ferimento antigo de alguém do grupo some. Uma sensação de gratidão a nada em especial acompanha a cura.','oportunidade'],
+['ass','+27','Música ao longe','Uma melodia vem de longe, sem fonte. Quem escuta se sente mais calmo, mais corajoso, ou apenas mais disposto a seguir o som.','dilema'],
+['ass','+28','Rosto no mato','Entre galhos e folhas, um rosto quase humano parece observar. Quando alguém olha direto, ele é só mato.','ameaça'],
+['ass','+29','Silêncio total','Por alguns minutos, nenhum som chega a ninguém. Os lábios se mexem, o mundo parece parado, e depois tudo volta ao normal.','ameaça'],
+['ass','+30','Luz entre as árvores','Uma luz baixa e morna aparece no meio da mata, sem fonte. Quem se aproxima descobre algo que a luz queria mostrar.','oportunidade'],
+['rec','+17','Comida a mais','Alguém do grupo, ou o abrigo, tem comida de sobra por uma noite. Dividir cria laços, guardar cria reservas, e há olhares famintos por perto.','oportunidade'],
+['rec','+18','Água racionada','A água acaba mais depressa que o previsto. Alguém precisa decidir quem recebe quanto, e a decisão será lembrada.','ameaça'],
+['rec','+19','Remédio raro','Alguém descobre um remédio útil, mas insuficiente para todos. A escolha de quem usa não é fácil nem neutra.','dilema'],
+['rec','+20','Lenha molhada','Toda a lenha do abrigo está úmida depois da chuva. Fazer fogo custa tempo e paciência, e a noite é longa.','ameaça'],
+['rec','+21','Achado no entulho','Num monte de entulho, algo útil: uma peça, uma ferramenta, um livro. Ninguém sabe de quem era, e o dono pode aparecer.','oportunidade'],
+['rec','+22','Ferramenta emprestada','Alguém empresta uma ferramenta rara por um dia, e ela quebra nas mãos do grupo. Consertar ou repor tem seu preço.','dilema'],
+['rec','+23','Estoque contado','Alguém conta os mantimentos e o número é menor do que todos achavam. Ninguém quer acusar ninguém, mas as perguntas vêm.','ameaça'],
+['rec','+24','Troca justa','Um comerciante, ou outro grupo, oferece uma troca honesta. O difícil é crer nisso depois de tanta troca desonesta.','oportunidade'],
+['rec','+25','Fogueira compartilhada','Um grupo de passagem pede para dividir a fogueira e a comida. Divide-se calor e conversa, e as ferramentas ficam à vista.','dilema'],
+['rec','+26','Carga pesada demais','Um item grande, útil mas pesado, precisa ser levado ou deixado para trás. Cada escolha tem custo, e a decisão é do grupo.','dilema'],
+['rec','+27','Conserto que rende','Um conserto simples e bem feito resolve um problema que incomodava há tempos. O alívio é grande, e a fama chega aos vizinhos.','oportunidade'],
+['rec','+28','Comida suspeita','Parte da comida ou da água amanhece com aspecto estranho. Pode ser só estrago, e pode ser que alguém tenha feito de propósito.','ameaça'],
+['rec','+29','Armadilha de peixe','Uma armadilha de pesca, bem montada, traz mais do que se esperava. Há comida, e há curiosidade sobre quem a fez.','oportunidade'],
+['rec','+30','Esconderijo seguro','O grupo encontra um lugar seco, discreto e defensável para guardar o que tem. Estar ali, porém, também diz algo sobre quem já o usou.','oportunidade'],
 ]);
-var CARDS=CARDS_RAW.map(function(c){return {id:c[0]+c[1],s:c[0],n:c[1],t:c[2],x:c[3],k:c[4]};});
-var CARDBY={}; CARDS.forEach(function(c){CARDBY[c.id]=c;});
+var CARDS=[], CARDBY={}, BASEID={}, KINDS=['ameaça','dilema','oportunidade'];
+CARDS_RAW.forEach(function(c){BASEID[c[0]+c[1]]=1;});
 var SUITBY={}; SUITS.forEach(function(s){SUITBY[s.id]=s;});
 
 function T(id,nm,rt,ct,rows,cols){return {id:id,nm:nm,rt:rt,ct:ct,rows:rows,cols:cols};}
@@ -887,7 +951,7 @@ function saveFile(name,data){
 /* ================= ESTADO ================= */
 var KEY='gerador-aventuras-assimiladas-v1';
 var LIMITE=175000, MAXE=5000;
-var ST={metodo:'padrao',diario:[],over:{},narrador:'',nome:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[]};
+var ST={metodo:'padrao',diario:[],over:{},narrador:'',nome:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[],cartas:{ed:{},rm:{},nv:[]}};
 function charsDe(list){ return list.reduce(function(n,e){return n+(e.titulo?e.titulo.length:0)+(e.texto?e.texto.length:0);},0); }
 function fmtN(n){ try{return n.toLocaleString('pt-BR');}catch(e){return String(n);} }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
@@ -908,6 +972,7 @@ function load(){
     if(typeof o.narrador==='string') ST.narrador=o.narrador.slice(0,80);
     if(TONS.indexOf(o.tom)>=0) ST.tom=o.tom;
     if(typeof o.nome==='string') ST.nome=o.nome.slice(0,60);
+    ST.cartas=cleanCartas(o.cartas);
     ST.fechado=!!o.fechado;
     ST.motivo=['cheio','morte'].indexOf(o.motivo)>=0?o.motivo:'';
     ST.epitafio=typeof o.epitafio==='string'?o.epitafio.slice(0,400):'';
@@ -1551,6 +1616,190 @@ function escolher(id){
   DK.chosen=id; DK.pile.push(id); DK.hist.unshift(id); DK.hist=DK.hist.slice(0,10); DK.fresh=false;
   renderBaralho();
 }
+/* ---- cartas personalizadas: editar, adicionar, remover ---- */
+function cleanCartas(o){
+  var r={ed:{},rm:{},nv:[]};
+  if(!o||typeof o!=='object') return r;
+  if(o.ed&&typeof o.ed==='object') Object.keys(o.ed).forEach(function(id){
+    var e=o.ed[id];
+    if(BASEID[id]&&e&&typeof e.t==='string'&&typeof e.x==='string'&&e.t.trim()&&e.x.trim())
+      r.ed[id]={t:e.t.trim().slice(0,60),x:e.x.trim().slice(0,500),k:KINDS.indexOf(e.k)>=0?e.k:'dilema'};
+  });
+  var rm=Array.isArray(o.rm)?o.rm:(o.rm&&typeof o.rm==='object'?Object.keys(o.rm):[]);
+  rm.forEach(function(id){ if(BASEID[id]) r.rm[id]=1; });
+  if(Array.isArray(o.nv)) o.nv.slice(0,500).forEach(function(c){
+    if(c&&typeof c.t==='string'&&typeof c.x==='string'&&c.t.trim()&&c.x.trim()&&SUITBY[c.s]){
+      r.nv.push({id:String(c.id||('u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6))).slice(0,40),s:c.s,
+        t:c.t.trim().slice(0,60),x:c.x.trim().slice(0,500),k:KINDS.indexOf(c.k)>=0?c.k:'dilema'});
+    }
+  });
+  return r;
+}
+function rebuildCards(){
+  var cs=ST.cartas;
+  CARDS=[]; CARDBY={};
+  CARDS_RAW.forEach(function(r){
+    var c={id:r[0]+r[1],s:r[0],n:r[1],t:r[2],x:r[3],k:r[4],base:true,orig:{t:r[2],x:r[3],k:r[4]}};
+    c.removida=!!cs.rm[c.id];
+    var e=cs.ed[c.id]; if(e){ c.t=e.t; c.x=e.x; c.k=e.k; c.editada=true; }
+    CARDBY[c.id]=c;
+    if(!c.removida) CARDS.push(c);
+  });
+  cs.nv.forEach(function(r){
+    var c={id:r.id,s:r.s,n:'★',t:r.t,x:r.x,k:r.k,custom:true};
+    CARDBY[c.id]=c; CARDS.push(c);
+  });
+  var hl=DK.hand.length;
+  function vivo(id){return CARDBY[id]&&!CARDBY[id].removida;}
+  DK.draw=DK.draw.filter(vivo); DK.pile=DK.pile.filter(vivo); DK.hand=DK.hand.filter(vivo); DK.hist=DK.hist.filter(vivo);
+  if(DK.hand.length!==hl||(DK.chosen!==null&&!vivo(DK.chosen))){ DK.hand=[]; DK.chosen=null; }
+}
+function aplicarCartas(){
+  save(); rebuildCards(); rebuild(); renderBaralho();
+}
+var EDK={on:false,suit:'todas',q:'',edit:null,nova:false,lim:30,confRest:false,confDel:null,verRem:false};
+function cartasJson(){
+  var cs=ST.cartas;
+  return JSON.stringify({tipo:'cartas-assimilacao',versao:1,ed:cs.ed,rm:Object.keys(cs.rm),nv:cs.nv},null,2);
+}
+function importarCartas(text){
+  var o; try{o=JSON.parse(text);}catch(e){toast('Arquivo inválido: não é JSON.');return;}
+  if(!o||o.tipo!=='cartas-assimilacao'){toast('Arquivo inválido: não é um arquivo de cartas.');return;}
+  var n=cleanCartas(o), cs=ST.cartas, novas=0;
+  Object.keys(n.ed).forEach(function(id){cs.ed[id]=n.ed[id];});
+  Object.keys(n.rm).forEach(function(id){cs.rm[id]=1;});
+  var have={}; cs.nv.forEach(function(c){have[c.id]=1;});
+  n.nv.forEach(function(c){ if(!have[c.id]){cs.nv.push(c);novas++;} });
+  aplicarCartas();
+  toast('Cartas importadas: '+novas+(novas===1?' nova':' novas')+', '+Object.keys(n.ed).length+' editadas, '+Object.keys(n.rm).length+' removidas.');
+}
+function cartaForm(c,withSuit,onSave,onCancel){
+  var t=h('input',{type:'text',maxlength:'60',placeholder:'Título da carta','aria-label':'Título da carta'}); t.value=c.t||'';
+  var x=h('textarea',{maxlength:'500',placeholder:'O que acontece? Escreva o gatilho em uma ou duas frases.','aria-label':'Texto da carta'}); x.value=c.x||''; x.style.minHeight='6rem';
+  var k=h('select',{'aria-label':'Tipo da carta'},KINDS.map(function(o){return h('option',{value:o},o);})); k.value=c.k||'dilema';
+  var sel=null;
+  if(withSuit){ sel=h('select',{'aria-label':'Naipe da carta'},SUITS.map(function(q){return h('option',{value:q.id},q.nm);})); sel.value=c.s||'nat'; }
+  function ok(){
+    var tt=t.value.trim(), xx=x.value.trim();
+    if(!tt||!xx){toast('Preencha o título e o texto da carta.');return;}
+    onSave({t:tt.slice(0,60),x:xx.slice(0,500),k:k.value,s:sel?sel.value:c.s});
+  }
+  return h('div',{class:'cform'},
+    h('div',{class:'field'},h('span',{class:'lbl'},'Título'),t),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Texto'),x),
+    h('div',{class:'bar'},
+      h('div',{class:'field'},h('span',{class:'lbl'},'Tipo'),k),
+      sel?h('div',{class:'field'},h('span',{class:'lbl'},'Naipe'),sel):null),
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn sm pri',onclick:ok},'Salvar carta'),
+      h('button',{type:'button',class:'btn sm',onclick:onCancel},'Cancelar')));
+}
+function cartaLinha(c){
+  var cs=ST.cartas;
+  if(EDK.edit===c.id){
+    return h('div',{class:'crow s-'+c.s,style:'--c:var(--s-'+c.s+')'},
+      cartaForm(c,!!c.custom,function(v){
+        if(c.custom){
+          var r=cs.nv.filter(function(q){return q.id===c.id;})[0]; if(r){r.t=v.t;r.x=v.x;r.k=v.k;r.s=v.s;}
+        }else{
+          if(v.t===c.orig.t&&v.x===c.orig.x&&v.k===c.orig.k) delete cs.ed[c.id]; else cs.ed[c.id]={t:v.t,x:v.x,k:v.k};
+        }
+        EDK.edit=null; aplicarCartas(); toast('Carta salva.');
+      },function(){EDK.edit=null;renderBaralho();}));
+  }
+  return h('div',{class:'crow s-'+c.s,style:'--c:var(--s-'+c.s+')'},
+    h('div',{class:'ctop'},
+      h('span',{class:'rank'},c.n),
+      h('strong',null,c.t),
+      h('span',{class:'tag'},c.k),
+      c.editada?h('span',{class:'tag mod'},'editada'):null,
+      c.custom?h('span',{class:'tag mod'},'sua'):null),
+    h('p',null,c.x),
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn sm',onclick:function(){EDK.edit=c.id;EDK.nova=false;renderBaralho();}},'Editar'),
+      c.editada?h('button',{type:'button',class:'btn sm',onclick:function(){delete cs.ed[c.id];aplicarCartas();toast('Edição desfeita.');}},'Desfazer edição'):null,
+      EDK.confDel===c.id
+        ?[h('span',{class:'hint'},c.custom?'Apagar esta carta de vez?':'Remover do baralho?'),
+          h('button',{type:'button',class:'btn sm bad',onclick:function(){
+            EDK.confDel=null;
+            if(c.custom) cs.nv=cs.nv.filter(function(q){return q.id!==c.id;}); else cs.rm[c.id]=1;
+            aplicarCartas(); toast(c.custom?'Carta apagada.':'Carta removida. Dá para restaurar depois.');
+          }},c.custom?'Apagar':'Remover'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){EDK.confDel=null;renderBaralho();}},'Cancelar')]
+        :h('button',{type:'button',class:'btn sm bad',onclick:function(){EDK.confDel=c.id;renderBaralho();}},c.custom?'Apagar':'Remover')));
+}
+function renderEditorCartas(root){
+  var cs=ST.cartas;
+  var todas=CARDS.slice();
+  var q=EDK.q.trim().toLowerCase();
+  var lista=todas.filter(function(c){
+    if(EDK.suit==='minhas'){ if(!(c.custom||c.editada)) return false; }
+    else if(EDK.suit!=='todas'&&c.s!==EDK.suit) return false;
+    return !q||(c.t+' '+c.x).toLowerCase().indexOf(q)>=0;
+  });
+  var removidas=CARDS_RAW.map(function(r){return CARDBY[r[0]+r[1]];}).filter(function(c){return c.removida;});
+  var chipDefs=[{id:'todas',nm:'Todas'}].concat(SUITS.map(function(x){return {id:x.id,nm:x.curto};})).concat([{id:'minhas',nm:'Minhas e editadas'}]);
+  var chips=h('div',{class:'chips'},chipDefs.map(function(d){
+    return h('button',{type:'button',class:'chip','aria-pressed':String(EDK.suit===d.id),onclick:function(){EDK.suit=d.id;EDK.lim=30;EDK.edit=null;renderBaralho();}},d.nm);
+  }));
+  var busca=h('input',{type:'search',placeholder:'Buscar por título ou texto','aria-label':'Buscar cartas',style:'flex:1 1 14rem;min-width:0'}); busca.value=EDK.q;
+  busca.addEventListener('input',function(){
+    EDK.q=busca.value; EDK.lim=30;
+    var pos=busca.selectionStart; renderBaralho();
+    var b2=document.querySelector('#v-baralho input[type=search]'); if(b2){b2.focus();try{b2.setSelectionRange(pos,pos);}catch(e){}}
+  });
+  var imp=h('input',{type:'file',accept:'.json,application/json',hidden:true,'aria-label':'Importar cartas'});
+  imp.addEventListener('change',function(){
+    var f=imp.files&&imp.files[0]; if(!f) return;
+    if(f.size>2*1024*1024){toast('Arquivo grande demais.');imp.value='';return;}
+    var r=new FileReader(); r.onload=function(){importarCartas(String(r.result||''));}; r.onerror=function(){toast('Não consegui ler o arquivo.');};
+    r.readAsText(f); imp.value='';
+  });
+  var nChanges=Object.keys(cs.ed).length+Object.keys(cs.rm).length+cs.nv.length;
+  root.append(h('div',{class:'panel'},
+    h('div',{class:'bar'},
+      h('div',{class:'row'},
+        h('button',{type:'button',class:'btn pri',onclick:function(){EDK.on=false;EDK.edit=null;EDK.nova=false;renderBaralho();}},'Voltar ao baralho'),
+        h('button',{type:'button',class:'btn',onclick:function(){EDK.nova=!EDK.nova;EDK.edit=null;renderBaralho();}},EDK.nova?'Fechar nova carta':'Nova carta')),
+      h('span',{class:'hint'},CARDS.length+' cartas no baralho'+(removidas.length?(' · '+removidas.length+' removidas'):''))),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Mostrar'),chips),
+    h('div',{class:'row'},busca),
+    h('div',{class:'row'},
+      downloads?h('button',{type:'button',class:'btn sm',disabled:!nChanges,onclick:function(){saveFile('cartas-assimilacao.json',cartasJson());}},'Exportar minhas cartas'):null,
+      h('button',{type:'button',class:'btn sm',disabled:!nChanges,onclick:function(){copyText(cartasJson(),'Cartas copiadas (JSON).');}},'Copiar backup'),
+      h('button',{type:'button',class:'btn sm',onclick:function(){imp.click();}},'Importar cartas'),
+      imp,
+      h('span',{class:'grow'}),
+      EDK.confRest
+        ?[h('span',{class:'hint'},'Voltar ao baralho original? Suas edições, remoções e cartas novas serão apagadas.'),
+          h('button',{type:'button',class:'btn sm bad',onclick:function(){ST.cartas={ed:{},rm:{},nv:[]};EDK.confRest=false;EDK.edit=null;aplicarCartas();toast('Baralho original restaurado.');}},'Restaurar'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){EDK.confRest=false;renderBaralho();}},'Cancelar')]
+        :h('button',{type:'button',class:'btn sm bad',disabled:!nChanges,onclick:function(){EDK.confRest=true;renderBaralho();}},'Restaurar baralho original'))));
+  if(EDK.nova){
+    root.append(h('div',{class:'panel',style:'margin-top:12px'},h('div',{class:'lbl'},'Nova carta'),
+      cartaForm({s:EDK.suit!=='todas'&&EDK.suit!=='minhas'?EDK.suit:'nat',k:'dilema'},true,function(v){
+        cs.nv.unshift({id:'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),s:v.s,t:v.t,x:v.x,k:v.k});
+        EDK.nova=false; aplicarCartas(); toast('Carta adicionada ao baralho.');
+      },function(){EDK.nova=false;renderBaralho();})));
+  }
+  var box=h('div',{class:'clist'});
+  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma carta aqui'),h('p',null,'Troque o filtro ou a busca, ou crie uma carta nova.')));
+  lista.slice(0,EDK.lim).forEach(function(c){ box.append(cartaLinha(c)); });
+  root.append(box);
+  if(lista.length>EDK.lim) root.append(h('div',{class:'row',style:'margin-top:10px'},
+    h('button',{type:'button',class:'btn sm',onclick:function(){EDK.lim+=40;renderBaralho();}},'Mostrar mais ('+(lista.length-EDK.lim)+')')));
+  if(removidas.length){
+    root.append(h('div',{class:'panel',style:'margin-top:16px'},
+      h('div',{class:'bar'},h('div',{class:'lbl'},'Cartas removidas ('+removidas.length+')'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){EDK.verRem=!EDK.verRem;renderBaralho();}},EDK.verRem?'Ocultar':'Ver e restaurar')),
+      EDK.verRem?h('div',{class:'clist'},removidas.map(function(c){
+        return h('div',{class:'crow',style:'--c:var(--s-'+c.s+')'},
+          h('div',{class:'ctop'},h('span',{class:'rank'},c.n),h('strong',null,c.t),h('span',{class:'tag'},SUITBY[c.s].curto)),
+          h('p',null,c.x),
+          h('div',{class:'row'},h('button',{type:'button',class:'btn sm pri',onclick:function(){delete cs.rm[c.id];aplicarCartas();toast('Carta restaurada.');}},'Restaurar')));
+      })):null));
+  }
+}
 function cartaNode(c,opts){
   opts=opts||{};
   var cls='card s-'+c.s+(opts.out?' out':'')+(opts.pick?' pick':'')+(opts.deal?' deal':'');
@@ -1564,6 +1813,7 @@ function cartaNode(c,opts){
 function cartaTexto(c){return '['+SUITBY[c.s].nm+' · '+c.n+'] '+c.t+'. '+c.x;}
 function renderBaralho(){
   var root=$('v-baralho'); root.textContent='';
+  if(EDK.on){ renderEditorCartas(root); return; }
   var chips=h('div','chips',SUITS.map(function(s){
     var b=h('button',{type:'button',class:'chip','aria-pressed':String(!!DK.suits[s.id]),title:s.x,style:'--c:var(--s-'+s.id+')'},h('span','sw',{style:'--c:var(--s-'+s.id+')'}),s.nm);
     b.addEventListener('click',function(){
@@ -1580,7 +1830,8 @@ function renderBaralho(){
     h('div','bar',
       h('div','row',
         h('button',{type:'button',class:'btn pri',onclick:sortear},'Sortear 3 cartas'),
-        h('button',{type:'button',class:'btn',onclick:function(){resetDeck();DK.hand=[];renderBaralho();toast('Baralho embaralhado.');}},'Embaralhar tudo')),
+        h('button',{type:'button',class:'btn',onclick:function(){resetDeck();DK.hand=[];renderBaralho();toast('Baralho embaralhado.');}},'Embaralhar tudo'),
+        h('button',{type:'button',class:'btn',onclick:function(){EDK.on=true;renderBaralho();}},'Editar cartas')),
       h('span','hint','Baralho: '+nDraw+' · Descarte: '+nPile)),
     h('div','field',h('span','lbl','Naipes no baralho'),chips),
     h('label',{class:'check','for':'dev'},dev,'Devolver ao baralho as cartas que não foram escolhidas')));
@@ -2135,6 +2386,7 @@ function renderDiario(){
 
 /* ================= INÍCIO ================= */
 load();
+rebuildCards();
 updateBadge();
 resetDeck(); DK.hand=DK.draw.splice(0,3); DK.fresh=true;
 THEMES[0].t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());});
