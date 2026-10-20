@@ -951,7 +951,7 @@ function saveFile(name,data){
 /* ================= ESTADO ================= */
 var KEY='gerador-aventuras-assimiladas-v1';
 var LIMITE=175000, MAXE=5000;
-var ST={metodo:'padrao',diario:[],over:{},narrador:'',nome:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[],cartas:{ed:{},rm:{},nv:[]}};
+var ST={metodo:'padrao',diario:[],over:{},narrador:'',nome:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[],cartas:{ed:{},rm:{},nv:[]},ameacas:{ed:{},rm:{},nv:[]}};
 function charsDe(list){ return list.reduce(function(n,e){return n+(e.titulo?e.titulo.length:0)+(e.texto?e.texto.length:0);},0); }
 function fmtN(n){ try{return n.toLocaleString('pt-BR');}catch(e){return String(n);} }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
@@ -973,6 +973,7 @@ function load(){
     if(TONS.indexOf(o.tom)>=0) ST.tom=o.tom;
     if(typeof o.nome==='string') ST.nome=o.nome.slice(0,60);
     ST.cartas=cleanCartas(o.cartas);
+    ST.ameacas=cleanAmeacas(o.ameacas);
     ST.fechado=!!o.fechado;
     ST.motivo=['cheio','morte'].indexOf(o.motivo)>=0?o.motivo:'';
     ST.epitafio=typeof o.epitafio==='string'?o.epitafio.slice(0,400):'';
@@ -1297,6 +1298,53 @@ praga:[
 ]
 };
 var CBY={}; CATS.forEach(function(c){CBY[c.id]=c;});
+/* ---- ameaças personalizadas ---- */
+var BASEA={}, EFF={}, ALLA=[], INTK=['hostil','neutra','amigável'];
+function aid(cat,nome){ return cat.id+'|'+nome; }
+CATS.forEach(function(c){ c.l.forEach(function(r){ BASEA[aid(c,r[0])]=1; }); });
+function CATS_BASE(cat){ return cat.l.map(normEnt); }
+function cleanSig(x){
+  if(!Array.isArray(x)||x.length<3) return null;
+  var cost=String(x[0]).toUpperCase().replace(/[^ABC]/g,'').slice(0,4), nome=String(x[1]||'').trim().slice(0,40), tx=String(x[2]||'').trim().slice(0,240);
+  if(!cost||!nome||!tx) return null;
+  return [cost,nome,tx];
+}
+function cleanAmeacaEnt(e){
+  if(!e||typeof e!=='object') return null;
+  var nome=String(e.nome||'').trim().slice(0,60), desc=String(e.desc||'').trim().slice(0,300), neut=String(e.neut||'').trim().slice(0,200);
+  if(!nome||!desc||!neut) return null;
+  return {nome:nome,gen:e.gen==='f'?'f':'m',desc:desc,int:INTK.indexOf(e.int)>=0?e.int:'neutra',neut:neut,sig:cleanSig(e.sig)};
+}
+function cleanAmeacas(o){
+  var r={ed:{},rm:{},nv:[]};
+  if(!o||typeof o!=='object') return r;
+  if(o.ed&&typeof o.ed==='object') Object.keys(o.ed).forEach(function(id){ if(BASEA[id]){ var e=cleanAmeacaEnt(o.ed[id]); if(e) r.ed[id]=e; } });
+  var rm=Array.isArray(o.rm)?o.rm:(o.rm&&typeof o.rm==='object'?Object.keys(o.rm):[]);
+  rm.forEach(function(id){ if(BASEA[id]) r.rm[id]=1; });
+  if(Array.isArray(o.nv)) o.nv.slice(0,500).forEach(function(c){
+    var e=c&&CBY[c.cat]?cleanAmeacaEnt(c):null;
+    if(e){ e.id=String(c.id||('a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6))).slice(0,40); e.cat=c.cat; r.nv.push(e); }
+  });
+  return r;
+}
+function rebuildAmeacas(){
+  var cs=ST.ameacas; EFF={}; ALLA=[];
+  CATS.forEach(function(c){
+    var lista=[];
+    c.l.forEach(function(r){
+      var e=normEnt(r), orig={nome:e.nome,gen:e.gen,desc:e.desc,int:e.int,neut:e.neut,sig:e.sig};
+      e.id=aid(c,e.nome); e.cat=c.id; e.base=true; e.orig=orig;
+      e.removida=!!cs.rm[e.id];
+      var o=cs.ed[e.id]; if(o){ e.nome=o.nome; e.gen=o.gen; e.desc=o.desc; e.int=o.int; e.neut=o.neut; e.sig=o.sig; e.editada=true; }
+      lista.push(e);
+    });
+    cs.nv.forEach(function(r){ if(r.cat===c.id) lista.push({id:r.id,cat:c.id,nome:r.nome,gen:r.gen,desc:r.desc,int:r.int,neut:r.neut,sig:r.sig,custom:true}); });
+    if(!lista.some(function(e){return !e.removida;})) lista.forEach(function(e){e.removida=false;});
+    EFF[c.id]=lista.filter(function(e){return !e.removida;});
+    ALLA=ALLA.concat(lista);
+  });
+}
+
 
 var TRACOS=[
  ['Camuflada','Só pode ser alvo de neutralização depois de AA investidos em localizá-la.'],
@@ -1386,6 +1434,7 @@ function pickMuts(tipo,g){
   return out;
 }
 function normEnt(c){
+  if(!Array.isArray(c)) return c;
   return c.length>=6?{nome:c[0],gen:c[1],desc:c[2],int:c[3],neut:c[4],sig:c[5]}
                    :{nome:c[0],gen:'m',desc:c[1],int:c[2],neut:c[3],sig:null};
 }
@@ -1421,7 +1470,7 @@ function genPrincipais(a){
   ];
 }
 function gerarAmeaca(o){
-  var cat=o.cat==='rand'?pick(CATS):CBY[o.cat], e=normEnt(pick(cat.l)), g=GR[o.grau-1];
+  var cat=o.cat==='rand'?pick(CATS):CBY[o.cat], e=pick(EFF[cat.id]&&EFF[cat.id].length?EFF[cat.id]:CATS_BASE(cat)), g=GR[o.grau-1];
   var intn=(o.int&&o.int!=='auto')?o.int:e.int;
   var a={cat:cat,ent:e,nome:e.nome,desc:e.desc,neutDesc:e.neut,int:intn,g:g,n:o.n,dif:DIFS[o.dif],final:!!o.final,pool:POOLS[cat.pool]};
   var as=o.assim||'sorteio';
@@ -1536,8 +1585,176 @@ function gerarAgora(){
   mostrar();
   var o=$('am-out'); if(o&&o.scrollIntoView&&window.innerWidth<700){try{o.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}}
 }
+var AED={on:false,cat:'todas',q:'',edit:null,nova:false,lim:30,confRest:false,confDel:null,verRem:false};
+function aplicarAmeacas(){ save(); rebuildAmeacas(); renderAmeacas(); }
+function ameacasJson(){
+  var cs=ST.ameacas;
+  return JSON.stringify({tipo:'ameacas-assimilacao',versao:1,ed:cs.ed,rm:Object.keys(cs.rm),nv:cs.nv},null,2);
+}
+function importarAmeacas(text){
+  var o; try{o=JSON.parse(text);}catch(e){toast('Arquivo inválido: não é JSON.');return;}
+  if(!o||o.tipo!=='ameacas-assimilacao'){toast('Arquivo inválido: não é um arquivo de ameaças.');return;}
+  var n=cleanAmeacas(o), cs=ST.ameacas, novas=0;
+  Object.keys(n.ed).forEach(function(id){cs.ed[id]=n.ed[id];});
+  Object.keys(n.rm).forEach(function(id){cs.rm[id]=1;});
+  var have={}; cs.nv.forEach(function(c){have[c.id]=1;});
+  n.nv.forEach(function(c){ if(!have[c.id]){cs.nv.push(c);novas++;} });
+  aplicarAmeacas();
+  toast('Ameaças importadas: '+novas+(novas===1?' nova':' novas')+', '+Object.keys(n.ed).length+' editadas, '+Object.keys(n.rm).length+' removidas.');
+}
+function ameacaForm(e,catId,withCat,onSave,onCancel){
+  function inp(max,ph,val,label){ var i=h('input',{type:'text',maxlength:String(max),placeholder:ph,'aria-label':label}); i.value=val||''; return i; }
+  function area(max,ph,val,label){ var a=h('textarea',{maxlength:String(max),placeholder:ph,'aria-label':label}); a.value=val||''; a.style.minHeight='4.5rem'; return a; }
+  var nome=inp(60,'Nome da ameaça (ex.: Onça-pintada)',e.nome,'Nome da ameaça');
+  var desc=area(300,'Quem ou o que é, e como se mostra.',e.desc,'Descrição da ameaça');
+  var neut=area(200,'Como os Infectados podem neutralizá-la (ex.: Afugentar com fogo e barulho).',e.neut,'Como neutralizar');
+  var intn=h('select',{'aria-label':'Intenção'},INTK.map(function(k){return h('option',{value:k},INTS[k]);})); intn.value=e.int||'hostil';
+  var cat=null;
+  if(withCat){ cat=h('select',{'aria-label':'Categoria da ameaça'},CATS.map(function(c){return h('option',{value:c.id},c.nm);})); cat.value=catId; }
+  var catAtual=catId;
+  var gen=h('select',{'aria-label':'Gênero do nome'},[h('option',{value:'m'},'Masculino (assimilado)'),h('option',{value:'f'},'Feminino (assimilada)')]); gen.value=e.gen||'m';
+  var sig=e.sig||['','',''];
+  var sc=inp(4,'Custo: A, B e C (ex.: CC)',sig[0],'Custo da ativação própria'), sn=inp(40,'Nome da ativação (ex.: Bote)',sig[1],'Nome da ativação própria'), st=area(240,'O que a ativação faz. Use {d} onde entra o dano em pontos de Saúde.',sig[2],'Texto da ativação própria');
+  function ok(){
+    var v={nome:nome.value.trim(),desc:desc.value.trim(),neut:neut.value.trim(),int:intn.value,gen:gen.value,cat:cat?cat.value:catAtual};
+    if(!v.nome||!v.desc||!v.neut){toast('Preencha nome, descrição e como neutralizar.');return;}
+    var any=sc.value.trim()||sn.value.trim()||st.value.trim();
+    if(any){
+      var c=sc.value.toUpperCase().replace(/[^ABC]/g,'');
+      if(!c||!sn.value.trim()||!st.value.trim()){toast('A ativação própria precisa de custo (A, B ou C), nome e texto. Ou deixe os três vazios.');return;}
+      v.sig=[c.slice(0,4),sn.value.trim().slice(0,40),st.value.trim().slice(0,240)];
+    }else v.sig=null;
+    onSave(v);
+  }
+  return h('div',{class:'cform'},
+    h('div',{class:'field'},h('span',{class:'lbl'},'Nome'),nome),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Descrição'),desc),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Como neutralizar'),neut),
+    h('div',{class:'bar'},
+      h('div',{class:'field'},h('span',{class:'lbl'},'Intenção'),intn),
+      cat?h('div',{class:'field'},h('span',{class:'lbl'},'Categoria'),cat):null,
+      h('div',{class:'field'},h('span',{class:'lbl'},'Gênero (para “assimilado/a”)'),gen)),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Ativação própria (opcional)'),
+      h('div',{class:'bar'},sc,sn),st,
+      h('p',{class:'hint'},'Custo com A (Sucesso), B (Adaptação) e C (Pressão). Ativações só com C prejudicam os Infectados.')),
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn sm pri',onclick:ok},'Salvar ameaça'),
+      h('button',{type:'button',class:'btn sm',onclick:onCancel},'Cancelar')));
+}
+function ameacaLinha(e){
+  var cs=ST.ameacas, cat=CBY[e.cat];
+  if(AED.edit===e.id){
+    return h('div',{class:'crow',style:'--c:var(--s-'+cat.cor+')'},
+      ameacaForm(e,e.cat,!!e.custom,function(v){
+        if(e.custom){
+          var r=cs.nv.filter(function(q){return q.id===e.id;})[0];
+          if(r){ r.nome=v.nome; r.desc=v.desc; r.neut=v.neut; r.int=v.int; r.gen=v.gen; r.sig=v.sig; r.cat=v.cat; }
+        }else{
+          var o=e.orig, same=v.nome===o.nome&&v.desc===o.desc&&v.neut===o.neut&&v.int===o.int&&v.gen===o.gen&&JSON.stringify(v.sig)===JSON.stringify(o.sig);
+          if(same) delete cs.ed[e.id]; else cs.ed[e.id]={nome:v.nome,desc:v.desc,neut:v.neut,int:v.int,gen:v.gen,sig:v.sig};
+        }
+        AED.edit=null; aplicarAmeacas(); toast('Ameaça salva.');
+      },function(){AED.edit=null;renderAmeacas();}));
+  }
+  return h('div',{class:'crow',style:'--c:var(--s-'+cat.cor+')'},
+    h('div',{class:'ctop'},
+      h('strong',null,e.nome),
+      h('span',{class:'tag'},INTS[e.int]),
+      h('span',{class:'tag'},cat.nm),
+      e.editada?h('span',{class:'tag mod'},'editada'):null,
+      e.custom?h('span',{class:'tag mod'},'sua'):null),
+    h('p',null,e.desc),
+    h('p',{class:'hint'},'Neutralizar: '+e.neut+(e.sig?(' · Ativação própria: '+e.sig[0]+' '+e.sig[1]):'')),
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn sm',onclick:function(){AED.edit=e.id;AED.nova=false;renderAmeacas();}},'Editar'),
+      e.editada?h('button',{type:'button',class:'btn sm',onclick:function(){delete cs.ed[e.id];aplicarAmeacas();toast('Edição desfeita.');}},'Desfazer edição'):null,
+      AED.confDel===e.id
+        ?[h('span',{class:'hint'},e.custom?'Apagar esta ameaça de vez?':'Remover da lista?'),
+          h('button',{type:'button',class:'btn sm bad',onclick:function(){
+            AED.confDel=null;
+            if(EFF[e.cat].length<=1){toast('Cada categoria precisa de ao menos uma ameaça.');renderAmeacas();return;}
+            if(e.custom) cs.nv=cs.nv.filter(function(q){return q.id!==e.id;}); else cs.rm[e.id]=1;
+            aplicarAmeacas(); toast(e.custom?'Ameaça apagada.':'Ameaça removida. Dá para restaurar depois.');
+          }},e.custom?'Apagar':'Remover'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){AED.confDel=null;renderAmeacas();}},'Cancelar')]
+        :h('button',{type:'button',class:'btn sm bad',onclick:function(){AED.confDel=e.id;renderAmeacas();}},e.custom?'Apagar':'Remover')));
+}
+function renderEditorAmeacas(root){
+  var cs=ST.ameacas;
+  var ativas=ALLA.filter(function(e){return !e.removida;});
+  var q=AED.q.trim().toLowerCase();
+  var lista=ativas.filter(function(e){
+    if(AED.cat==='minhas'){ if(!(e.custom||e.editada)) return false; }
+    else if(AED.cat!=='todas'&&e.cat!==AED.cat) return false;
+    return !q||(e.nome+' '+e.desc+' '+e.neut).toLowerCase().indexOf(q)>=0;
+  });
+  var removidas=ALLA.filter(function(e){return e.removida;});
+  var defs=[{id:'todas',nm:'Todas'}].concat(CATS.map(function(c){return {id:c.id,nm:c.nm};})).concat([{id:'minhas',nm:'Minhas e editadas'}]);
+  var chips=h('div',{class:'chips'},defs.map(function(d){
+    return h('button',{type:'button',class:'chip','aria-pressed':String(AED.cat===d.id),onclick:function(){AED.cat=d.id;AED.lim=30;AED.edit=null;renderAmeacas();}},d.nm);
+  }));
+  var busca=h('input',{type:'search',placeholder:'Buscar por nome ou texto','aria-label':'Buscar ameaças',style:'flex:1 1 14rem;min-width:0'}); busca.value=AED.q;
+  busca.addEventListener('input',function(){
+    AED.q=busca.value; AED.lim=30;
+    var pos=busca.selectionStart; renderAmeacas();
+    var b2=document.querySelector('#v-ameacas input[type=search]'); if(b2){b2.focus();try{b2.setSelectionRange(pos,pos);}catch(x){}}
+  });
+  var imp=h('input',{type:'file',accept:'.json,application/json',hidden:true,'aria-label':'Importar ameaças'});
+  imp.addEventListener('change',function(){
+    var f=imp.files&&imp.files[0]; if(!f) return;
+    if(f.size>2*1024*1024){toast('Arquivo grande demais.');imp.value='';return;}
+    var r=new FileReader(); r.onload=function(){importarAmeacas(String(r.result||''));}; r.onerror=function(){toast('Não consegui ler o arquivo.');};
+    r.readAsText(f); imp.value='';
+  });
+  var nCh=Object.keys(cs.ed).length+Object.keys(cs.rm).length+cs.nv.length;
+  root.append(h('div',{class:'panel'},
+    h('div',{class:'bar'},
+      h('div',{class:'row'},
+        h('button',{type:'button',class:'btn pri',onclick:function(){AED.on=false;AED.edit=null;AED.nova=false;renderAmeacas();}},'Voltar ao gerador'),
+        h('button',{type:'button',class:'btn',onclick:function(){AED.nova=!AED.nova;AED.edit=null;renderAmeacas();}},AED.nova?'Fechar nova ameaça':'Nova ameaça')),
+      h('span',{class:'hint'},ativas.length+' ameaças'+(removidas.length?(' · '+removidas.length+' removidas'):''))),
+    h('div',{class:'field'},h('span',{class:'lbl'},'Mostrar'),chips),
+    h('div',{class:'row'},busca),
+    h('div',{class:'row'},
+      downloads?h('button',{type:'button',class:'btn sm',disabled:!nCh,onclick:function(){saveFile('ameacas-assimilacao.json',ameacasJson());}},'Exportar minhas ameaças'):null,
+      h('button',{type:'button',class:'btn sm',disabled:!nCh,onclick:function(){copyText(ameacasJson(),'Ameaças copiadas (JSON).');}},'Copiar backup'),
+      h('button',{type:'button',class:'btn sm',onclick:function(){imp.click();}},'Importar ameaças'),
+      imp,
+      h('span',{class:'grow'}),
+      AED.confRest
+        ?[h('span',{class:'hint'},'Voltar às ameaças originais? Suas edições, remoções e ameaças novas serão apagadas.'),
+          h('button',{type:'button',class:'btn sm bad',onclick:function(){ST.ameacas={ed:{},rm:{},nv:[]};AED.confRest=false;AED.edit=null;aplicarAmeacas();toast('Ameaças originais restauradas.');}},'Restaurar'),
+          h('button',{type:'button',class:'btn sm',onclick:function(){AED.confRest=false;renderAmeacas();}},'Cancelar')]
+        :h('button',{type:'button',class:'btn sm bad',disabled:!nCh,onclick:function(){AED.confRest=true;renderAmeacas();}},'Restaurar ameaças originais'))));
+  if(AED.nova){
+    var c0=(AED.cat!=='todas'&&AED.cat!=='minhas')?AED.cat:'pessoas';
+    root.append(h('div',{class:'panel',style:'margin-top:12px'},h('div',{class:'lbl'},'Nova ameaça'),
+      ameacaForm({int:'hostil'},c0,true,function(v){
+        cs.nv.unshift({id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),cat:v.cat,nome:v.nome,desc:v.desc,neut:v.neut,int:v.int,gen:v.gen,sig:v.sig});
+        AED.nova=false; aplicarAmeacas(); toast('Ameaça adicionada.');
+      },function(){AED.nova=false;renderAmeacas();})));
+  }
+  var box=h('div',{class:'clist'});
+  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma ameaça aqui'),h('p',null,'Troque o filtro ou a busca, ou crie uma ameaça nova.')));
+  lista.slice(0,AED.lim).forEach(function(e){ box.append(ameacaLinha(e)); });
+  root.append(box);
+  if(lista.length>AED.lim) root.append(h('div',{class:'row',style:'margin-top:10px'},
+    h('button',{type:'button',class:'btn sm',onclick:function(){AED.lim+=40;renderAmeacas();}},'Mostrar mais ('+(lista.length-AED.lim)+')')));
+  if(removidas.length){
+    root.append(h('div',{class:'panel',style:'margin-top:16px'},
+      h('div',{class:'bar'},h('div',{class:'lbl'},'Ameaças removidas ('+removidas.length+')'),
+        h('button',{type:'button',class:'btn sm',onclick:function(){AED.verRem=!AED.verRem;renderAmeacas();}},AED.verRem?'Ocultar':'Ver e restaurar')),
+      AED.verRem?h('div',{class:'clist'},removidas.map(function(e){
+        return h('div',{class:'crow',style:'--c:var(--s-'+CBY[e.cat].cor+')'},
+          h('div',{class:'ctop'},h('strong',null,e.nome),h('span',{class:'tag'},CBY[e.cat].nm)),
+          h('p',null,e.desc),
+          h('div',{class:'row'},h('button',{type:'button',class:'btn sm pri',onclick:function(){delete cs.rm[e.id];aplicarAmeacas();toast('Ameaça restaurada.');}},'Restaurar')));
+      })):null));
+  }
+}
 function renderAmeacas(){
   var root=$('v-ameacas'); root.textContent='';
+  if(AED.on){ renderEditorAmeacas(root); return; }
   var tiles=[{id:'rand',nm:'Qualquer',x:'Sortear a categoria',cor:'ink'}].concat(CATS).map(function(t){
     return h('button',{type:'button',class:'tipo t-'+(t.cor||'ink'),'aria-pressed':String(AP.cat===t.id),onclick:function(){AP.cat=t.id;renderAmeacas();}},
       t.id==='rand'?h('div',{class:'art rand'},h('span',null,'?')):artNode(t.art),
@@ -1564,6 +1781,7 @@ function renderAmeacas(){
     h('label',{class:'check','for':'am-fin'},fin,'Ameaça final (a ameaça é o próprio Conflito, com objetivos principais)'),
     h('div',{class:'row'},
       h('button',{type:'button',class:'btn pri',onclick:function(){AP.final=fin.checked;gerarAgora();}},'Gerar ameaça'),
+      h('button',{type:'button',class:'btn',onclick:function(){AED.on=true;renderAmeacas();}},'Editar ameaças'),
       h('span',{class:'legenda'},h('span',{class:'sym sA'},'A'),' Sucesso ',h('span',{class:'sym sB'},'B'),' Adaptação ',h('span',{class:'sym sC'},'C'),' Pressão'))));
   root.append(h('div',{id:'am-out',class:'amlist',style:'margin-top:16px'}));
   mostrar();
@@ -2387,6 +2605,7 @@ function renderDiario(){
 /* ================= INÍCIO ================= */
 load();
 rebuildCards();
+rebuildAmeacas();
 updateBadge();
 resetDeck(); DK.hand=DK.draw.splice(0,3); DK.fresh=true;
 THEMES[0].t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());});
