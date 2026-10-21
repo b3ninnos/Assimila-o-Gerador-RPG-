@@ -4,6 +4,7 @@
 <meta name="theme-color" content="#0f1311">
 <meta name="description" content="Gerador de eventos, tabelas, oráculos e diário para jogo solo, ferramenta de fã de Assimilação RPG.">
 <link rel="manifest" href="manifest.webmanifest">
+<script src="firebase-config.js"></script>
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,7 +26,7 @@
      CORES E TEMA · BASE · CABEÇALHO E ABAS · BOTÕES E CAMPOS · CARTAS ·
      TABELAS · ORÁCULOS E TRAMAS · DIÁRIO · PAPEL DO DIÁRIO ·
      ANIMAÇÕES E AVISOS · IMAGENS: MAPA DOS RECORTES · AMEAÇAS · SÍMBOLOS ·
-     FICHA DA AMEAÇA
+     CONTA E NUVEM · FICHA DA AMEAÇA
    Dicas: as cores estão todas em "CORES E TEMA"; para mudar uma cor do
    site inteiro basta mexer lá.
    ============================================================ */
@@ -353,6 +354,11 @@ select{appearance:auto}
 .legenda .sy{width:1.5rem;height:1.5rem;vertical-align:middle}
 :root[data-theme="dark"] .sy{filter:brightness(1.5) saturate(1.1)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sy{filter:brightness(1.5) saturate(1.1)}}
+/* ================= CONTA E NUVEM ================= */
+#conta{max-width:30rem}
+.nverro{color:var(--s-ame)}
+#contabtn{max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ================= FICHA DA AMEAÇA ================= */
 .cost{display:inline-flex;gap:3px;align-items:center;flex-wrap:wrap}
 .cost .num{font:700 1.3rem/1 var(--f-display);margin-right:2px}
@@ -405,7 +411,8 @@ select{appearance:auto}
     <div class="hero" id="hero" aria-hidden="true"></div>
     <div class="stripe" aria-hidden="true"></div>
     <p class="eyebrow">Ferramenta de fã para Assimilação RPG · não oficial</p>
-    <div class="brandrow"><h1 class="brand">Gerador de Aventuras</h1><button type="button" class="btn sm" id="themebtn" aria-pressed="false">Modo escuro</button></div>
+    <div class="brandrow"><h1 class="brand">Gerador de Aventuras</h1><div class="row"><button type="button" class="btn sm" id="contabtn" hidden>Entrar</button><button type="button" class="btn sm" id="themebtn" aria-pressed="false">Modo escuro</button></div></div>
+    <section class="panel" id="conta" aria-label="Conta" hidden></section>
     <nav class="tabs" role="tablist" aria-label="Geradores">
       <button class="tab" role="tab" type="button" data-v="baralho" id="t-baralho">Baralho</button>
       <button class="tab" role="tab" type="button" data-v="tabelas" id="t-tabelas">Tabelas</button>
@@ -444,7 +451,7 @@ select{appearance:auto}
      AMEAÇAS: INTERFACE     tela da aba Ameaças e editor
      ABAS                   troca de abas
      BARALHO                tela do baralho e editor de cartas
-     TABELAS · ORÁCULOS · TRAMAS · DIÁRIO · TEMA · INÍCIO
+     TABELAS · ORÁCULOS · TRAMAS · DIÁRIO · CONTA E NUVEM · TEMA · INÍCIO
    Para mudar TEXTOS do jogo, edite as seções de DADOS (ou use os
    editores dentro do próprio site, que não mexem no código).
    ============================================================ */
@@ -964,7 +971,7 @@ var LIMITE=175000, MAXE=5000;
 var ST={metodo:'padrao',diario:[],over:{},narrador:'',nome:'',tom:TONS[0],fechado:false,motivo:'',epitafio:'',num:1,arquivo:[],cartas:{ed:{},rm:{},nv:[]},ameacas:{ed:{},rm:{},nv:[]}};
 function charsDe(list){ return list.reduce(function(n,e){return n+(e.titulo?e.titulo.length:0)+(e.texto?e.texto.length:0);},0); }
 function fmtN(n){ try{return n.toLocaleString('pt-BR');}catch(e){return String(n);} }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){} nuvemMudou();}
 function load(){
   try{
     var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(!o||typeof o!=='object') return;
@@ -2612,6 +2619,219 @@ function renderDiario(){
 }
 
 
+/* ================= CONTA E NUVEM ================= */
+/* Login opcional (usuário e senha, ou Google) com Firebase, para guardar o diário e as edições na nuvem
+   e usar o mesmo conteúdo em vários aparelhos. Só aparece se existir o arquivo firebase-config.js com a
+   configuração do projeto (passo a passo no GUIA-LOGIN.txt). Sem isso, tudo fica só neste aparelho.
+   Funcionamento: cada mudança salva (save) agenda um envio para a nuvem; ao abrir o app, compara-se a
+   data da nuvem com a deste aparelho e vale a mais nova (se as duas mudaram, o app pergunta). */
+var NV={cfg:null,auth:null,db:null,user:null,aberto:false,modo:'entrar',erro:'',ocupado:false,enviando:false,pend:false,timer:null,ultimo:0,campoU:'',campoP:'',campoP2:''};
+var NVKEY='gerador-aventuras-nuvem-v1';          // controle local: quem está logado e quando foi a última sincronização
+var NVDOM='@gerador-assimilacao.example';        // o "usuário" vira um e-mail fictício só para o Firebase aceitar
+var NVPARTE=300000;                               // tamanho de cada pedaço enviado (limite do Firestore é 1 MB por documento)
+
+function nvMeta(){try{var m=JSON.parse(localStorage.getItem(NVKEY)||'null');return m&&typeof m==='object'?m:{};}catch(e){return {};}}
+function nvSalvaMeta(m){try{localStorage.setItem(NVKEY,JSON.stringify(m));}catch(e){}}
+function nvVazio(){
+  function v(x){return !x||(Array.isArray(x)?!x.length:Object.keys(x).length===0);}
+  var c=ST.cartas||{},a=ST.ameacas||{};
+  return v(ST.diario)&&v(ST.arquivo)&&v(ST.over)&&v(c.ed)&&v(c.rm)&&v(c.nv)&&v(a.ed)&&v(a.rm)&&v(a.nv)&&!ST.nome&&!ST.narrador;
+}
+function nvPartes(t){
+  var r=[],i=0;
+  while(i<t.length){
+    var f=Math.min(i+NVPARTE,t.length);
+    if(f<t.length){var c=t.charCodeAt(f-1); if(c>=0xD800&&c<=0xDBFF) f--;}   // não corta um par de substituição (emoji)
+    r.push(t.slice(i,f)); i=f;
+  }
+  return r.length?r:[''];
+}
+function nvNome(u){
+  var e=(u&&u.email)||'';
+  if(e.slice(-NVDOM.length)===NVDOM) return e.slice(0,-NVDOM.length);
+  return (u&&(u.displayName||u.email))||'';
+}
+function nvMsgErro(e){
+  var c=(e&&e.code)||'';
+  var t={
+    'auth/user-not-found':'Usuário ou senha incorretos.','auth/wrong-password':'Usuário ou senha incorretos.','auth/invalid-credential':'Usuário ou senha incorretos.',
+    'auth/email-already-in-use':'Esse nome de usuário já existe. Escolha outro.','auth/weak-password':'A senha precisa ter pelo menos 6 caracteres.',
+    'auth/network-request-failed':'Sem conexão com a internet.','auth/too-many-requests':'Muitas tentativas. Espere um pouco e tente de novo.',
+    'auth/operation-not-allowed':'Esse tipo de login não está ativado no projeto Firebase.','auth/popup-closed-by-user':'A janela do Google foi fechada.',
+    'auth/popup-blocked':'O navegador bloqueou a janela do Google. Use usuário e senha.','auth/cancelled-popup-request':'',
+    'auth/unauthorized-domain':'Este endereço não está autorizado no Firebase (veja o GUIA-LOGIN.txt).','auth/operation-not-supported-in-this-environment':'Login com Google não funciona aqui. Use usuário e senha.',
+    'permission-denied':'A nuvem recusou o acesso. Confira as regras do Firestore (GUIA-LOGIN.txt).','unavailable':'Sem conexão com a nuvem.'
+  };
+  if(c in t) return t[c];
+  return 'Algo deu errado'+(c?(' ('+c+')'):'')+'.';
+}
+
+/* --- carregar o Firebase só quando preciso (e só se houver configuração) --- */
+function nvScript(src){return new Promise(function(ok,no){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){no({code:'sdk'});};document.head.append(s);});}
+function nvSDK(){
+  if(window.firebase&&firebase.auth&&firebase.firestore) return Promise.resolve();
+  var b='https://www.gstatic.com/firebasejs/10.12.2/';
+  return nvScript(b+'firebase-app-compat.js').then(function(){return nvScript(b+'firebase-auth-compat.js');}).then(function(){return nvScript(b+'firebase-firestore-compat.js');});
+}
+function nvLiga(){
+  if(NV.auth) return Promise.resolve();
+  return nvSDK().then(function(){
+    if(!firebase.apps.length) firebase.initializeApp(NV.cfg);
+    NV.auth=firebase.auth(); NV.db=firebase.firestore();
+    NV.auth.onAuthStateChanged(function(u){
+      NV.user=u||null; nvRender();
+      if(u){
+        var m=nvMeta();
+        if(m.uid!==u.uid){ nvSalvaMeta({uid:u.uid,sync:0,mod:0}); }
+        nvChecar();
+      }
+    });
+  });
+}
+
+/* --- nuvem: ler, baixar, enviar --- */
+function nvRef(){return NV.db.collection('usuarios').doc(NV.user.uid);}
+function nvBaixar(rem){
+  var col=nvRef().collection('partes');
+  return col.get().then(function(snap){
+    var ps=snap.docs.map(function(d){return d.data();}).sort(function(a,b){return a.i-b.i;});
+    if(ps.length<rem.n) throw {code:'incompleto'};
+    var txt=ps.slice(0,rem.n).map(function(p){return p.t;}).join('');
+    var o=JSON.parse(txt); if(!o||typeof o!=='object') throw {code:'invalido'};
+    try{ var atual=localStorage.getItem(KEY); if(atual) localStorage.setItem(KEY+'-backup',atual); }catch(e){}
+    localStorage.setItem(KEY,txt);
+    nvSalvaMeta({uid:NV.user.uid,sync:rem.mod,mod:rem.mod});
+    toast('Dados da nuvem carregados.');
+    setTimeout(function(){location.reload();},400);
+  });
+}
+function nvEnviar(){
+  if(!NV.user||NV.enviando) return Promise.resolve();
+  clearTimeout(NV.timer); NV.enviando=true; NV.erro=''; nvPintaStatus();
+  var txt=JSON.stringify(ST), ps=nvPartes(txt), mod=Date.now(), ref=nvRef(), col=ref.collection('partes');
+  function id(i){return 'p'+('0000'+i).slice(-4);}
+  return col.get().then(function(snap){
+    var b=NV.db.batch();
+    ps.forEach(function(t,i){b.set(col.doc(id(i)),{i:i,t:t});});
+    snap.docs.forEach(function(d){ if(!(d.data().i<ps.length)) b.delete(d.ref); });
+    b.set(ref,{mod:mod,n:ps.length,tam:txt.length});
+    return b.commit();
+  }).then(function(){
+    var m=nvMeta(); m.uid=NV.user.uid; m.sync=mod; if((m.mod||0)<=mod){m.mod=mod; NV.pend=false;} nvSalvaMeta(m);
+    NV.ultimo=mod;
+  }).catch(function(e){NV.erro=nvMsgErro(e);}).then(function(){NV.enviando=false; nvRender();});
+}
+function nvChecar(){
+  if(!NV.user||NV.ocupado) return Promise.resolve();
+  NV.ocupado=true; NV.erro=''; nvRender();
+  return nvRef().get().then(function(s){
+    var rem=s.exists?s.data():null, m=nvMeta(), sync=m.sync||0, local=(m.mod||0)>sync, primeira=!sync;
+    if(!rem){ return nvVazio()?null:nvEnviar(); }
+    NV.ultimo=sync;
+    if(rem.mod>sync){
+      var baixa=primeira?nvVazio():!local;
+      if(!baixa){
+        baixa=confirm('Este aparelho e a nuvem têm conteúdos diferentes.\n\nOK = usar a versão da NUVEM (a deste aparelho fica guardada como cópia de segurança)\nCancelar = manter a deste aparelho e enviá-la para a nuvem');
+      }
+      return baixa?nvBaixar(rem):nvEnviar();
+    }
+    if(local) return nvEnviar();
+    NV.ultimo=rem.mod;
+  }).catch(function(e){NV.erro=nvMsgErro(e);}).then(function(){NV.ocupado=false; nvRender();});
+}
+/* chamada por save(): marca que há mudança e agenda o envio */
+function nuvemMudou(){
+  var m=nvMeta(); if(!m.uid) return;
+  m.mod=Date.now(); nvSalvaMeta(m);
+  if(NV.user){ NV.pend=true; clearTimeout(NV.timer); NV.timer=setTimeout(nvEnviar,3000); nvPintaStatus(); }
+}
+
+/* --- entrar, criar conta, sair --- */
+function nvEntrar(){
+  var u=NV.campoU.trim().toLowerCase(), p=NV.campoP;
+  if(!/^[a-z0-9._-]{3,24}$/.test(u)){ NV.erro='Usuário: 3 a 24 letras (sem acento), números, ponto, hífen ou sublinhado.'; return nvRender(); }
+  if(p.length<6){ NV.erro='A senha precisa ter pelo menos 6 caracteres.'; return nvRender(); }
+  if(NV.modo==='criar'&&p!==NV.campoP2){ NV.erro='As duas senhas não são iguais.'; return nvRender(); }
+  NV.erro=''; NV.ocupado=true; nvRender();
+  nvLiga().then(function(){
+    return NV.modo==='criar'?NV.auth.createUserWithEmailAndPassword(u+NVDOM,p):NV.auth.signInWithEmailAndPassword(u+NVDOM,p);
+  }).then(function(){NV.campoP='';NV.campoP2='';}).catch(function(e){NV.erro=nvMsgErro(e);}).then(function(){NV.ocupado=false;nvRender();});
+}
+function nvGoogle(){
+  NV.erro=''; NV.ocupado=true; nvRender();
+  nvLiga().then(function(){return NV.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());})
+    .catch(function(e){NV.erro=nvMsgErro(e);}).then(function(){NV.ocupado=false;nvRender();});
+}
+function nvSair(){
+  var pronto=NV.pend?nvEnviar():Promise.resolve();
+  pronto.then(function(){return NV.auth.signOut();}).then(function(){NV.user=null;NV.pend=false;nvSalvaMeta({});nvRender();toast('Você saiu da conta. Os dados continuam neste aparelho.');});
+}
+
+/* --- tela --- */
+function nvStatusTxt(){
+  if(NV.erro) return NV.erro;
+  if(NV.ocupado||NV.enviando) return 'Sincronizando…';
+  if(NV.pend) return 'Alterações a enviar…';
+  if(NV.ultimo){ var d=new Date(NV.ultimo); return 'Salvo na nuvem em '+d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.'; }
+  return 'Ainda não sincronizado.';
+}
+function nvPintaStatus(){ var e=$('nv-status'); if(e){ e.textContent=nvStatusTxt(); e.className='hint'+(NV.erro?' nverro':''); } }
+function nvRender(){
+  var b=$('contabtn'), p=$('conta'); if(!b||!p) return;
+  b.textContent=NV.user?('Conta: '+nvNome(NV.user)):'Entrar';
+  p.hidden=!NV.aberto; if(!NV.aberto) return;
+  p.replaceChildren();
+  var fechar=h('button',{type:'button',class:'btn sm',onclick:function(){NV.aberto=false;nvRender();}},'Fechar');
+  if(NV.user){
+    p.append(
+      h('div',{class:'sech'},h('h3','Sua conta'),fechar),
+      h('p',{class:'hint'},'Conectado como ',h('strong',nvNome(NV.user)),'. O diário, as cartas e as ameaças editadas são salvos na nuvem e aparecem nos outros aparelhos em que você entrar.'),
+      h('p',{id:'nv-status',class:'hint'+(NV.erro?' nverro':'')},nvStatusTxt()),
+      h('div',{class:'row'},
+        h('button',{type:'button',class:'btn pri',disabled:NV.ocupado||NV.enviando,onclick:function(){nvChecar().then(function(){return nvEnviar();});}},'Sincronizar agora'),
+        h('button',{type:'button',class:'btn',onclick:nvSair},'Sair'))
+    );
+    return;
+  }
+  var criar=NV.modo==='criar';
+  function campo(rot,tipo,chave,auto){
+    return h('label',{class:'field'},h('span',{class:'lbl'},rot),
+      h('input',{type:tipo,value:NV[chave],autocomplete:auto,autocapitalize:'none',spellcheck:false,oninput:function(e){NV[chave]=e.target.value;},
+        onkeydown:function(e){if(e.key==='Enter') nvEntrar();}}));
+  }
+  p.append(
+    h('div',{class:'sech'},h('h3','Entrar para guardar na nuvem'),fechar),
+    h('div',{class:'chips'},
+      h('button',{type:'button',class:'chip','aria-pressed':String(!criar),onclick:function(){NV.modo='entrar';NV.erro='';nvRender();}},'Entrar'),
+      h('button',{type:'button',class:'chip','aria-pressed':String(criar),onclick:function(){NV.modo='criar';NV.erro='';nvRender();}},'Criar conta')),
+    campo('Usuário','text','campoU','username'),
+    campo('Senha','password','campoP',criar?'new-password':'current-password'),
+    criar?campo('Repita a senha','password','campoP2','new-password'):'',
+    NV.erro?h('p',{id:'nv-status',class:'hint nverro'},NV.erro):'',
+    h('div',{class:'row'},
+      h('button',{type:'button',class:'btn pri',disabled:NV.ocupado,onclick:nvEntrar},NV.ocupado?'Aguarde…':(criar?'Criar conta':'Entrar')),
+      NV.cfg.google?h('button',{type:'button',class:'btn',disabled:NV.ocupado,onclick:nvGoogle},'Entrar com Google'):null),
+    h('p',{class:'hint'},'Com usuário e senha não há recuperação: se esquecer a senha, a conta não volta (o diário continua neste aparelho). Anote a senha.'+(NV.cfg.google?' Com Google, a recuperação é a do próprio Google.':''))
+  );
+}
+function nvIniciar(){
+  var cfg=window.FIREBASE_CONFIG; if(!cfg||!cfg.apiKey||!cfg.projectId) return;
+  NV.cfg=cfg;
+  var b=$('contabtn'); b.hidden=false;
+  b.addEventListener('click',function(){
+    NV.aberto=!NV.aberto; nvRender();
+    if(NV.aberto&&!NV.auth) nvLiga().catch(function(){NV.erro='Sem conexão para carregar o login.';nvRender();});
+  });
+  nvRender();
+  var m=nvMeta();
+  if(m.uid) nvLiga().catch(function(){});      // já tinha conta neste aparelho: reconecta sozinho
+  document.addEventListener('visibilitychange',function(){
+    if(!NV.user) return;
+    if(document.visibilityState==='hidden'){ if(NV.pend) nvEnviar(); } else nvChecar();
+  });
+  window.addEventListener('online',function(){ if(!NV.auth&&nvMeta().uid) nvLiga().catch(function(){}); else nvChecar(); });
+}
+
 /* ================= TEMA ================= */
 (function(){
   var TK='gerador-aventuras-tema-v1', root=document.documentElement, btn=$('themebtn');
@@ -2635,6 +2855,7 @@ function renderDiario(){
 
 /* ================= INÍCIO ================= */
 load();
+nvIniciar();
 rebuildCards();
 rebuildAmeacas();
 updateBadge();
