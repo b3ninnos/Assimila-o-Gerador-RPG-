@@ -1,6 +1,6 @@
 /* Service worker: deixa o app funcionar sem internet.
    Ao mudar o index.html, aumente a VERSAO para os aparelhos pegarem a versão nova. */
-var VERSAO = 'v14';
+var VERSAO = 'v15';
 var CACHE = 'gerador-aventuras-' + VERSAO;
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 
@@ -19,6 +19,10 @@ self.addEventListener('fetch', function (e) {
   var mesmaOrigem = url.origin === location.origin;
   var fonte = /(^|\.)(fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname);
   if (!mesmaOrigem && !fonte) return;
+  if (mesmaOrigem && /firebase-config\.js$/.test(url.pathname)) {   // a configuração do login vale sempre a mais nova
+    e.respondWith(fetch(req, { cache: 'no-store' }).catch(function () { return caches.match(req); }));
+    return;
+  }
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(function (r) {
       var cp = r.clone(); caches.open(CACHE).then(function (c) { c.put('./index.html', cp); }); return r;

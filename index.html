@@ -2815,7 +2815,15 @@ function nvRender(){
   );
 }
 function nvIniciar(){
-  var cfg=window.FIREBASE_CONFIG; if(!cfg||!cfg.apiKey||!cfg.projectId) return;
+  var cfg=window.FIREBASE_CONFIG;
+  if(!cfg||!cfg.apiKey||!cfg.projectId){
+    // só no app publicado (que carrega firebase-config.js): explica por que o botão não apareceu
+    if(document.querySelector('script[src="firebase-config.js"]')){
+      var falta=!cfg?'o arquivo firebase-config.js não foi encontrado ou tem erro de digitação (aspas, vírgulas)':'faltam valores no firebase-config.js ('+['apiKey','projectId'].filter(function(k){return !cfg[k];}).join(', ')+')';
+      var f=document.querySelector('.legal'); if(f) f.append(h('p',{id:'nv-diag'},'Conta na nuvem desativada: '+falta+'. Veja o GUIA-LOGIN.txt.'));
+    }
+    return;
+  }
   NV.cfg=cfg;
   var b=$('contabtn'); b.hidden=false;
   b.addEventListener('click',function(){
