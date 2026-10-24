@@ -1,6 +1,6 @@
 {
-  "name": "Gerador de Aventuras Assimiladas",
-  "short_name": "Gerador",
+  "name": "Assimilação RPG: Solo",
+  "short_name": "Assimilação Solo",
   "description": "Baralho de eventos, tabelas, oráculos, tramas e diário para jogo solo.",
   "lang": "pt-BR",
   "start_url": "./index.html",

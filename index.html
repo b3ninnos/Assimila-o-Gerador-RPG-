@@ -9,11 +9,11 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Gerador">
+<meta name="apple-mobile-web-app-title" content="Assimilação Solo">
 </head><body>
-<title>Gerador de Aventuras Assimiladas</title>
+<title>Assimilação RPG: Solo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
 <style>
 /* ============================================================
    GERADOR DE AVENTURAS ASSIMILADAS: ESTE ARQUIVO TEM 4 PARTES
@@ -32,31 +32,34 @@
    ============================================================ */
 /* ================= CORES E TEMA ================= */
 :root{
-  --bg:#d9ddd5;
-  --surface:#e9ece5;
-  --raised:#f4f6f1;
+  --bg:#cbcfc0;
+  --surface:#e9e6d7;
+  --raised:#f3f1e5;
   --ink:#161c1a;
   --muted:#556059;
-  --line:#b3bbb0;
+  --line:#b3ab98;
   --s-nat:#2c7448;
   --s-ame:#ad401c;
   --s-ass:#76398f;
   --s-rec:#8a6208;
   --ok:#2c7448;
-  --f-display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
+  --teal:#1f7f8c;
+  --btn-bg:#2c4a36;--btn-fg:#f1efe4;
+  --tape:rgba(214,196,150,.82);
+  --f-display:'Fraunces',Georgia,'Times New Roman',serif;
   --f-body:'Newsreader',Georgia,'Times New Roman',serif;
-  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --f-mono:'Courier Prime','Courier New',ui-monospace,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0f1311;--surface:#171c19;--raised:#1e2521;--ink:#e0e6e0;--muted:#92a097;--line:#2c3631;
-    --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;
+    --bg:#0b0f0c;--surface:#141a15;--raised:#1b221c;--ink:#e3e8dc;--muted:#99a595;--line:#33402f;
+    --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;--teal:#5ec3d0;--btn-bg:#b5cfa6;--btn-fg:#10180f;--tape:rgba(190,170,120,.55);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0f1311;--surface:#171c19;--raised:#1e2521;--ink:#e0e6e0;--muted:#92a097;--line:#2c3631;
-  --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;
+  --bg:#0b0f0c;--surface:#141a15;--raised:#1b221c;--ink:#e3e8dc;--muted:#99a595;--line:#33402f;
+  --s-nat:#6cc794;--s-ame:#f09068;--s-ass:#c999e6;--s-rec:#e2b84e;--ok:#6cc794;--teal:#5ec3d0;--btn-bg:#b5cfa6;--btn-fg:#10180f;--tape:rgba(190,170,120,.55);
   color-scheme:dark;
 }
 /* ================= BASE ================= */
@@ -75,15 +78,6 @@ button{cursor:pointer}
 .app{max-width:72rem;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 
 /* ================= CABEÇALHO E ABAS ================= */
-.top{display:flex;flex-direction:column;gap:10px}
-.stripe{height:8px;background:repeating-linear-gradient(-45deg,var(--ink) 0 10px,transparent 10px 20px);opacity:.85}
-.brandrow{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between}
-.eyebrow{margin:0;font:500 .72rem/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.brand{margin:0;font:700 clamp(2.1rem,6vw,3.4rem)/.95 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
-.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid var(--ink)}
-.tab{background:none;border:0;padding:10px 14px 9px;font:600 1.05rem/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:4px solid transparent;margin-bottom:-2px;display:flex;gap:8px;align-items:center}
-.tab:hover{color:var(--ink)}
-.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
 .badge{font:600 .68rem/1 var(--f-mono);background:var(--ink);color:var(--bg);border-radius:999px;padding:3px 7px;font-variant-numeric:tabular-nums}
 
 /* ================= BOTÕES E CAMPOS ================= */
@@ -252,8 +246,6 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
 @keyframes spores{to{background-position:-340px -600px,420px -760px,-280px -720px,500px -880px}}
 .app,.toast{position:relative;z-index:1}
 .toast{position:fixed}
-.stripe{background-size:28.28px 8px;animation:crawl 6s linear infinite}
-@keyframes crawl{to{background-position:28.28px 0}}
 .brand{animation:flick 11s steps(1,end) infinite}
 @keyframes flick{0%,93%,100%{opacity:1;text-shadow:none}94%{opacity:.82;text-shadow:2px 0 var(--s-ass),-2px 0 var(--s-nat)}95%{opacity:1;text-shadow:none}96%{opacity:.9;text-shadow:-2px 0 var(--s-ame)}97%{opacity:1;text-shadow:none}}
 .tab[aria-selected="true"]{animation:vine .35s ease-out both}
@@ -306,7 +298,6 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
    Cada área do site usa uma das imagens (--i), com foco (--p: x% y%) e zoom (--z).
    Para trocar a imagem de uma área, mude o --i; para enquadrar, mude --p e --z.
    As imagens ficam no fim do arquivo (--imgA, --imgB...). */
-.ph-hero{--i:var(--imgF);--p:50% 58%;--z:1}
 .ph-pessoa{--i:var(--imgA);--p:47% 40%;--z:1.9}
 .ph-grupo{--i:var(--imgK);--p:50% 58%;--z:1.15}
 .ph-tensao{--i:var(--imgL);--p:78% 50%;--z:1}
@@ -324,14 +315,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
 .ph-recursos{--i:var(--imgH);--p:38% 78%;--z:2.2}
 .ph-luto{--i:var(--imgD);--p:45% 42%;--z:1.1}
 .ph-viagem{--i:var(--imgH);--p:50% 70%;--z:1.4}
-.hero.ph{background:none;opacity:.34}
 :root[data-theme="dark"] .ph::before{filter:brightness(.8) saturate(.9)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ph::before{filter:brightness(.8) saturate(.9)}}
 .card .art{height:86px;border-bottom:1px solid var(--line)}
-.hero{position:absolute;left:0;right:0;top:0;height:150px;pointer-events:none;z-index:0;opacity:.9;
-  -webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent)}
-.top{position:relative}
-.top>*:not(.hero){position:relative;z-index:1}
 .eart{height:9rem;max-width:20rem;border:1px solid var(--line);border-radius:2px;margin-bottom:6px}
 
 /* ================= AMEAÇAS (seletor de tipo) ================= */
@@ -404,16 +390,91 @@ select{appearance:auto}
 .fsec p{margin:0}
 .neut{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){.ficha{animation:none!important}}
+
+/* ================= FUNDO E TOPO ================= */
+p:empty,.hint:empty{display:none}
+body{background:
+    radial-gradient(70rem 34rem at 0% 0%,rgba(44,116,72,.20),transparent 62%),
+    radial-gradient(60rem 30rem at 100% 100%,rgba(138,74,30,.16),transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .17 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),var(--bg);background-attachment:fixed}
+.brand{animation:none}
+.brand .solo{font-style:italic;color:var(--s-nat)}
+body.inicio .topline .logo{visibility:hidden}
+body.inicio .topline{justify-content:flex-end}
+.top{display:flex;flex-direction:column;gap:14px}
+.topline{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;justify-content:space-between}
+.logo{background:none;border:0;padding:0;font:700 1.15rem/1 var(--f-display);letter-spacing:.01em;color:var(--ink);cursor:pointer;text-align:left}
+.tools{display:flex;gap:8px;align-items:center}
+.brand{margin:4px 0 26px;font:700 clamp(2.2rem,7vw,4.2rem)/1.02 var(--f-display);letter-spacing:-.01em;padding-bottom:0}
+
+/* ================= CADERNO: DIVISÓRIAS (ABAS) E PÁGINA ================= */
+.sheet{display:flex;flex-direction:column}
+.tabs{display:flex;gap:4px;align-items:flex-end;overflow-x:auto;scrollbar-width:thin;padding:0 6px;margin-bottom:-1px;position:relative;z-index:2}
+.tab{--c:var(--ink);flex:0 0 auto;background:color-mix(in srgb,var(--c) 14%,var(--bg));border:1px solid var(--line);border-bottom:0;border-radius:7px 7px 0 0;padding:9px 16px 8px;font:700 .78rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:inline-flex;gap:7px;align-items:center;position:relative;top:1px;transition:padding .15s,background .15s}
+.tab:hover{color:var(--ink);background:color-mix(in srgb,var(--c) 26%,var(--bg))}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);padding-top:12px;border-top:4px solid var(--c);animation:none}
+#t-baralho{--c:var(--s-rec)}#t-tabelas{--c:var(--s-nat)}#t-oraculos{--c:var(--s-ass)}#t-ameacas{--c:var(--s-ame)}#t-tramas{--c:var(--teal)}
+body.inicio .tabs{display:none}
+.page{background:var(--surface);border:1px solid var(--line);padding:24px 22px 28px;position:relative;box-shadow:0 18px 36px -18px rgba(0,0,0,.55)}
+.page::before{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.5}
+.page>*{position:relative}
+body.inicio .page{background:none;border:0;box-shadow:none;padding:0}
+body.inicio .page::before{display:none}
+.panel,.empty,.arqi,.meter,.big{background:var(--raised)}
+.ficha{background:var(--raised)}
+.btn{font:700 .76rem/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+.btn:hover:not(:disabled){background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.btn.pri{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.chip[aria-pressed="true"]{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-fg)}
+.chip{border-radius:2px}
+.badge{border-radius:2px}
+@media (max-width:40rem){.page{padding:18px 14px 22px}.tab{padding:9px 12px 8px;font-size:.72rem}}
+
+/* ================= PÁGINA INICIAL: FOTOS PENDURADAS ================= */
+.strips{display:flex;gap:18px;align-items:flex-start;justify-content:center;padding:6px 10px 0}
+.strip{--c:var(--ink);--rot:0deg;flex:1 1 0;min-width:0;max-width:13.5rem;display:flex;flex-direction:column;text-align:left;background:none;border:0;padding:0;color:var(--ink);cursor:pointer;position:relative;transform:rotate(var(--rot));transition:transform .3s ease;animation:drop .7s ease-out both;animation-delay:calc(var(--n,0)*.09s)}
+.strip:nth-child(1){--rot:-1.6deg}.strip:nth-child(2){--rot:1.2deg}.strip:nth-child(3){--rot:-.7deg}.strip:nth-child(4){--rot:1.6deg}.strip:nth-child(5){--rot:-1.1deg}.strip:nth-child(6){--rot:.9deg}
+.strip:nth-child(even){margin-top:3.5rem}
+@keyframes drop{from{opacity:0;transform:translateY(-18px) rotate(calc(var(--rot)*3))}to{opacity:1;transform:rotate(var(--rot))}}
+.strip::before{content:"";position:absolute;z-index:3;top:-11px;left:50%;width:4.4rem;height:1.5rem;margin-left:-2.2rem;background:var(--tape);transform:rotate(-3deg);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.strip:nth-child(even)::before{transform:rotate(4deg)}
+.sfig{height:21rem;border:7px solid #ebe6d3;border-bottom-width:7px;box-shadow:0 10px 20px -6px rgba(0,0,0,.55);filter:sepia(.12) saturate(.95);transition:filter .3s}
+.strip:nth-child(even) .sfig{height:17rem}
+.strip:hover,.strip:focus-visible{transform:rotate(0deg) translateY(-6px)}
+.strip:hover .sfig,.strip:focus-visible .sfig{filter:none}
+.stag{align-self:flex-start;margin:-14px 0 0 8px;position:relative;z-index:2;padding:6px 11px 5px;background:color-mix(in srgb,var(--c) 28%,#ebe6d3);color:#1c211a;border:1px solid color-mix(in srgb,var(--c) 70%,#000);font:700 .78rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-1.5deg)}
+.s-baralho{--c:var(--s-rec)}.s-tabelas{--c:var(--s-nat)}.s-oraculos{--c:var(--s-ass)}.s-ameacas{--c:var(--s-ame)}.s-tramas{--c:var(--teal)}.s-diario{--c:#7a6a50}
+.ph-f-baralho{--i:var(--imgM);--p:66% 40%;--z:1}
+.ph-f-tabelas{--i:var(--imgE);--p:55% 60%;--z:1}
+.ph-f-oraculos{--i:var(--imgB);--p:50% 40%;--z:1.2}
+.ph-f-ameacas{--i:var(--imgK);--p:16% 55%;--z:1.2}
+.ph-f-tramas{--i:var(--imgL);--p:84% 50%;--z:1.2}
+.ph-f-diario{--i:var(--imgA);--p:47% 40%;--z:1.2}
+@media (max-width:48rem){
+  .strips{flex-wrap:wrap;justify-content:flex-start;gap:22px 16px}
+  .strip,.strip:nth-child(even){flex:0 0 calc(50% - 8px);max-width:none;margin-top:0}
+  .sfig,.strip:nth-child(even) .sfig{height:13.5rem}
+}
+@media (prefers-reduced-motion:reduce){.strip{animation:none}.strip:hover{transform:rotate(var(--rot))}}
+
+/* ================= RODAPÉ ================= */
+.legal{max-width:none;border-top:0;padding-top:6px}
+.legal p{max-width:78ch}
+.footbar{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;padding:22px 0 8px;border-top:1px solid var(--line)}
+.footbar .logo{font-size:1rem}
 </style>
 
 <div class="app">
   <header class="top">
-    <div class="hero" id="hero" aria-hidden="true"></div>
-    <div class="stripe" aria-hidden="true"></div>
-    <p class="eyebrow">Ferramenta de fã para Assimilação RPG · não oficial</p>
-    <div class="brandrow"><h1 class="brand">Gerador de Aventuras</h1><div class="row"><button type="button" class="btn sm" id="contabtn" hidden>Entrar</button><button type="button" class="btn sm" id="themebtn" aria-pressed="false">Modo escuro</button></div></div>
+    <div class="topline">
+      <button type="button" class="logo" id="logo" aria-label="Voltar para a página inicial">Assimilação RPG: Solo</button>
+      <div class="tools"><button type="button" class="btn sm" id="contabtn" hidden>Entrar</button><button type="button" class="btn sm" id="themebtn" aria-pressed="false">Modo escuro</button></div>
+    </div>
     <section class="panel" id="conta" aria-label="Conta" hidden></section>
+  </header>
+  <div class="sheet">
     <nav class="tabs" role="tablist" aria-label="Geradores">
+      <button class="tab" role="tab" type="button" data-v="inicio" id="t-inicio">Início</button>
       <button class="tab" role="tab" type="button" data-v="baralho" id="t-baralho">Baralho</button>
       <button class="tab" role="tab" type="button" data-v="tabelas" id="t-tabelas">Tabelas</button>
       <button class="tab" role="tab" type="button" data-v="oraculos" id="t-oraculos">Oráculos</button>
@@ -421,18 +482,19 @@ select{appearance:auto}
       <button class="tab" role="tab" type="button" data-v="tramas" id="t-tramas">Tramas</button>
       <button class="tab" role="tab" type="button" data-v="diario" id="t-diario">Diário <span class="badge" id="nlog">0</span></button>
     </nav>
-  </header>
-  <main>
-    <section id="v-baralho" role="tabpanel" aria-labelledby="t-baralho"></section>
-    <section id="v-tabelas" role="tabpanel" aria-labelledby="t-tabelas" hidden></section>
-    <section id="v-oraculos" role="tabpanel" aria-labelledby="t-oraculos" hidden></section>
-    <section id="v-ameacas" role="tabpanel" aria-labelledby="t-ameacas" hidden></section>
-    <section id="v-tramas" role="tabpanel" aria-labelledby="t-tramas" hidden></section>
-    <section id="v-diario" role="tabpanel" aria-labelledby="t-diario" hidden></section>
-  </main>
+    <main class="page">
+      <section id="v-inicio" role="tabpanel" aria-labelledby="t-inicio"></section>
+      <section id="v-baralho" role="tabpanel" aria-labelledby="t-baralho" hidden></section>
+      <section id="v-tabelas" role="tabpanel" aria-labelledby="t-tabelas" hidden></section>
+      <section id="v-oraculos" role="tabpanel" aria-labelledby="t-oraculos" hidden></section>
+      <section id="v-ameacas" role="tabpanel" aria-labelledby="t-ameacas" hidden></section>
+      <section id="v-tramas" role="tabpanel" aria-labelledby="t-tramas" hidden></section>
+      <section id="v-diario" role="tabpanel" aria-labelledby="t-diario" hidden></section>
+    </main>
+  </div>
   <footer class="legal">
-    <p>Ferramenta de fã, sem fins lucrativos e sem afiliação com a Editora Assimilar. Cartas, tabelas, oráculos, ameaças e tramas deste site são textos originais, escritos para este gerador, que seguem a estrutura de jogo do livro: baralho de quatro naipes, tabelas 6×6 e oráculos.</p>
-    <p>Quem tem o livro pode digitar as próprias entradas em “Editar combinações”, na aba Tabelas. Elas ficam só neste navegador. O diário e as edições também ficam salvos só aqui.</p>
+    <div class="footbar" id="footbar"></div>
+    <p>Ferramenta de fã, sem fins lucrativos e sem afiliação com a Editora Assimilar. Todo o texto é original.</p>
   </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1585,27 +1647,27 @@ function fichaAmeaca(a,idx){
   if(a.cat.mut) root.append(h('section',{class:'fsec'},
     secHead(a.assim?'Alterações da Assimilação':'Natureza',a.assim?function(){a.mut=pickMuts(a.cat.mut,g);refazFixos(a);mostrar();}:null),
     a.assim?h('ul',{class:'conds'},a.mut.map(function(m){return h('li',null,h('strong',null,m.nome),h('p',null,S(m.texto+' Ativação própria: '+m.ativ[1]+'.')));}))
-           :h('p',null,'Esta ameaça é natural, sem alteração da Assimilação.'),
+           :h('p',null,''),
     h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:function(){aplicarAss(a,!a.assim);mostrar();}},a.assim?'Tornar natural':'Assimilar'))));
   root.append(h('section',{class:'fsec'},secHead('Dados da ameaça',function(){a.dados=comporDados(g.ab+g.ap*a.n,a.int);mostrar();}),
     diceNode(a.dados,a.dif.ex),
-    h('p',{class:'hint'},'Dado 6 vale 1, Dado 1 vale 2 e Dado 2 vale 3. Total: '+(g.ab+g.ap*a.n)+' ('+g.ab+' + '+g.ap+' por Infectado). A ameaça rola e mantém todos os dados.'+(a.dif.ex?(' Na dificuldade '+a.dif.nm+', role '+a.dif.ex+' Dado 2 extra, sem manter.'):''))));
+    h('p',{class:'hint'},'Total: '+(g.ab+g.ap*a.n)+' ('+g.ab+' + '+g.ap+' por Infectado)'+(a.dif.ex?(' · '+a.dif.ex+' Dado 2 extra, sem manter'):''))));
   if(a.tracos.length) root.append(h('section',{class:'fsec'},secHead('Traços',function(){a.tracos=genTracos(g);mostrar();}),
     h('ul',{class:'conds'},a.tracos.map(function(t){return h('li',null,h('strong',null,t.nome),h('p',null,S(t.texto)));}))));
   root.append(h('section',{class:'fsec'},secHead('Ativações da ameaça',function(){a.ativ=genAtiv(a.pool,g,a.int,totalAtiv(a),a.fixos);mostrar();}),
     h('ul',{class:'ativs'},a.ativ.map(ativNode)),
-    h('p',{class:'hint'},S('Sempre há ao menos uma ativação só com C e uma só com A. C são desfavoráveis aos Infectados e A são favoráveis. Dano em pontos de Saúde, sugerido para este grau.'))));
+    h('p',{class:'hint'},'')));
   root.append(h('section',{class:'fsec'},secHead('Neutralização',function(){a.especial=pick(ESPECIAIS);a.conseq=pick(CONSEQS);mostrar();}),
     h('div',{class:'neut'},costNode(a.neutN+'A'),h('span',{class:'hint'},a.neutPor?S('+'+a.neutPor+'A por Infectado além do primeiro'):'custo fixo')),
-    h('p',null,h('strong',null,'Como: '),S(a.neutDesc+' A neutralização pode ser parcial e não precisa ser letal.')),
+    h('p',null,h('strong',null,'Como: '),S(a.neutDesc)),
     h('p',null,h('strong',null,'Especial: '),S(a.especial)),
     h('p',null,h('strong',null,'Consequência: '),S(a.conseq.replace(/^Ao ser neutralizada, /,'').replace(/^./,function(c){return c.toUpperCase();})))));
   root.append(h('section',{class:'fsec'},secHead('Objetivos secundários',function(){a.secs=genSecs();mostrar();}),
     h('ul',{class:'objs'},a.secs.map(function(s){return h('li',null,h('strong',null,s.nome),h('span',{class:'ocost'},costNode(s.base+'A')),h('p',null,S(s.texto)));}))));
   if(a.princ) root.append(h('section',{class:'fsec'},secHead('Objetivos principais (ameaça final)'),
     h('ul',{class:'objs'},a.princ.map(function(o){return h('li',null,h('strong',null,o.nome),objCost(o),h('p',null,S(o.desc)));})),
-    h('p',{class:'hint'},'Quando a ameaça é a única geradora do Conflito, ela vira o próprio Conflito: as ativações dela passam a ser as ativações do Conflito.')));
-  root.append(h('section',{class:'fsec'},h('p',{class:'hint'},'Se a ameaça ganhar importância e virar personagem, monte uma Ficha de Infectado com '+(g.id===1?'a experiência da ficha inicial':g.x)+', priorizando o conceito e as ativações dela.'),
+    h('p',{class:'hint'},'')));
+  root.append(h('section',{class:'fsec'},h('p',{class:'hint'},''),
     h('div',{class:'row'},
       h('button',{type:'button',class:'btn pri',onclick:function(){addLog('Ameaça',a.nome+' ('+a.cat.nm+', '+g.nm+')',ameacaTexto(a));}},'Enviar ao diário'),
       h('button',{type:'button',class:'btn',onclick:function(){copyText(ameacaTexto(a),'Ameaça copiada.');}},'Copiar'),
@@ -1615,7 +1677,7 @@ function fichaAmeaca(a,idx){
 function mostrar(){
   var box=$('am-out'); if(!box) return;
   box.textContent='';
-  if(!AR.length){ box.append(h('div',{class:'empty'},artNode('vazio','eart'),h('h3',null,'Nenhuma ameaça ainda'),h('p',null,'Escolha a categoria, o grau e o número de Infectados, e toque em Gerar ameaça.'))); return; }
+  if(!AR.length){ box.append(h('div',{class:'empty'},artNode('vazio','eart'),h('h3',null,'Nenhuma ameaça ainda'),h('p',null,''))); return; }
   AR.forEach(function(a,i){ box.append(fichaAmeaca(a,i)); });
 }
 function gerarAgora(){
@@ -1674,7 +1736,7 @@ function ameacaForm(e,catId,withCat,onSave,onCancel){
       h('div',{class:'field'},h('span',{class:'lbl'},'Gênero (para “assimilado/a”)'),gen)),
     h('div',{class:'field'},h('span',{class:'lbl'},'Ativação própria (opcional)'),
       h('div',{class:'bar'},sc,sn),st,
-      h('p',{class:'hint'},S('Custo com A (Sucesso), B (Adaptação) e C (Pressão). Ativações só com C prejudicam os Infectados. Digite as letras A, B e C: elas viram os símbolos na ficha.'))),
+      h('p',{class:'hint'},'Custos com A, B e C.')),
     h('div',{class:'row'},
       h('button',{type:'button',class:'btn sm pri',onclick:ok},'Salvar ameaça'),
       h('button',{type:'button',class:'btn sm',onclick:onCancel},'Cancelar')));
@@ -1773,7 +1835,7 @@ function renderEditorAmeacas(root){
       },function(){AED.nova=false;renderAmeacas();})));
   }
   var box=h('div',{class:'clist'});
-  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma ameaça aqui'),h('p',null,'Troque o filtro ou a busca, ou crie uma ameaça nova.')));
+  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma ameaça aqui'),h('p',null,'')));
   lista.slice(0,AED.lim).forEach(function(e){ box.append(ameacaLinha(e)); });
   root.append(box);
   if(lista.length>AED.lim) root.append(h('div',{class:'row',style:'margin-top:10px'},
@@ -1796,7 +1858,7 @@ function renderAmeacas(){
   var tiles=[{id:'rand',nm:'Qualquer',x:'Sortear a categoria',cor:'ink'}].concat(CATS).map(function(t){
     return h('button',{type:'button',class:'tipo t-'+(t.cor||'ink'),'aria-pressed':String(AP.cat===t.id),onclick:function(){AP.cat=t.id;renderAmeacas();}},
       t.id==='rand'?h('div',{class:'art rand'},h('span',null,'?')):artNode(t.art),
-      h('strong',null,t.nm),h('span',{class:'hint'},t.x));
+      h('strong',null,t.nm));
   });
   var graus=h('div',{class:'chips'},GR.map(function(g){
     return h('button',{type:'button',class:'chip','aria-pressed':String(AP.grau===g.id),title:g.x,onclick:function(){AP.grau=g.id;renderAmeacas();}},g.nm);
@@ -1826,14 +1888,35 @@ function renderAmeacas(){
 }
 
 /* ================= ABAS ================= */
-var VIEWS=['baralho','tabelas','oraculos','ameacas','tramas','diario'];
+var VIEWS=['inicio','baralho','tabelas','oraculos','ameacas','tramas','diario'];
 function go(v){
+  document.body.classList.toggle('inicio',v==='inicio');
+  if(v==='inicio') renderInicio();
   VIEWS.forEach(function(x){
     $('v-'+x).hidden=(x!==v);
     var t=$('t-'+x); t.setAttribute('aria-selected',String(x===v)); t.tabIndex=(x===v)?0:-1;
   });
   try{ if(location.hash!=='#'+v) history.replaceState(null,'','#'+v); }catch(e){}
   if(v==='diario') renderDiario();
+  window.scrollTo(0,0);
+}
+
+/* ---- página inicial: fotos penduradas que levam às abas ---- */
+var FAIXAS=[
+  {v:'baralho',nome:'Baralho'},{v:'tabelas',nome:'Tabelas'},{v:'oraculos',nome:'Oráculos'},
+  {v:'ameacas',nome:'Ameaças'},{v:'tramas',nome:'Tramas'},{v:'diario',nome:'Diário'}
+];
+function renderInicio(){
+  var box=$('v-inicio'); box.replaceChildren(
+    h('h1',{class:'brand'},'Assimilação RPG: ',h('span',{class:'solo'},'Solo')),
+    h('div',{class:'strips'},FAIXAS.map(function(f,i){
+      return h('button',{type:'button',class:'strip s-'+f.v,style:'--n:'+i,'aria-label':f.nome,onclick:function(){go(f.v);}},
+        h('div',{class:'sfig ph ph-f-'+f.v,'aria-hidden':'true'}),
+        h('span',{class:'stag'},f.nome));
+    })));
+}
+function renderRodape(){
+  $('footbar').replaceChildren(h('button',{type:'button',class:'logo',onclick:function(){go('inicio');}},'Assimilação RPG: Solo'));
 }
 
 /* ================= BARALHO ================= */
@@ -2039,7 +2122,7 @@ function renderEditorCartas(root){
       },function(){EDK.nova=false;renderBaralho();})));
   }
   var box=h('div',{class:'clist'});
-  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma carta aqui'),h('p',null,'Troque o filtro ou a busca, ou crie uma carta nova.')));
+  if(!lista.length) box.append(h('div',{class:'empty'},h('h3',null,'Nenhuma carta aqui'),h('p',null,'')));
   lista.slice(0,EDK.lim).forEach(function(c){ box.append(cartaLinha(c)); });
   root.append(box);
   if(lista.length>EDK.lim) root.append(h('div',{class:'row',style:'margin-top:10px'},
@@ -2091,8 +2174,7 @@ function renderBaralho(){
       h('span','hint','Baralho: '+nDraw+' · Descarte: '+nPile)),
     h('div','field',h('span','lbl','Naipes no baralho'),chips),
     h('label',{class:'check','for':'dev'},dev,'Devolver ao baralho as cartas que não foram escolhidas')));
-  root.append(h('p','hint',{style:'margin:14px 0 10px'},'Sorteie três cartas e escolha uma. A carta é um gatilho: use agora, guarde para depois ou adapte ao que o grupo está vivendo.'));
-  var hand=h('div',{class:'hand'});
+    var hand=h('div',{class:'hand'});
   if(!DK.hand.length){
     for(var i=0;i<3;i++) hand.append(h('div','back','Carta virada'));
   }else{
@@ -2217,7 +2299,7 @@ function tableCard(t,rerender){
   }
   var head=h('tr',null,h('th',null,'Linha \\ Coluna'),t.cols.map(function(x,i){return h('th',null,LABELS[i]+' · '+x);}));
   det.append(
-    h('p','hint',{style:'margin-bottom:8px'},'Digite aqui, célula por célula, o que quiser no lugar da combinação padrão. Fica salvo só neste navegador. Célula vazia usa a combinação das duas listas.'),
+    h('p','hint',{style:'margin-bottom:8px'},''),
     h('div','egrid',h('table',null,h('thead',null,head),tb)),
     h('div',{class:'row',style:'margin-top:8px'},h('button',{type:'button',class:'btn sm bad',onclick:function(){delete ST.over[t.id];save();rerender();toast('Edições desta tabela removidas.');}},'Limpar edições desta tabela')));
   card.append(det);
@@ -2229,12 +2311,12 @@ function renderTabelas(){
   var th=THEMES.filter(function(x){return x.id===curTheme;})[0];
   root.append(h('div','panel',
     methodBar(renderTabelas),
-    h('p','hint','Cada tabela tem 6 linhas e 6 colunas. Role uma vez para a linha e outra para a coluna, ou escolha direto. As porcentagens acima são as do livro e dão mais peso aos resultados do meio. Cada linha e cada coluna têm uma segunda versão escondida, sorteada na hora, então o mesmo resultado pode sair com palavras diferentes. As 36 combinações vêm de duas listas, e você pode trocar qualquer célula pela sua.')));
+    h('p','hint','')));
   root.append(h('div',{class:'chips',style:'margin:16px 0 8px'},THEMES.map(function(x){
     return h('button',{type:'button',class:'chip','aria-pressed':String(x.id===curTheme),onclick:function(){curTheme=x.id;renderTabelas();}},x.nm);
   })));
   root.append(h('div','bar',{style:'margin-bottom:12px'},
-    h('p','hint',th.x),
+    
     h('button',{type:'button',class:'btn sm',onclick:function(){
       th.t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());}); renderTabelas();
     }},'Rolar o tema inteiro')));
@@ -2276,7 +2358,7 @@ function renderOraculos(){
   var root=$('v-oraculos'); root.textContent='';
   root.append(h('div','panel',
     methodBar(renderOraculos),
-    h('p','hint','Oráculos respondem perguntas rápidas. Cada um tem seis resultados, do pior (0–1) ao melhor (6+), e rolam com o mesmo método das tabelas.')));
+    h('p','hint','')));
   var grid=h('div',{class:'oracles',style:'margin-top:16px'});
   ORACLES.forEach(function(o){
     var ol=h('ol');
@@ -2298,12 +2380,12 @@ function renderTramas(){
   root.append(h('div','panel',
     h('div','field',h('span','lbl','Tipo de trama'),
       h('div','chips',cats.map(function(c){return h('button',{type:'button',class:'chip','aria-pressed':String(PS.cat===c.id),onclick:function(){PS.cat=c.id;renderTramas();}},c.nm);}))),
-    h('p','hint','Pontos de partida para a primeira anotação de um registro de jogo solo. Escritos como se fossem a voz de quem escreve o diário.')));
+    h('p','hint','')));
   var pool=[]; PLOTS.forEach(function(p){ if(PS.cat==='todas'||PS.cat===p.id) p.h.forEach(function(x){pool.push({cat:p,x:x});}); });
   var big=h('div',{class:'big',style:'margin-top:16px'});
   function paint(){
     big.textContent='';
-    if(!PS.cur){ big.append(h('div','lbl','Ponto de partida'),h('p','hint','Toque em Sortear para receber um começo de registro.')); }
+    if(!PS.cur){ big.append(h('div','lbl','Ponto de partida')); }
     else big.append(h('div','lbl','Trama · '+PS.cur.cat.nm),h('p','quote','“'+PS.cur.x+'”'));
     big.append(h('div','row',
       h('button',{type:'button',class:'btn pri',onclick:function(){PS.cur=pick(pool);paint();}},PS.cur?'Sortear outra':'Sortear'),
@@ -2543,9 +2625,9 @@ function renderDiario(){
     morte?artNode('luto','eart'):null,
     h('div',{class:'bar'},h('h3',{class:'mtit',id:'mtit'},(morte?'† ':'')+(ST.nome||('Diário nº '+ST.num))+(ST.nome?(' (nº '+ST.num+')'):'')+(ro?' · encerrado':'')),h('span',{class:'hint grow',style:'text-align:right'},fmtN(tot)+' de '+fmtN(LIMITE)+' caracteres')),
     h('div',{class:'mbar',role:'progressbar','aria-label':'Espaço usado no diário','aria-valuemin':'0','aria-valuemax':String(LIMITE),'aria-valuenow':String(Math.min(tot,LIMITE))},h('span',{style:'width:'+pct+'%'})),
-    ro?(morte?[h('p',{class:'hint'},'O dono deste diário morreu. Ele está só para leitura.'),ST.epitafio?h('p',{class:'epit'},ST.epitafio):null]
-             :h('p',{class:'hint'},'Este diário foi encerrado e está só para leitura.'))
-      :(cheio?h('p',{class:'hint'},'O diário chegou ao espaço de um caderno (175.000 caracteres). Você pode encerrá-lo e começar outro, ou continuar escrevendo se preferir.')
+    ro?(morte?[h('p',{class:'hint'},'O dono deste diário morreu.'),ST.epitafio?h('p',{class:'epit'},ST.epitafio):null]
+             :h('p',{class:'hint'},'Diário encerrado.'))
+      :(cheio?h('p',{class:'hint'},'Diário cheio (175.000 caracteres).')
              :(tot>=LIMITE*.9?h('p',{class:'hint'},'Faltam '+fmtN(LIMITE-tot)+' caracteres para o diário encher.'):null)),
     acoes.length?h('div',{class:'row'},acoes):null);
   root.append(meter);
@@ -2589,7 +2671,7 @@ function renderDiario(){
   root.append(tools);
   if(!ST.diario.length){
     root.append(h('div','empty',artNode('viagem','eart'),h('h3',null,'O diário está vazio'),
-      h('p',null,'Use o botão “Enviar ao diário” em qualquer sorteio das outras abas. Eles aparecem aqui, do mais novo para o mais antigo, para você editar, copiar ou transformar em texto.')));
+      ''));
     renderArquivo(root);
     return;
   }
@@ -2782,10 +2864,16 @@ function nvRender(){
   p.hidden=!NV.aberto; if(!NV.aberto) return;
   p.replaceChildren();
   var fechar=h('button',{type:'button',class:'btn sm',onclick:function(){NV.aberto=false;nvRender();}},'Fechar');
+  if(!NV.cfg){
+    p.append(h('div',{class:'sech'},h('h3','Conta na nuvem'),fechar),
+      h('p',{class:'hint'},'Ainda não está ligada: '+NV.semCfg+'.'),
+      '');
+    return;
+  }
   if(NV.user){
     p.append(
       h('div',{class:'sech'},h('h3','Sua conta'),fechar),
-      h('p',{class:'hint'},'Conectado como ',h('strong',nvNome(NV.user)),'. O diário, as cartas e as ameaças editadas são salvos na nuvem e aparecem nos outros aparelhos em que você entrar.'),
+      h('p',{class:'hint'},'Conectado como ',h('strong',nvNome(NV.user)),'.'),
       h('p',{id:'nv-status',class:'hint'+(NV.erro?' nverro':'')},nvStatusTxt()),
       h('div',{class:'row'},
         h('button',{type:'button',class:'btn pri',disabled:NV.ocupado||NV.enviando,onclick:function(){nvChecar().then(function(){return nvEnviar();});}},'Sincronizar agora'),
@@ -2811,17 +2899,18 @@ function nvRender(){
     h('div',{class:'row'},
       h('button',{type:'button',class:'btn pri',disabled:NV.ocupado,onclick:nvEntrar},NV.ocupado?'Aguarde…':(criar?'Criar conta':'Entrar')),
       NV.cfg.google?h('button',{type:'button',class:'btn',disabled:NV.ocupado,onclick:nvGoogle},'Entrar com Google'):null),
-    h('p',{class:'hint'},'Com usuário e senha não há recuperação: se esquecer a senha, a conta não volta (o diário continua neste aparelho). Anote a senha.'+(NV.cfg.google?' Com Google, a recuperação é a do próprio Google.':''))
+    h('p',{class:'hint'},'Sem recuperação de senha: anote a sua.'+(NV.cfg.google?' Com Google, a recuperação é a do Google.':''))
   );
 }
 function nvIniciar(){
   var cfg=window.FIREBASE_CONFIG;
   if(!cfg||!cfg.apiKey||!cfg.projectId){
-    // só no app publicado (que carrega firebase-config.js): explica por que o botão não apareceu
-    if(document.querySelector('script[src="firebase-config.js"]')){
-      var falta=!cfg?'o arquivo firebase-config.js não foi encontrado ou tem erro de digitação (aspas, vírgulas)':'faltam valores no firebase-config.js ('+['apiKey','projectId'].filter(function(k){return !cfg[k];}).join(', ')+')';
-      var f=document.querySelector('.legal'); if(f) f.append(h('p',{id:'nv-diag'},'Conta na nuvem desativada: '+falta+'. Veja o GUIA-LOGIN.txt.'));
-    }
+    // sem configuração: o botão continua aparecendo e explica o que falta
+    var tem=!!document.querySelector('script[src="firebase-config.js"]');
+    NV.semCfg=!tem?'esta página não carrega o arquivo firebase-config.js (o login só funciona no app publicado no GitHub, com esse arquivo preenchido)'
+      :(!cfg?'o arquivo firebase-config.js não foi encontrado ou tem erro de digitação (aspas, vírgulas)':'faltam valores no firebase-config.js ('+['apiKey','projectId'].filter(function(k){return !cfg[k];}).join(', ')+')');
+    var b0=$('contabtn'); b0.hidden=false;
+    b0.addEventListener('click',function(){NV.aberto=!NV.aberto; nvRender();});
     return;
   }
   NV.cfg=cfg;
@@ -2870,7 +2959,6 @@ updateBadge();
 resetDeck(); DK.hand=DK.draw.splice(0,3); DK.fresh=true;
 THEMES[0].t.forEach(function(t){var s=ts(t);sa(s,'r',rolar());sa(s,'c',rolar());});
 renderBaralho(); renderTabelas(); renderOraculos(); renderAmeacas(); renderTramas();
-$('hero').className='hero ph ph-hero';
 document.querySelectorAll('.tab').forEach(function(b){
   b.addEventListener('click',function(){go(b.dataset.v);});
   b.addEventListener('keydown',function(e){
@@ -2882,7 +2970,9 @@ document.querySelectorAll('.tab').forEach(function(b){
   });
 });
 var hv=(location.hash||'').slice(1);
-go(VIEWS.indexOf(hv)>=0?hv:'baralho');
+renderRodape();
+$('logo').addEventListener('click',function(){go('inicio');});
+go(VIEWS.indexOf(hv)>=0?hv:'inicio');
 (async function(){
   try{ downloads=(window.claude&&window.claude.use)?await window.claude.use('downloads'):null; }catch(e){downloads=null;}
   try{ sample=(window.claude&&window.claude.use)?await window.claude.use('sample'):null; }catch(e){sample=null;}
